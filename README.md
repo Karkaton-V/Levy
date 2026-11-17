@@ -36,13 +36,17 @@ Workbench.Desktop/
                BuildingSource.cs, MapStyle.cs, StudyArea.cs, LouisianaOutline.cs, MainViewModel.Map.cs
     Compare/   CompareTabView, MainViewModel.Compare.cs
     Shared/    Shared.cs (helpers and asset loading), StatTileView
+    Settings/  ThemeManager.cs (light/dark switching), AppSettings.cs (saved preferences)
   Assets/
-    App/       AppStyles.xaml (tab bar)
+    App/       AppStyles.xaml (navigation rail, top bar, page area)
+    Account/   supabase.json (Supabase project URL and publishable key)
     Editor/    EditorStyles.xaml, DefaultRules.rules (the rules the app starts with)
     Map/       MapStyles.xaml, map-style.json (parcel and border colours), study-area.json (border streets, boxes, sample size), louisiana.geojson
     Compare/   CompareStyles.xaml
-    Shared/    Theme.xaml (palette, fonts, shared styles), Rules.xshd (syntax colours)
+    Shared/    Theme.xaml (fonts and shared control styles), Rules.Light.xshd / Rules.Dark.xshd (syntax colours)
 ```
+
+Each asset folder also has `Colors.Light.xaml` and `Colors.Dark.xaml` with the same keys; styles look colours up at runtime, so the theme switches without restarting, and the choice is saved per user.
 
 `MainViewModel` is one class split across files: each tab's folder holds the part that tab uses. The `.xaml` styles are compiled into the app; the data files are copied next to it and read at startup, so you can change a colour, the study area or the starting rules without touching code. The map legend is built from `map-style.json`, so it always matches what the map draws. Changing `study-area.json` downloads that area's streets and buildings again.
 

@@ -1,0 +1,12 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Navigation rail colours (light theme). Swapped at runtime by ThemeManager; the other theme's file has the same keys. -->
+    <SolidColorBrush x:Key="NavBackground" Color="#1C2433" />
+    <SolidColorBrush x:Key="NavStrong" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="NavText" Color="#C6CEDA" />
+    <SolidColorBrush x:Key="NavMuted" Color="#7E8A9E" />
+    <SolidColorBrush x:Key="NavHover" Color="#263042" />
+    <SolidColorBrush x:Key="NavSelected" Color="#2D3A52" />
+    <SolidColorBrush x:Key="NavAccent" Color="#5B9BFF" />
+    <SolidColorBrush x:Key="NavLine" Color="#263042" />
+</ResourceDictionary>

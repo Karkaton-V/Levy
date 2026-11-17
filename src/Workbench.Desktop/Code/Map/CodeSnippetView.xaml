@@ -5,6 +5,6 @@
     <!-- A few read-only lines of rules code, coloured like the Editor. -->
     <avalon:TextEditor x:Name="Editor" IsReadOnly="True" ShowLineNumbers="False"
                        FontFamily="{StaticResource Mono}" FontSize="12.5"
-                       Background="Transparent" Foreground="{StaticResource Text}"
+                       Background="Transparent" Foreground="{DynamicResource Text}"
                        HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled" WordWrap="True" />
 </UserControl>

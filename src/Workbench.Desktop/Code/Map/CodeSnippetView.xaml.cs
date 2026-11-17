@@ -13,11 +13,15 @@ public partial class CodeSnippetView : UserControl
     public CodeSnippetView()
     {
         InitializeComponent();
-        Editor.SyntaxHighlighting = Shared.RulesSyntax;
+        ApplyTheme();
+        Loaded += (_, _) => ThemeManager.Changed += ApplyTheme;
+        Unloaded += (_, _) => ThemeManager.Changed -= ApplyTheme;
         Editor.Options.EnableHyperlinks = false;
         Editor.Options.EnableEmailHyperlinks = false;
         Editor.TextArea.Caret.CaretBrush = System.Windows.Media.Brushes.Transparent;
     }
+
+    void ApplyTheme() => Editor.SyntaxHighlighting = Shared.RulesSyntax(ThemeManager.IsDark);
 
     public string Code
     {

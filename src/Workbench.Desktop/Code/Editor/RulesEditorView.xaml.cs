@@ -23,22 +23,19 @@ public partial class RulesEditorView : UserControl
     public RulesEditorView()
     {
         InitializeComponent();
-        // Colours come from Assets/Editor/EditorStyles.xaml; syntax colours from Assets/Shared/Rules.xshd.
-        _marks = new LineMarks((Brush)FindResource("EditorProblemTint"), (Pen)FindResource("EditorProblemSquiggle"));
-        Editor.SyntaxHighlighting = Shared.RulesSyntax;
+        _marks = new LineMarks();
         Editor.Options.HighlightCurrentLine = true;
         Editor.Options.ConvertTabsToSpaces = true;
         Editor.Options.IndentationSize = 4;
         Editor.Options.EnableHyperlinks = false;
         Editor.Options.EnableEmailHyperlinks = false;
-        Editor.TextArea.TextView.CurrentLineBackground = (Brush)FindResource("EditorCurrentLine");
-        Editor.TextArea.TextView.CurrentLineBorder = (Pen)FindResource("EditorCurrentLineBorder");
-        Editor.TextArea.SelectionBrush = (Brush)FindResource("EditorSelection");
         Editor.TextArea.SelectionBorder = null;
         Editor.TextArea.SelectionForeground = null;
         Editor.TextArea.SelectionCornerRadius = 2;
-        Editor.TextArea.Caret.CaretBrush = (Brush)FindResource("EditorCaret");
+        ApplyTheme();
         Editor.TextArea.TextView.BackgroundRenderers.Add(_marks);
+        Loaded += (_, _) => ThemeManager.Changed += ApplyTheme;
+        Unloaded += (_, _) => ThemeManager.Changed -= ApplyTheme;
         SearchPanel.Install(Editor);
 
         Editor.TextChanged += (_, _) => OnTextChanged();
@@ -47,6 +44,19 @@ public partial class RulesEditorView : UserControl
         Editor.MouseHover += OnMouseHover;
         Editor.MouseHoverStopped += (_, _) => _hoverTip.IsOpen = false;
         DataContextChanged += (_, _) => Attach(DataContext as MainViewModel);
+    }
+
+    // Colours from Assets/Editor/Colors.*.xaml and syntax colours from Assets/Shared/Rules.*.xshd, for the current theme.
+    void ApplyTheme()
+    {
+        Editor.SyntaxHighlighting = Shared.RulesSyntax(ThemeManager.IsDark);
+        Editor.TextArea.TextView.CurrentLineBackground = (Brush)FindResource("EditorCurrentLine");
+        Editor.TextArea.TextView.CurrentLineBorder = (Pen)FindResource("EditorCurrentLineBorder");
+        Editor.TextArea.SelectionBrush = (Brush)FindResource("EditorSelection");
+        Editor.TextArea.Caret.CaretBrush = (Brush)FindResource("EditorCaret");
+        _marks.ProblemBrush = (Brush)FindResource("EditorProblemTint");
+        _marks.SquigglePen = (Pen)FindResource("EditorProblemSquiggle");
+        Editor.TextArea.TextView.InvalidateLayer(KnownLayer.Background);
     }
 
     // Moves the caret to a line, selects it and scrolls it into view.
@@ -143,8 +153,11 @@ public partial class RulesEditorView : UserControl
     }
 
     // Draws a tint and a squiggle under lines with problems.
-    sealed class LineMarks(Brush ProblemBrush, Pen SquigglePen) : IBackgroundRenderer
+    sealed class LineMarks : IBackgroundRenderer
     {
+        public Brush ProblemBrush { get; set; } = Brushes.Transparent;
+        public Pen SquigglePen { get; set; } = new(Brushes.Transparent, 1);
+
         public Dictionary<int, string> Problems { get; set; } = new();
         public KnownLayer Layer => KnownLayer.Background;
 

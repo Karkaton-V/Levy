@@ -8,20 +8,20 @@
 
         <!-- Hover preview: follows the mouse and never takes clicks. -->
         <Canvas IsHitTestVisible="False">
-            <Border x:Name="HoverLabel" Visibility="Collapsed" Background="{StaticResource MapOverlay}" CornerRadius="6" Padding="12,8">
-                <TextBlock x:Name="HoverText" Foreground="{StaticResource MapOverlayText}" FontSize="12" />
+            <Border x:Name="HoverLabel" Visibility="Collapsed" Background="{DynamicResource MapOverlay}" CornerRadius="6" Padding="12,8">
+                <TextBlock x:Name="HoverText" Foreground="{DynamicResource MapOverlayText}" FontSize="12" />
             </Border>
         </Canvas>
 
         <!-- Top left: find a parcel and jump to common views. -->
         <WrapPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,20,90,0">
-            <Border Background="{StaticResource MapControlFill}" BorderBrush="{StaticResource MapControlBorder}" BorderThickness="1" CornerRadius="6" Padding="4" Margin="0,0,12,12">
+            <Border Background="{DynamicResource MapControlFill}" BorderBrush="{DynamicResource MapControlBorder}" BorderThickness="1" CornerRadius="6" Padding="4" Margin="0,0,12,12">
                 <StackPanel Orientation="Horizontal">
                     <Grid>
                         <TextBox x:Name="SearchBox" Width="190" Height="34" VerticalContentAlignment="Center" BorderThickness="0" Padding="8,0"
-                                 FontSize="13" Foreground="{StaticResource MapControlText}" KeyDown="SearchBox_KeyDown"
+                                 FontSize="13" Foreground="{DynamicResource MapControlText}" KeyDown="SearchBox_KeyDown"
                                  AutomationProperties.Name="Find parcel by ID" ToolTip="Type a parcel ID such as 04-2115, or just its last digits" />
-                        <TextBlock x:Name="SearchPlaceholder" Text="Find parcel ID" Foreground="{StaticResource MapControlPlaceholder}" FontSize="13" IsHitTestVisible="False"
+                        <TextBlock x:Name="SearchPlaceholder" Text="Find parcel ID" Foreground="{DynamicResource MapControlPlaceholder}" FontSize="13" IsHitTestVisible="False"
                                    VerticalAlignment="Center" Margin="11,0,0,0" />
                     </Grid>
                     <Button Content="Find" Style="{StaticResource PrimaryButton}" Click="Find_Click" Margin="4,0,0,0" />
@@ -32,8 +32,8 @@
             <Button Content="Louisiana" Style="{StaticResource MapButton}" Click="Louisiana_Click" ToolTip="Zoom out to the whole state" Margin="0,0,0,12" />
         </WrapPanel>
         <Border x:Name="SearchMessage" Visibility="Collapsed" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,72,0,0"
-                Background="{StaticResource MapOverlay}" CornerRadius="6" Padding="12,8">
-            <TextBlock x:Name="SearchMessageText" Foreground="{StaticResource WarnText}" FontSize="12" />
+                Background="{DynamicResource MapOverlay}" CornerRadius="6" Padding="12,8">
+            <TextBlock x:Name="SearchMessageText" Foreground="{DynamicResource WarnText}" FontSize="12" />
         </Border>
 
         <!-- Top right: zoom. -->
@@ -44,11 +44,11 @@
 
         <!-- Bottom centre: loading or error messages, and a hint when empty parcels are hidden. -->
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="20,0,20,48" MaxWidth="560">
-            <Border x:Name="ZoomHint" Visibility="Collapsed" Background="{StaticResource MapOverlaySoft}" CornerRadius="16" Padding="16,8" HorizontalAlignment="Center" Margin="0,0,0,10">
-                <TextBlock Text="{Binding ZoomHint}" Foreground="{StaticResource MapOverlayText}" FontSize="12" />
+            <Border x:Name="ZoomHint" Visibility="Collapsed" Background="{DynamicResource MapOverlaySoft}" CornerRadius="16" Padding="16,8" HorizontalAlignment="Center" Margin="0,0,0,10">
+                <TextBlock Text="{Binding ZoomHint}" Foreground="{DynamicResource MapOverlayText}" FontSize="12" />
             </Border>
-            <Border Padding="20,12" CornerRadius="8" Background="{StaticResource MapOverlaySoft}" Visibility="{Binding HasMapMessage, Converter={StaticResource BoolVis}}">
-                <TextBlock Text="{Binding MapMessage}" Foreground="{StaticResource MapOverlayText}" TextWrapping="Wrap" TextAlignment="Center" LineHeight="20" />
+            <Border Padding="20,12" CornerRadius="8" Background="{DynamicResource MapOverlaySoft}" Visibility="{Binding HasMapMessage, Converter={StaticResource BoolVis}}">
+                <TextBlock Text="{Binding MapMessage}" Foreground="{DynamicResource MapOverlayText}" TextWrapping="Wrap" TextAlignment="Center" LineHeight="20" />
             </Border>
         </StackPanel>
     </Grid>

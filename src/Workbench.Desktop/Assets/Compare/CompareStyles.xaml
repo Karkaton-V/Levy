@@ -5,18 +5,15 @@
         <ResourceDictionary Source="/ValuationWorkbench;component/Assets/Shared/Theme.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
-    <SolidColorBrush x:Key="BeforeBar" Color="#C3CAD5" />
-    <SolidColorBrush x:Key="AfterBar" Color="#2563EB" />
-    <SolidColorBrush x:Key="InTargetLabel" Color="#1A2230" />
 
     <!-- Bin labels are dark and bold inside the 0.95 to 1.05 target, muted outside it. -->
     <Style x:Key="BinLabel" TargetType="TextBlock">
-        <Setter Property="Foreground" Value="{StaticResource Muted}" />
+        <Setter Property="Foreground" Value="{DynamicResource Muted}" />
         <Setter Property="FontFamily" Value="{StaticResource Mono}" />
         <Setter Property="FontSize" Value="11" />
         <Style.Triggers>
             <DataTrigger Binding="{Binding InTarget}" Value="True">
-                <Setter Property="Foreground" Value="{StaticResource InTargetLabel}" />
+                <Setter Property="Foreground" Value="{DynamicResource InTargetLabel}" />
                 <Setter Property="FontWeight" Value="Bold" />
             </DataTrigger>
         </Style.Triggers>

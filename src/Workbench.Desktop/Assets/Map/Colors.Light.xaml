@@ -1,0 +1,13 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Map overlay and control colours (light theme). Swapped at runtime by ThemeManager; the other theme's file has the same keys. -->
+    <SolidColorBrush x:Key="MapOverlay" Color="#F21C2433" />
+    <SolidColorBrush x:Key="MapOverlaySoft" Color="#E61C2433" />
+    <SolidColorBrush x:Key="MapOverlayText" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="MapControlFill" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="MapControlFillHover" Color="#EEF1F5" />
+    <SolidColorBrush x:Key="MapControlBorder" Color="#CBD2DC" />
+    <SolidColorBrush x:Key="MapControlFocus" Color="#2563EB" />
+    <SolidColorBrush x:Key="MapControlText" Color="#1A2230" />
+    <SolidColorBrush x:Key="MapControlPlaceholder" Color="#6B7280" />
+</ResourceDictionary>

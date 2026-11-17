@@ -5,13 +5,6 @@
         <ResourceDictionary Source="/ValuationWorkbench;component/Assets/Shared/Theme.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
-    <SolidColorBrush x:Key="EditorLineNumbers" Color="#A3ACBA" />
-    <SolidColorBrush x:Key="EditorCurrentLine" Color="#F3F6FB" />
-    <Pen x:Key="EditorCurrentLineBorder" Brush="Transparent" Thickness="0" />
-    <SolidColorBrush x:Key="EditorSelection" Color="#332563EB" />
-    <SolidColorBrush x:Key="EditorCaret" Color="#1A2230" />
-    <SolidColorBrush x:Key="EditorProblemTint" Color="#16F59E0B" />
-    <Pen x:Key="EditorProblemSquiggle" Brush="#D97706" Thickness="1.2" />
 
     <!-- One clickable row in the problems list. -->
     <Style x:Key="ProblemButton" TargetType="Button">
@@ -25,10 +18,10 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource HoverFillSoft}" />
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource HoverFillSoft}" />
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource HoverFillSoft}" />
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource HoverFillSoft}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

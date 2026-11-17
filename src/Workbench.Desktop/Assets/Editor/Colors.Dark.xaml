@@ -1,0 +1,11 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Code editor colours (dark theme). Swapped at runtime by ThemeManager; the other theme's file has the same keys. -->
+    <SolidColorBrush x:Key="EditorLineNumbers" Color="#5D6472" />
+    <SolidColorBrush x:Key="EditorCurrentLine" Color="#10FFFFFF" />
+    <Pen x:Key="EditorCurrentLineBorder" Brush="Transparent" Thickness="0" />
+    <SolidColorBrush x:Key="EditorSelection" Color="#554F8FEA" />
+    <SolidColorBrush x:Key="EditorCaret" Color="#E6E9EF" />
+    <SolidColorBrush x:Key="EditorProblemTint" Color="#1CF0A35A" />
+    <Pen x:Key="EditorProblemSquiggle" Brush="#F0A35A" Thickness="1.2" />
+</ResourceDictionary>

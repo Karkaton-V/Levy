@@ -6,22 +6,11 @@
         <ResourceDictionary Source="/ValuationWorkbench;component/Assets/Shared/Theme.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
-    <SolidColorBrush x:Key="MapOverlay" Color="#F21C2433" />
-    <SolidColorBrush x:Key="MapOverlaySoft" Color="#E61C2433" />
-    <SolidColorBrush x:Key="MapOverlayText" Color="#FFFFFF" />
-    <SolidColorBrush x:Key="MapControlFill" Color="#FFFFFF" />
-    <SolidColorBrush x:Key="MapControlFillHover" Color="#EEF1F5" />
-    <SolidColorBrush x:Key="MapControlBorder" Color="#CBD2DC" />
-    <SolidColorBrush x:Key="MapControlFocus" Color="#2563EB" />
-    <SolidColorBrush x:Key="MapControlText" Color="#1A2230" />
-    <SolidColorBrush x:Key="MapControlPlaceholder" Color="#6B7280" />
-    <SolidColorBrush x:Key="SegmentChecked" Color="#FFFFFF" />
-    <SolidColorBrush x:Key="SegmentTrack" Color="#ECEFF3" />
     <sys:String x:Key="InfoGlyph">&#xE946;</sys:String>
 
     <!-- White button floating on the map. -->
     <Style x:Key="MapButton" TargetType="Button">
-        <Setter Property="Foreground" Value="{StaticResource MapControlText}" />
+        <Setter Property="Foreground" Value="{DynamicResource MapControlText}" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Height" Value="38" />
@@ -29,41 +18,16 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border x:Name="Bd" Background="{StaticResource MapControlFill}" BorderBrush="{StaticResource MapControlBorder}" BorderThickness="1" CornerRadius="7" Padding="14,0">
+                    <Border x:Name="Bd" Background="{DynamicResource MapControlFill}" BorderBrush="{DynamicResource MapControlBorder}" BorderThickness="1" CornerRadius="7" Padding="14,0">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource MapControlFillHover}" />
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource MapControlFillHover}" />
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="True">
-                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource MapControlFocus}" />
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource MapControlFocus}" />
                             <Setter TargetName="Bd" Property="BorderThickness" Value="2" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <!-- Text that acts as a link. -->
-    <Style x:Key="LinkButton" TargetType="Button">
-        <Setter Property="Foreground" Value="{StaticResource Link}" />
-        <Setter Property="FontSize" Value="12" />
-        <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Border Background="Transparent" Padding="0,2">
-                        <TextBlock x:Name="Label" Text="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}" />
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Label" Property="TextDecorations" Value="Underline" />
-                        </Trigger>
-                        <Trigger Property="IsKeyboardFocused" Value="True">
-                            <Setter TargetName="Label" Property="TextDecorations" Value="Underline" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -76,7 +40,7 @@
         <Setter Property="Width" Value="24" />
         <Setter Property="Height" Value="24" />
         <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="Foreground" Value="{StaticResource Muted}" />
+        <Setter Property="Foreground" Value="{DynamicResource Muted}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ToggleButton">
@@ -86,15 +50,15 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource HoverFill}" />
-                            <Setter TargetName="Glyph" Property="Foreground" Value="{StaticResource Text}" />
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource HoverFill}" />
+                            <Setter TargetName="Glyph" Property="Foreground" Value="{DynamicResource Text}" />
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="Glyph" Property="Foreground" Value="{StaticResource Link}" />
-                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource HoverFill}" />
+                            <Setter TargetName="Glyph" Property="Foreground" Value="{DynamicResource Link}" />
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource HoverFill}" />
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="True">
-                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Accent}" />
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Accent}" />
                             <Setter TargetName="Bd" Property="BorderThickness" Value="1" />
                         </Trigger>
                     </ControlTemplate.Triggers>
@@ -103,33 +67,4 @@
         </Setter>
     </Style>
 
-    <!-- One half of the sidebar's Property record / Rules switch. -->
-    <Style x:Key="SegmentButton" TargetType="RadioButton">
-        <Setter Property="Foreground" Value="{StaticResource Muted}" />
-        <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="RadioButton">
-                    <Border x:Name="Bd" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" CornerRadius="6" Padding="16,7">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource HoverFill}" />
-                        </Trigger>
-                        <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource SegmentChecked}" />
-                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Line}" />
-                            <Setter Property="Foreground" Value="{StaticResource Text}" />
-                            <Setter Property="FontWeight" Value="SemiBold" />
-                        </Trigger>
-                        <Trigger Property="IsKeyboardFocused" Value="True">
-                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Accent}" />
-                            <Setter TargetName="Bd" Property="BorderThickness" Value="1" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
 </ResourceDictionary>

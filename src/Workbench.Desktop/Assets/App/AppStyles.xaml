@@ -23,7 +23,7 @@
 
     <!-- One navigation entry. Tag holds its icon glyph; a blue bar marks the open page. -->
     <Style x:Key="NavItem" TargetType="ListBoxItem">
-        <Setter Property="Foreground" Value="{StaticResource NavText}" />
+        <Setter Property="Foreground" Value="{DynamicResource NavText}" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -34,24 +34,24 @@
                         <Border x:Name="Bd" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" CornerRadius="8" Padding="14,10">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock x:Name="Glyph" Text="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}" FontFamily="{StaticResource IconFont}"
-                                           FontSize="16" Foreground="{StaticResource NavMuted}" VerticalAlignment="Center" />
+                                           FontSize="16" Foreground="{DynamicResource NavMuted}" VerticalAlignment="Center" />
                                 <ContentPresenter Margin="14,0,0,0" VerticalAlignment="Center" />
                             </StackPanel>
                         </Border>
-                        <Border x:Name="Bar" Width="3" CornerRadius="2" Margin="0,9" HorizontalAlignment="Left" Background="{StaticResource NavAccent}" Visibility="Collapsed" />
+                        <Border x:Name="Bar" Width="3" CornerRadius="2" Margin="0,9" HorizontalAlignment="Left" Background="{DynamicResource NavAccent}" Visibility="Collapsed" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource NavHover}" />
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource NavHover}" />
                         </Trigger>
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource NavSelected}" />
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource NavSelected}" />
                             <Setter TargetName="Bar" Property="Visibility" Value="Visible" />
-                            <Setter TargetName="Glyph" Property="Foreground" Value="{StaticResource NavAccent}" />
-                            <Setter Property="Foreground" Value="{StaticResource NavStrong}" />
+                            <Setter TargetName="Glyph" Property="Foreground" Value="{DynamicResource NavAccent}" />
+                            <Setter Property="Foreground" Value="{DynamicResource NavStrong}" />
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="True">
-                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource NavAccent}" />
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource NavAccent}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -59,12 +59,16 @@
         </Setter>
     </Style>
 
-    <!-- The page area: shows the selected page only; the navigation rail does the switching. -->
+    <!-- The page area: shows the selected page only; the navigation rail does the switching.
+         The tab strip is kept but hidden at zero height: without an items host the TabControl never selects or shows a page. -->
     <Style x:Key="PageTabs" TargetType="TabControl">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TabControl">
-                    <ContentPresenter ContentSource="SelectedContent" />
+                    <Grid>
+                        <TabPanel IsItemsHost="True" Height="0" Visibility="Hidden" />
+                        <ContentPresenter ContentSource="SelectedContent" />
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -72,15 +76,10 @@
 
     <!-- White bar across the top of every page. -->
     <Style x:Key="TopBar" TargetType="Border">
-        <Setter Property="Background" Value="{StaticResource Panel}" />
-        <Setter Property="BorderBrush" Value="{StaticResource Line}" />
+        <Setter Property="Background" Value="{DynamicResource Panel}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Line}" />
         <Setter Property="BorderThickness" Value="0,0,0,1" />
         <Setter Property="Padding" Value="32,16" />
     </Style>
 
-    <!-- One number in the summary strip. -->
-    <Style x:Key="SummaryCard" TargetType="Border" BasedOn="{StaticResource Card}">
-        <Setter Property="Padding" Value="18,14" />
-        <Setter Property="Margin" Value="0,0,12,0" />
-    </Style>
 </ResourceDictionary>
