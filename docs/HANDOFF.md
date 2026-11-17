@@ -32,6 +32,11 @@ Their reference apps were Karbon, Taxfiler, TaxDome and Canopy: a dark left rail
 
 None of this has been run on Windows yet. The XAML parses, every resource key resolves, and the non-WPF code type-checks.
 
+## Progress (2026-11-17, branch `claude/supabase-mcp-setup-5b491a`)
+- Step 1 done: `Code/Settings/AccountMenu.xaml` is the rail footer and settings menu. The gear spins one turn and the menu slides up from behind the footer; `SignOutRequested` shows the Sign out button once step 3 handles it, and `UserName` / `Email` fill the footer.
+- Step 2 done: `supabase/migrations/20261117164716_workspace.sql` was applied to the hosted project with the Supabase MCP (it is recorded in the migration history, so `supabase db push` skips it). Security advisors are clean; the performance advisor only lists unused indexes on the empty tables. Sign-up seeding, organization isolation, blocked deletes and signed-out access were tested in a rolled-back transaction.
+- `.mcp.json` adds the Supabase MCP server for this project.
+
 ## Still to do, in order
 
 ### 1. Settings popup (owner's first request)
