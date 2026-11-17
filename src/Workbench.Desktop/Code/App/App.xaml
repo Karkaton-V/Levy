@@ -10,6 +10,7 @@
                 <ResourceDictionary Source="/ValuationWorkbench;component/Assets/Editor/EditorStyles.xaml" />
                 <ResourceDictionary Source="/ValuationWorkbench;component/Assets/Map/MapStyles.xaml" />
                 <ResourceDictionary Source="/ValuationWorkbench;component/Assets/Compare/CompareStyles.xaml" />
+                <ResourceDictionary Source="/ValuationWorkbench;component/Assets/Account/AccountStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

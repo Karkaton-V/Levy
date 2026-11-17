@@ -6,10 +6,16 @@ namespace Workbench.Desktop;
 
 public partial class MainWindow : Window
 {
-    public MainWindow()
+    // Raised by Sign out in the account menu; the app closes this window and returns to sign-in.
+    public event Action? SignOutRequested;
+
+    public MainWindow(SupabaseClient client)
     {
         InitializeComponent();
         FitToScreen();
+        Account.UserName = client.User?.FullName ?? "";
+        Account.Email = client.User?.Email ?? "";
+        Account.SignOutRequested += () => SignOutRequested?.Invoke();
         // The starting rules and the study area are assets, not strings in code.
         var viewModel = new MainViewModel(Shared.ReadAsset("Editor", "DefaultRules.rules"), StudyArea.Default);
         DataContext = viewModel;
