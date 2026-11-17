@@ -22,7 +22,7 @@ public partial class SignInWindow : Window
 
     void ModeChanged(object sender, RoutedEventArgs e)
     {
-        if (Heading is null) return; // Fires once during InitializeComponent, before the rest of the form exists.
+        if (SubmitText is null) return; // Fires once while InitializeComponent is still building the form; SubmitText is its last named element.
         NameSection.Visibility = Creating ? Visibility.Visible : Visibility.Collapsed;
         Heading.Text = Creating ? "Create your account" : "Welcome back";
         Subheading.Text = Creating ? "You get a workspace of your own, with sample work to explore." : "Sign in to your workspace.";
