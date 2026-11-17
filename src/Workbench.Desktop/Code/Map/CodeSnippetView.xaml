@@ -1,0 +1,10 @@
+<UserControl x:Class="Workbench.Desktop.CodeSnippetView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:avalon="http://icsharpcode.net/sharpdevelop/avalonedit">
+    <!-- A few read-only lines of rules code, coloured like the Editor. -->
+    <avalon:TextEditor x:Name="Editor" IsReadOnly="True" ShowLineNumbers="False"
+                       FontFamily="{StaticResource Mono}" FontSize="12.5"
+                       Background="Transparent" Foreground="{StaticResource Text}"
+                       HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled" WordWrap="True" />
+</UserControl>

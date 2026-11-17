@@ -1,0 +1,38 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- The Editor tab: code editor colours and the problems list. -->
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/ValuationWorkbench;component/Assets/Shared/Theme.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <SolidColorBrush x:Key="EditorLineNumbers" Color="#A3ACBA" />
+    <SolidColorBrush x:Key="EditorCurrentLine" Color="#F3F6FB" />
+    <Pen x:Key="EditorCurrentLineBorder" Brush="Transparent" Thickness="0" />
+    <SolidColorBrush x:Key="EditorSelection" Color="#332563EB" />
+    <SolidColorBrush x:Key="EditorCaret" Color="#1A2230" />
+    <SolidColorBrush x:Key="EditorProblemTint" Color="#16F59E0B" />
+    <Pen x:Key="EditorProblemSquiggle" Brush="#D97706" Thickness="1.2" />
+
+    <!-- One clickable row in the problems list. -->
+    <Style x:Key="ProblemButton" TargetType="Button">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Bd" Background="Transparent" CornerRadius="6" Padding="12,10">
+                        <ContentPresenter />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource HoverFillSoft}" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource HoverFillSoft}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

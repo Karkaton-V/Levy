@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RollForward>LatestMajor</RollForward>
+    <AssemblyName>ValuationWorkbench</AssemblyName>
+    <!-- App.xaml lives in Code/App instead of the project root. -->
+    <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AvalonEdit" Version="6.3.1.120" />
+    <PackageReference Include="Mapsui.Wpf" Version="5.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Workbench.Engine\Workbench.Engine.csproj" />
+  </ItemGroup>
+
+  <!-- Code/: everything that runs, one sub-folder per tab plus App and Shared. -->
+  <ItemGroup>
+    <Page Remove="Code\App\App.xaml" />
+    <ApplicationDefinition Include="Code\App\App.xaml" />
+  </ItemGroup>
+
+  <!-- Assets/: same sub-folders as Code/. Styles (.xaml) compile in as resources; data files are copied next to the app and read at startup. -->
+  <ItemGroup>
+    <None Remove="Assets\**\*.json;Assets\**\*.geojson;Assets\**\*.xshd;Assets\**\*.rules" />
+    <Content Include="Assets\**\*.json;Assets\**\*.geojson;Assets\**\*.xshd;Assets\**\*.rules" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,14 @@
+# Land rate in dollars per square foot, by neighborhood
+LandRate.N-04 = 9.00
+LandRate.N-07 = 6.00
+
+# Building cost approach
+CostPerSqFt = 112
+DepreciationPerYear = 0.009
+MaxDepreciation = 0.55
+ValuationYear = 2026
+
+# Louisiana-style tax math (sample millage)
+AssessmentRatio = 0.10
+HomesteadExemption = 7500
+Millage = 120

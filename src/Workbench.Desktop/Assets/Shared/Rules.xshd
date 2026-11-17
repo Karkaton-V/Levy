@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Syntax colours for the rules language: comments, rule names, neighborhood codes, numbers and the equals sign. -->
+<SyntaxDefinition name="Rules" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+  <Color name="Comment" foreground="#8B95A5" fontStyle="italic" />
+  <Color name="Key" foreground="#1D4ED8" />
+  <Color name="Neighborhood" foreground="#7C3AED" />
+  <Color name="Number" foreground="#B45309" />
+  <Color name="Operator" foreground="#6A7486" />
+  <RuleSet>
+    <Span color="Comment"><Begin>\#</Begin></Span>
+    <Rule color="Neighborhood">(?&lt;=\.)[A-Za-z0-9\-]+(?=\s*=)</Rule>
+    <Rule color="Key">[A-Za-z][A-Za-z0-9]*(?=\s*[.=])</Rule>
+    <Rule color="Operator">=</Rule>
+    <Rule color="Number">-?[0-9]+(\.[0-9]+)?</Rule>
+  </RuleSet>
+</SyntaxDefinition>

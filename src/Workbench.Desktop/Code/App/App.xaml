@@ -1,0 +1,16 @@
+<Application x:Class="Workbench.Desktop.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Every colour, font and control style lives under Assets/, one dictionary per tab plus the shared theme. -->
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/ValuationWorkbench;component/Assets/Shared/Theme.xaml" />
+                <ResourceDictionary Source="/ValuationWorkbench;component/Assets/App/AppStyles.xaml" />
+                <ResourceDictionary Source="/ValuationWorkbench;component/Assets/Editor/EditorStyles.xaml" />
+                <ResourceDictionary Source="/ValuationWorkbench;component/Assets/Map/MapStyles.xaml" />
+                <ResourceDictionary Source="/ValuationWorkbench;component/Assets/Compare/CompareStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

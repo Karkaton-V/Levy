@@ -1,0 +1,10 @@
+{
+  "name": "Forest Park",
+  "description": "Linwood Avenue, Kings Highway, Fairfield Avenue, and Avery and Parker Streets",
+  "borderStreets": [ "Linwood Avenue", "Kings Highway", "Fairfield Avenue", "Avery Street", "Saint Vincent Avenue", "Parker Street" ],
+  "buildingBox": { "south": 32.4655, "west": -93.7645, "north": 32.4830, "east": -93.7485 },
+  "streetBox": { "south": 32.455, "west": -93.775, "north": 32.490, "east": -93.740 },
+  "maxGapMeters": 300,
+  "minShareOfBox": 0.4,
+  "sample": { "count": 96, "minHouseSqFt": 900, "maxHouseSqFt": 3200 }
+}

@@ -1,0 +1,121 @@
+<Window x:Class="Workbench.Desktop.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:Workbench.Desktop"
+        Title="Valuation Workbench" Width="1332" Height="864" MinWidth="1180" MinHeight="720"
+        Background="{StaticResource Ground}" Foreground="{StaticResource Text}" FontSize="13"
+        WindowStartupLocation="CenterScreen">
+    <!-- The shell only: navigation rail, top bar and summary strip. Each page is its own view under Code/Editor, Code/Map and Code/Compare. Styles: Assets/App/AppStyles.xaml. -->
+
+    <Window.InputBindings>
+        <KeyBinding Key="F5" Command="{Binding RunCommand}" />
+    </Window.InputBindings>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="236" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Navigation rail: brand, pages, and the study area at the bottom. -->
+        <Border Grid.Column="0" Background="{StaticResource NavBackground}">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="24,24,20,32">
+                    <Border Width="34" Height="34" CornerRadius="9" Background="{StaticResource Accent}">
+                        <TextBlock Text="{StaticResource BrandGlyph}" FontFamily="{StaticResource IconFont}" FontSize="17" Foreground="{StaticResource OnAccent}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="Valuation Workbench" Foreground="{StaticResource NavStrong}" FontSize="14" FontWeight="SemiBold" />
+                        <TextBlock Text="Mass appraisal" Foreground="{StaticResource NavMuted}" FontSize="11" Margin="0,2,0,0" />
+                    </StackPanel>
+                </StackPanel>
+
+                <Border DockPanel.Dock="Bottom" BorderBrush="{StaticResource NavHover}" BorderThickness="0,1,0,0" Padding="24,18">
+                    <StackPanel>
+                        <TextBlock Text="STUDY AREA" Foreground="{StaticResource NavMuted}" FontSize="10" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding StudyAreaName}" Foreground="{StaticResource NavStrong}" FontSize="13" Margin="0,6,0,0" />
+                        <TextBlock Text="Shreveport, Louisiana" Foreground="{StaticResource NavMuted}" FontSize="12" Margin="0,2,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <StackPanel>
+                    <TextBlock Text="WORKSPACE" Foreground="{StaticResource NavMuted}" FontSize="10" FontWeight="SemiBold" Margin="28,0,0,8" />
+                    <ListBox x:Name="Nav" Style="{StaticResource NavList}" SelectedIndex="{Binding SelectedIndex, ElementName=Tabs, Mode=TwoWay}"
+                             AutomationProperties.Name="Pages">
+                        <ListBoxItem Style="{StaticResource NavItem}" Tag="{StaticResource EditorGlyph}" Content="Rules" />
+                        <ListBoxItem Style="{StaticResource NavItem}" Tag="{StaticResource MapGlyph}" Content="Parcel map" />
+                        <ListBoxItem Style="{StaticResource NavItem}" Tag="{StaticResource CompareGlyph}" Content="Compare runs" />
+                    </ListBox>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- Top bar: page title, study area and tax year, last run, Run button. -->
+            <Border Grid.Row="0" Style="{StaticResource TopBar}">
+                <DockPanel LastChildFill="False">
+                    <StackPanel DockPanel.Dock="Left" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding SelectedItem.Header, ElementName=Tabs}" FontSize="20" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding Subtitle}" Foreground="{StaticResource Muted}" Margin="0,3,0,0" />
+                    </StackPanel>
+                    <Button DockPanel.Dock="Right" Command="{Binding RunCommand}" Style="{StaticResource PrimaryButton}" VerticalAlignment="Center"
+                            ToolTip="Revalue every parcel with the current rules (F5)">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{StaticResource RunGlyph}" FontFamily="{StaticResource IconFont}" FontSize="12" VerticalAlignment="Center" />
+                            <TextBlock Text="Run model" Margin="8,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <TextBlock DockPanel.Dock="Right" Text="{Binding StatusLine}" Foreground="{StaticResource Muted}" VerticalAlignment="Center" Margin="0,0,20,0" />
+                    <Border DockPanel.Dock="Right" Style="{StaticResource WarnPill}" Margin="0,0,16,0" Visibility="{Binding IsStale, Converter={StaticResource BoolVis}}">
+                        <TextBlock Text="Edited · not run" Foreground="{StaticResource WarnStatus}" FontSize="11" FontWeight="SemiBold" />
+                    </Border>
+                </DockPanel>
+            </Border>
+
+            <!-- Summary strip: roll totals and the ratio study, on every page. -->
+            <ItemsControl Grid.Row="1" ItemsSource="{Binding Summary}" Margin="32,24,20,0" Focusable="False">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Rows="1" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource SummaryCard}">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Label}" Foreground="{StaticResource Muted}" FontSize="12" TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="{Binding Value}" FontSize="22" FontWeight="SemiBold" Margin="0,6,0,6" />
+                                <DockPanel LastChildFill="True">
+                                    <Border DockPanel.Dock="Right" Style="{StaticResource StatusPill}" Margin="8,0,0,0" Visibility="{Binding HasStatus, Converter={StaticResource BoolVis}}">
+                                        <TextBlock Text="{Binding Status}" Style="{StaticResource PillText}" />
+                                    </Border>
+                                    <TextBlock Text="{Binding Detail}" Foreground="{StaticResource Muted}" FontSize="11" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                </DockPanel>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- Pages. The rail above switches them; "Open in Editor" sets SelectedIndex too. -->
+            <TabControl x:Name="Tabs" Grid.Row="2" Style="{StaticResource PageTabs}">
+                <TabItem Header="Rules editor">
+                    <local:EditorTabView x:Name="EditorTab" />
+                </TabItem>
+                <TabItem Header="Parcel map">
+                    <local:MapTabView />
+                </TabItem>
+                <TabItem Header="Compare runs">
+                    <local:CompareTabView />
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </Grid>
+</Window>

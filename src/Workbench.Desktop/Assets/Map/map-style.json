@@ -1,0 +1,14 @@
+{
+  "under":          { "label": "Under-assessed", "fill": "#E13F83D6" },
+  "inRange":        { "label": "In range",       "fill": "#E17C8494" },
+  "over":           { "label": "Over-assessed",  "fill": "#E1E8892F" },
+  "noSale":         { "label": "No recent sale", "fill": "#E1C9CED6" },
+  "valuedOutline":  { "outline": "#FFFFFF", "outlineWidth": 1.5 },
+  "empty":          { "label": "Empty parcel", "fill": "#5AFFFFFF", "outline": "#464E5C", "outlineWidth": 1 },
+  "hover":          { "fill": "#3CFFFFFF", "outline": "#2563EB", "outlineWidth": 2.5 },
+  "selection":      { "fill": "#00000000", "outline": "#1A2230", "outlineWidth": 4 },
+  "border":         { "label": "Study area border", "line": "#7C3AED", "lineWidth": 4, "casing": "#FFFFFF", "casingWidth": 8 },
+  "outsideLouisiana": { "fill": "#A6F3F5F8", "outline": "#6A7486", "outlineWidth": 1.5 },
+  "maskMarginDegrees": 6,
+  "emptyParcelsMaxResolution": 40
+}
