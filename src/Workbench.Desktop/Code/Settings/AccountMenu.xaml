@@ -4,9 +4,14 @@
     <!-- Rail footer: the signed-in user and a gear that opens the settings menu upward. Styles: Assets/App/AppStyles.xaml. -->
     <Border x:Name="Footer" Style="{StaticResource RailFooter}">
         <DockPanel>
-            <ToggleButton x:Name="Gear" DockPanel.Dock="Right" Style="{StaticResource RailIconToggle}" Content="{StaticResource SettingsGlyph}"
-                          ToolTip="Settings" AutomationProperties.Name="Settings" VerticalAlignment="Center"
-                          IsChecked="{Binding IsOpen, ElementName=Menu, Mode=TwoWay}" />
+            <ToggleButton x:Name="Gear" DockPanel.Dock="Right" Style="{StaticResource RailIconToggle}" Click="GearClicked"
+                          ToolTip="Settings" AutomationProperties.Name="Settings" VerticalAlignment="Center">
+                <TextBlock Text="{StaticResource SettingsGlyph}" RenderTransformOrigin="0.5,0.5">
+                    <TextBlock.RenderTransform>
+                        <RotateTransform x:Name="GearSpin" />
+                    </TextBlock.RenderTransform>
+                </TextBlock>
+            </ToggleButton>
             <Border Style="{StaticResource Avatar}" VerticalAlignment="Center">
                 <TextBlock x:Name="FooterInitials" Style="{StaticResource AvatarText}" />
             </Border>
@@ -15,40 +20,46 @@
                 <TextBlock x:Name="FooterEmail" Foreground="{DynamicResource NavMuted}" FontSize="11" Margin="0,2,0,0" TextTrimming="CharacterEllipsis" />
             </StackPanel>
 
-            <Popup x:Name="Menu" PlacementTarget="{Binding ElementName=Footer}" Placement="Top" StaysOpen="False"
-                   AllowsTransparency="True" PopupAnimation="Slide" Focusable="False">
-                <Border Style="{StaticResource MenuCard}">
-                    <StackPanel>
-                        <DockPanel>
-                            <Border Style="{StaticResource Avatar}" Width="38" Height="38" CornerRadius="19">
-                                <TextBlock x:Name="MenuInitials" Style="{StaticResource AvatarText}" FontSize="14" />
-                            </Border>
-                            <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
-                                <TextBlock x:Name="MenuName" FontSize="14" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                                <TextBlock x:Name="MenuEmail" Foreground="{DynamicResource Muted}" FontSize="12" Margin="0,2,0,0" TextTrimming="CharacterEllipsis" />
-                            </StackPanel>
-                        </DockPanel>
-
-                        <Border Style="{StaticResource MenuDivider}" />
-
-                        <TextBlock Text="Appearance" Style="{StaticResource FormLabel}" />
-                        <Border Style="{StaticResource SegmentTrackBorder}" HorizontalAlignment="Stretch" Margin="0,6,0,0">
-                            <UniformGrid Rows="1">
-                                <RadioButton x:Name="LightOption" GroupName="Theme" Content="Light" Style="{StaticResource SegmentButton}" Checked="ThemeChosen" />
-                                <RadioButton x:Name="DarkOption" GroupName="Theme" Content="Dark" Style="{StaticResource SegmentButton}" Checked="ThemeChosen" Margin="4,0,0,0" />
-                            </UniformGrid>
-                        </Border>
-
-                        <StackPanel x:Name="SignOutSection">
-                            <Border Style="{StaticResource MenuDivider}" />
-                            <Button Style="{StaticResource SecondaryButton}" HorizontalAlignment="Stretch" Click="SignOutClicked">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{StaticResource SignOutGlyph}" FontFamily="{StaticResource IconFont}" FontSize="13" VerticalAlignment="Center" />
-                                    <TextBlock Text="Sign out" Margin="8,0,0,0" VerticalAlignment="Center" />
+            <!-- The popup's bottom edge sits on the footer's top edge and clips, so the card seems to rise from behind the footer. -->
+            <Popup x:Name="Menu" PlacementTarget="{Binding ElementName=Footer}" Placement="Top" StaysOpen="True"
+                   AllowsTransparency="True" Focusable="False">
+                <Border ClipToBounds="True" Background="Transparent" Width="{Binding ActualWidth, ElementName=Footer}">
+                    <Border x:Name="Card" Style="{StaticResource MenuCard}">
+                        <Border.RenderTransform>
+                            <TranslateTransform x:Name="CardSlide" />
+                        </Border.RenderTransform>
+                        <StackPanel>
+                            <DockPanel>
+                                <Border Style="{StaticResource Avatar}" Width="38" Height="38" CornerRadius="19">
+                                    <TextBlock x:Name="MenuInitials" Style="{StaticResource AvatarText}" FontSize="14" />
+                                </Border>
+                                <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
+                                    <TextBlock x:Name="MenuName" FontSize="14" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock x:Name="MenuEmail" Foreground="{DynamicResource Muted}" FontSize="12" Margin="0,2,0,0" TextTrimming="CharacterEllipsis" />
                                 </StackPanel>
-                            </Button>
+                            </DockPanel>
+
+                            <Border Style="{StaticResource MenuDivider}" />
+
+                            <TextBlock Text="Appearance" Style="{StaticResource FormLabel}" />
+                            <Border Style="{StaticResource SegmentTrackBorder}" HorizontalAlignment="Stretch" Margin="0,6,0,0">
+                                <UniformGrid Rows="1">
+                                    <RadioButton x:Name="LightOption" GroupName="Theme" Content="Light" Style="{StaticResource SegmentButton}" Checked="ThemeChosen" />
+                                    <RadioButton x:Name="DarkOption" GroupName="Theme" Content="Dark" Style="{StaticResource SegmentButton}" Checked="ThemeChosen" Margin="4,0,0,0" />
+                                </UniformGrid>
+                            </Border>
+
+                            <StackPanel x:Name="SignOutSection">
+                                <Border Style="{StaticResource MenuDivider}" />
+                                <Button Style="{StaticResource SecondaryButton}" HorizontalAlignment="Stretch" Click="SignOutClicked">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{StaticResource SignOutGlyph}" FontFamily="{StaticResource IconFont}" FontSize="13" VerticalAlignment="Center" />
+                                        <TextBlock Text="Sign out" Margin="8,0,0,0" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
                         </StackPanel>
-                    </StackPanel>
+                    </Border>
                 </Border>
             </Popup>
         </DockPanel>

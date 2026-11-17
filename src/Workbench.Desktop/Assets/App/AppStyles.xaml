@@ -133,10 +133,9 @@
         </Setter>
     </Style>
 
-    <!-- The popup's card: a Card with a soft shadow, inset so the shadow is not clipped. -->
+    <!-- The popup's card: a Card with a soft shadow, as wide as the rail less an equal 12px gap each side. -->
     <Style x:Key="MenuCard" TargetType="Border" BasedOn="{StaticResource Card}">
-        <Setter Property="Width" Value="264" />
-        <Setter Property="Padding" Value="18" />
+        <Setter Property="Padding" Value="16,20" />
         <Setter Property="Margin" Value="12,12,12,8" />
         <Setter Property="Effect">
             <Setter.Value>
