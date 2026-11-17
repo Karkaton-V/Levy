@@ -9,4 +9,5 @@
     <SolidColorBrush x:Key="NavSelected" Color="#2D3A52" />
     <SolidColorBrush x:Key="NavAccent" Color="#5B9BFF" />
     <SolidColorBrush x:Key="NavLine" Color="#263042" />
+    <Color x:Key="MenuShadowColor">#1C2433</Color>
 </ResourceDictionary>

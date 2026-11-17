@@ -17,7 +17,7 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <!-- Navigation rail: brand, pages, and the study area at the bottom. -->
+        <!-- Navigation rail: brand, pages, and the account and settings menu at the bottom. -->
         <Border Grid.Column="0" Background="{DynamicResource NavBackground}">
             <DockPanel>
                 <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="24,24,20,32">
@@ -31,13 +31,7 @@
                     </StackPanel>
                 </StackPanel>
 
-                <Border DockPanel.Dock="Bottom" BorderBrush="{DynamicResource NavHover}" BorderThickness="0,1,0,0" Padding="24,18">
-                    <StackPanel>
-                        <TextBlock Text="STUDY AREA" Foreground="{DynamicResource NavMuted}" FontSize="10" FontWeight="SemiBold" />
-                        <TextBlock Text="{Binding StudyAreaName}" Foreground="{DynamicResource NavStrong}" FontSize="13" Margin="0,6,0,0" />
-                        <TextBlock Text="Shreveport, Louisiana" Foreground="{DynamicResource NavMuted}" FontSize="12" Margin="0,2,0,0" />
-                    </StackPanel>
-                </Border>
+                <local:AccountMenu x:Name="Account" DockPanel.Dock="Bottom" />
 
                 <StackPanel>
                     <TextBlock Text="WORKSPACE" Foreground="{DynamicResource NavMuted}" FontSize="10" FontWeight="SemiBold" Margin="28,0,0,8" />

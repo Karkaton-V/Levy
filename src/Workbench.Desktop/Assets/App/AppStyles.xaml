@@ -74,6 +74,83 @@
         </Setter>
     </Style>
 
+    <!-- Account footer at the bottom of the rail, and the settings menu that opens upward from it. -->
+    <sys:String x:Key="SettingsGlyph">&#xE713;</sys:String>
+    <sys:String x:Key="SignOutGlyph">&#xF3B1;</sys:String>
+
+    <Style x:Key="RailFooter" TargetType="Border">
+        <Setter Property="BorderBrush" Value="{DynamicResource NavLine}" />
+        <Setter Property="BorderThickness" Value="0,1,0,0" />
+        <Setter Property="Padding" Value="20,14,14,14" />
+    </Style>
+
+    <!-- Round badge with the user's initials. -->
+    <Style x:Key="Avatar" TargetType="Border">
+        <Setter Property="Width" Value="32" />
+        <Setter Property="Height" Value="32" />
+        <Setter Property="CornerRadius" Value="16" />
+        <Setter Property="Background" Value="{DynamicResource Accent}" />
+    </Style>
+
+    <Style x:Key="AvatarText" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource OnAccent}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- The gear: an icon toggle drawn in the rail's colours. -->
+    <Style x:Key="RailIconToggle" TargetType="ToggleButton">
+        <Setter Property="Foreground" Value="{DynamicResource NavMuted}" />
+        <Setter Property="FontFamily" Value="{StaticResource IconFont}" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="Width" Value="34" />
+        <Setter Property="Height" Value="34" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border x:Name="Bd" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" CornerRadius="8">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource NavHover}" />
+                            <Setter Property="Foreground" Value="{DynamicResource NavStrong}" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource NavSelected}" />
+                            <Setter Property="Foreground" Value="{DynamicResource NavAccent}" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource NavAccent}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- The popup's card: a Card with a soft shadow, inset so the shadow is not clipped. -->
+    <Style x:Key="MenuCard" TargetType="Border" BasedOn="{StaticResource Card}">
+        <Setter Property="Width" Value="264" />
+        <Setter Property="Padding" Value="18" />
+        <Setter Property="Margin" Value="12,12,12,8" />
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect Color="{DynamicResource MenuShadowColor}" BlurRadius="18" ShadowDepth="4" Direction="270" Opacity="0.28" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="MenuDivider" TargetType="Border">
+        <Setter Property="Height" Value="1" />
+        <Setter Property="Background" Value="{DynamicResource Line}" />
+        <Setter Property="Margin" Value="0,14" />
+    </Style>
+
     <!-- White bar across the top of every page. -->
     <Style x:Key="TopBar" TargetType="Border">
         <Setter Property="Background" Value="{DynamicResource Panel}" />
