@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 190" role="img" aria-label="Levy"><title>Levy</title>
+  <g fill="none" stroke="#2563EB" stroke-width="9" stroke-linecap="round">
+    <path d="M6 140 q14 -10 28 0 t28 0 t28 0"/>
+    <path d="M14 115 q14 -10 28 0 t28 0 t28 0" opacity="0.7"/>
+    <path d="M24 90 q14 -10 28 0 t28 0 t28 0" opacity="0.45"/>
+  </g>
+  <path fill="#1C2433" d="M70 150 L100 40 L132 40 L132 118 L206 118 L206 150 Z"/>
+  <path fill="#16A34A" d="M97.8 48 L100 40 L132 40 L132 48 Z"/>
+  <text x="214" y="150" font-family="Segoe UI, Inter, Helvetica Neue, Arial, sans-serif" font-weight="700" font-size="150" letter-spacing="-4" fill="#1C2433">evy</text>
+</svg>

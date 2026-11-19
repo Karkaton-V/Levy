@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 190" role="img" aria-label="Levy"><title>Levy</title>
+  <path fill="none" stroke="#2563EB" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"
+        d="M6 150 C18 120 40 90 68 84 C86 80 96 94 89 104 C83 112 71 109 71 99 C71 93 77 90 81 93"/>
+  <path fill="none" stroke="#1C2433" stroke-width="10" stroke-linejoin="round" d="M75 145 L103 45 L127 45 L127 123 L201 123 L201 145 Z"/>
+  <text x="214" y="150" font-family="Segoe UI, Inter, Helvetica Neue, Arial, sans-serif" font-weight="500" font-size="150" letter-spacing="-4" fill="#1C2433">evy</text>
+</svg>

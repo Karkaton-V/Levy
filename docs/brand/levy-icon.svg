@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Levy"><title>Levy</title>
+  <defs>
+    <clipPath id="levy-icon-tile"><rect width="256" height="256" rx="56"/></clipPath>
+  </defs>
+  <g clip-path="url(#levy-icon-tile)">
+    <rect width="256" height="256" fill="#2563EB"/>
+    <path fill="#FFFFFF" opacity="0.5" d="M20 200 C30 160 54 122 86 106 C104 97 120 95 130 101 L114 106 C102 108 94 118 92 132 C90 150 92 174 94.5 188 L92 200 Z"/>
+    <circle cx="124" cy="82" r="4.5" fill="#FFFFFF" opacity="0.6"/><circle cx="110" cy="76" r="3.5" fill="#FFFFFF" opacity="0.6"/><circle cx="134" cy="72" r="3" fill="#FFFFFF" opacity="0.6"/>
+    <path fill="#FFFFFF" d="M92 200 L124 62 L158 62 L158 168 L222 168 L222 200 Z"/>
+    <rect y="200" width="256" height="56" fill="#1D4ED8"/>
+  </g>
+</svg>
