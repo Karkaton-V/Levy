@@ -11,7 +11,39 @@
     <sys:String x:Key="MapGlyph">&#xE707;</sys:String>
     <sys:String x:Key="CompareGlyph">&#xE9D2;</sys:String>
     <sys:String x:Key="RunGlyph">&#xE768;</sys:String>
-    <sys:String x:Key="BrandGlyph">&#xE80F;</sys:String>
+
+    <!-- The Levy mark (docs/brand/levy-icon.svg): a levee L taking a breaking wave, on a rounded blue tile. Set Width and Height; it scales. -->
+    <Style x:Key="LevyMark" TargetType="ContentControl">
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ContentControl">
+                    <Viewbox>
+                        <Canvas Width="256" Height="256">
+                            <Canvas.Clip>
+                                <RectangleGeometry Rect="0,0,256,256" RadiusX="56" RadiusY="56" />
+                            </Canvas.Clip>
+                            <Rectangle Width="256" Height="256" Fill="{DynamicResource BrandTile}" />
+                            <Path Fill="{DynamicResource BrandMark}" Opacity="0.5"
+                                  Data="M20,200 C30,160 54,122 86,106 C104,97 120,95 130,101 L114,106 C102,108 94,118 92,132 C90,150 92,174 94.5,188 L92,200 Z" />
+                            <Path Fill="{DynamicResource BrandMark}" Opacity="0.6">
+                                <Path.Data>
+                                    <GeometryGroup>
+                                        <EllipseGeometry Center="124,82" RadiusX="4.5" RadiusY="4.5" />
+                                        <EllipseGeometry Center="110,76" RadiusX="3.5" RadiusY="3.5" />
+                                        <EllipseGeometry Center="134,72" RadiusX="3" RadiusY="3" />
+                                    </GeometryGroup>
+                                </Path.Data>
+                            </Path>
+                            <Path Fill="{DynamicResource BrandMark}" Data="M92,200 L124,62 L158,62 L158,168 L222,168 L222,200 Z" />
+                            <Rectangle Canvas.Top="200" Width="256" Height="56" Fill="{DynamicResource BrandTileShade}" />
+                        </Canvas>
+                    </Viewbox>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
     <!-- The navigation list: no chrome of its own, the items do the drawing. -->
     <Style x:Key="NavList" TargetType="ListBox">

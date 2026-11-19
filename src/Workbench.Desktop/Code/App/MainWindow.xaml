@@ -21,10 +21,7 @@
         <Border Grid.Column="0" Background="{DynamicResource NavBackground}">
             <DockPanel>
                 <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="24,24,20,32">
-                    <Border Width="34" Height="34" CornerRadius="9" Background="{DynamicResource Accent}">
-                        <TextBlock Text="{StaticResource BrandGlyph}" FontFamily="{StaticResource IconFont}" FontSize="17" Foreground="{DynamicResource OnAccent}"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </Border>
+                    <ContentControl Style="{StaticResource LevyMark}" Width="36" Height="36" />
                     <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
                         <TextBlock Text="Valuation Workbench" Foreground="{DynamicResource NavStrong}" FontSize="14" FontWeight="SemiBold" />
                         <TextBlock Text="Mass appraisal" Foreground="{DynamicResource NavMuted}" FontSize="11" Margin="0,2,0,0" />
