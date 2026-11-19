@@ -6,18 +6,20 @@
     <StackPanel Margin="24,20,24,32">
         <TextBlock Text="{Binding SelectedTitle}" FontSize="22" FontWeight="SemiBold" />
         <TextBlock Text="{Binding SelectedSubtitle}" Foreground="{DynamicResource Muted}" TextWrapping="Wrap" LineHeight="20" Margin="0,6,0,0" />
-        <Button Content="Zoom to this parcel" Command="{Binding ZoomToSelectedCommand}" Style="{StaticResource SecondaryButton}"
+        <Button Command="{Binding ZoomToSelectedCommand}" Style="{StaticResource SecondaryButton}" ToolTip="Zoom to this parcel"
                 HorizontalAlignment="Left" Margin="0,16,0,0"
-                Visibility="{Binding HasSelection, Converter={StaticResource BoolVis}}" />
+                Visibility="{Binding HasSelection, Converter={StaticResource BoolVis}}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{StaticResource ZoomGlyph}" FontFamily="{StaticResource IconFont}" FontSize="13" VerticalAlignment="Center" />
+                <TextBlock Text="Zoom" Margin="8,0,0,0" VerticalAlignment="Center" />
+            </StackPanel>
+        </Button>
 
-        <TextBlock Text="Estimated market value" Foreground="{DynamicResource Muted}" FontSize="12" Margin="0,32,0,0" />
+        <TextBlock Text="Market value" Foreground="{DynamicResource Muted}" FontSize="12" Margin="0,32,0,0" />
         <TextBlock Text="{Binding SelectedMarket}" FontFamily="{StaticResource Mono}" FontSize="30" Margin="0,4,0,0" />
         <TextBlock Text="{Binding SelectedSale}" Foreground="{DynamicResource Soft}" FontSize="12" TextWrapping="Wrap" Margin="0,6,0,0" />
 
         <TextBlock Text="WHY THIS VALUE" Style="{StaticResource SectionLabel}" Margin="0,32,0,4" />
-        <TextBlock Foreground="{DynamicResource Muted}" FontSize="12" Margin="0,0,0,8" TextWrapping="Wrap">
-            Use the <Run FontFamily="{StaticResource IconFont}" Text="{StaticResource InfoGlyph}" /> button beside a step to see the code behind it.
-        </TextBlock>
         <ItemsControl ItemsSource="{Binding Trace}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
@@ -46,7 +48,7 @@
                                 <StackPanel>
                                     <TextBlock Text="{Binding CodeCaption}" Foreground="{DynamicResource Muted}" FontSize="11" />
                                     <local:CodeSnippetView Code="{Binding Code}" Margin="0,6,0,0" Visibility="{Binding HasCode, Converter={StaticResource BoolVis}}" />
-                                    <TextBlock Text="HOW IT'S WORKED OUT" Style="{StaticResource SectionLabel}" Margin="0,14,0,4" />
+                                    <TextBlock Text="FORMULA" Style="{StaticResource SectionLabel}" Margin="0,14,0,4" />
                                     <TextBlock Text="{Binding Formula}" Foreground="{DynamicResource Soft}" FontFamily="{StaticResource Mono}" FontSize="12" TextWrapping="Wrap" LineHeight="18" />
                                     <Button Content="Open in Editor" Style="{StaticResource LinkButton}" HorizontalAlignment="Left" Margin="0,12,0,0"
                                             Command="{Binding DataContext.OpenInEditorCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"

@@ -77,20 +77,19 @@ public sealed partial class MainViewModel : INotifyPropertyChanged
         var before = _previous is null ? null : RatioStudy.Compute(_previous);
         Tiles = new[]
         {
-            Tile("Median ratio", stats.Median, before?.Median, "F3", "0.95 to 1.05", RatioStudy.MedianOk(stats.Median)),
-            Tile("COD (uniformity)", stats.Cod, before?.Cod, "F1", "15.0 or less", RatioStudy.CodOk(stats.Cod)),
-            Tile("PRD (price fairness)", stats.Prd, before?.Prd, "F3", "0.98 to 1.03", RatioStudy.PrdOk(stats.Prd)),
+            Tile("Median ratio", stats.Median, before?.Median, "F3", "0.95–1.05", RatioStudy.MedianOk(stats.Median)),
+            Tile("COD (uniformity)", stats.Cod, before?.Cod, "F1", "≤ 15.0", RatioStudy.CodOk(stats.Cod)),
+            Tile("PRD (price fairness)", stats.Prd, before?.Prd, "F3", "0.98–1.03", RatioStudy.PrdOk(stats.Prd)),
         };
         Summary = BuildSummary(rules, stats);
-        Subtitle = $"{_area.Name} study area · Tax year {rules.ValuationYear} · {Number((double)rules.Millage, "0.##")} mills";
+        Subtitle = $"{_area.Name} · {rules.ValuationYear} · {Number((double)rules.Millage, "0.##")} mills";
         _lastRunText = _rulesText;
 
         UpdateEditorAfterRun(diagnostics);
         UpdateMapAfterRun();
         UpdateCompareAfterRun();
         RefreshRulesInWords();
-        var empty = Buildings.Count - _parcelBuilding.Length;
-        StatusLine = $"Run {_runNumber} · {_current.Count} parcels valued · {stats.Count} with sales" + (empty > 0 ? $" · {Number(empty, "N0")} empty parcels" : "");
+        StatusLine = $"Run {_runNumber} · {_current.Count} valued · {stats.Count} sold";
 
         RaiseAll();
         RestoreSelection(selectedIndex);
@@ -103,13 +102,13 @@ public sealed partial class MainViewModel : INotifyPropertyChanged
         var tax = _current.Sum(v => v.EstimatedTax);
         string Change(Func<Valuation, decimal> pick)
         {
-            if (_previous is null) return "First run";
+            if (_previous is null) return "—";
             var delta = _current.Sum(pick) - _previous.Sum(pick);
-            return delta == 0 ? "No change from last run" : Signed(delta) + " from last run";
+            return delta == 0 ? "No change" : Signed(delta) + " vs last run";
         }
         var cards = new List<SummaryCard>
         {
-            new("Parcels valued", Number(_current.Count, "N0"), $"{stats.Count} with recent sales", "", false, true),
+            new("Parcels valued", Number(_current.Count, "N0"), $"{stats.Count} sold", "", false, true),
             new("Total market value", Compact(market), Change(v => v.MarketValue), "", false, true),
             new("Estimated tax levy", Compact(tax), Change(v => v.EstimatedTax), "", false, true),
         };
@@ -126,7 +125,7 @@ public sealed partial class MainViewModel : INotifyPropertyChanged
     };
 
     static StatTile Tile(string name, double value, double? before, string format, string target, bool ok) =>
-        new(name, Number(value, format), before is null ? "" : "was " + Number(before.Value, format), "Target " + target, ok ? "Pass" : "Out of range", ok);
+        new(name, Number(value, format), before is null ? "" : "was " + Number(before.Value, format), target, ok ? "Pass" : "Out of range", ok);
 
     void Raise([CallerMemberName] string? name = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     void RaiseAll() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(string.Empty));

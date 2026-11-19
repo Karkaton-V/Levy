@@ -4,7 +4,7 @@
              xmlns:local="clr-namespace:Workbench.Desktop">
     <!-- Compare tab: the last two runs side by side. Styles: Assets/Compare/CompareStyles.xaml. -->
     <Grid>
-        <TextBlock Text="Change a rule on the Editor tab and press Run model. This tab then compares the last two runs."
+        <TextBlock Text="Edit a rule and run (F5) to compare."
                    Foreground="{DynamicResource Muted}" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"
                    Visibility="{Binding NoComparison, Converter={StaticResource BoolVis}}" />
 
@@ -55,14 +55,14 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <TextBlock Text="Each label is the low end of a 0.05-wide bin. Bins inside the 0.95 to 1.05 target are labelled in bold."
+                        <TextBlock Text="0.05-wide bins · bold = in target"
                                    Foreground="{DynamicResource Muted}" FontSize="12" Margin="0,20,0,0" TextWrapping="Wrap" />
                     </StackPanel>
                 </Border>
 
                 <Border Style="{StaticResource Card}" Padding="0" Margin="0,20,12,0" ClipToBounds="True">
                     <StackPanel>
-                        <TextBlock Text="Largest tax bill changes" Style="{StaticResource CardTitle}" Margin="24,18,24,14" />
+                        <TextBlock Text="Biggest tax changes" Style="{StaticResource CardTitle}" Margin="24,18,24,14" />
                         <Grid Background="{DynamicResource TableHead}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="160" />

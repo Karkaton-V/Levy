@@ -46,13 +46,13 @@ public sealed partial class MainViewModel
     public string StudyAreaName => _area.Name;
     public string MapMessage { get; private set; } = "Loading the study area";
     public bool HasMapMessage => MapMessage.Length > 0;
-    public string ZoomHint => $"Zoom in to see the {Number(Buildings.Count - _parcelBuilding.Length, "N0")} empty parcels";
+    public string ZoomHint => $"Zoom in · {Number(Buildings.Count - _parcelBuilding.Length, "N0")} more parcels";
     public string RulesInWords { get; private set; } = "";
     public bool SidebarShowsRules { get => _sidebarShowsRules; set => SetSidebar(value); }
     public bool SidebarShowsRecord { get => !_sidebarShowsRules; set => SetSidebar(!value); }
     public IReadOnlyList<TraceRow> Trace { get; private set; } = Array.Empty<TraceRow>();
     public string SelectedTitle { get; private set; } = "No parcel selected";
-    public string SelectedSubtitle { get; private set; } = "Click a parcel on the map to see how its value was worked out.";
+    public string SelectedSubtitle { get; private set; } = "Click a parcel on the map.";
     public string SelectedMarket { get; private set; } = "";
     public string SelectedSale { get; private set; } = "";
     public bool HasSelection => SelectedBuildingIndex is not null;
@@ -180,24 +180,24 @@ public sealed partial class MainViewModel
         if (v is null && _selectedEmpty is int b && b < Buildings.Count)
         {
             SelectedTitle = "Empty parcel";
-            SelectedSubtitle = $"OpenStreetMap building {Buildings[b].OsmId} · about {Number(Buildings[b].AreaSqFt, "N0")} sq ft footprint";
+            SelectedSubtitle = $"OSM {Buildings[b].OsmId} · ~{Number(Buildings[b].AreaSqFt, "N0")} sq ft";
             SelectedMarket = "Not valued";
-            SelectedSale = "This building has no record on the roll yet. The coloured parcels carry sample values.";
+            SelectedSale = "Not on the roll yet.";
             Trace = Array.Empty<TraceRow>();
         }
         else if (v is null)
         {
             SelectedTitle = "No parcel selected";
-            SelectedSubtitle = "Click a parcel on the map to see how its value was worked out.";
+            SelectedSubtitle = "Click a parcel on the map.";
             SelectedMarket = SelectedSale = "";
             Trace = Array.Empty<TraceRow>();
         }
         else
         {
             SelectedTitle = $"Parcel {v.Parcel.Id}";
-            SelectedSubtitle = $"{v.Parcel.Neighborhood} · built {v.Parcel.YearBuilt} · {Number(v.Parcel.LivingSqFt, "N0")} sq ft on a {Number(v.Parcel.LotSqFt, "N0")} sq ft lot";
+            SelectedSubtitle = $"{v.Parcel.Neighborhood} · {v.Parcel.YearBuilt} · {Number(v.Parcel.LivingSqFt, "N0")} sq ft · {Number(v.Parcel.LotSqFt, "N0")} sq ft lot";
             SelectedMarket = Money(v.MarketValue);
-            SelectedSale = v.Ratio is { } ratio ? $"Last sale {Money(v.Parcel.SalePrice!.Value)} · ratio {Number(ratio, "F3")}" : "No recent sale on record";
+            SelectedSale = v.Ratio is { } ratio ? $"Last sale {Money(v.Parcel.SalePrice!.Value)} · ratio {Number(ratio, "F3")}" : "No recent sale";
             Trace = BuildTrace(v);
         }
         Raise(nameof(SelectedTitle)); Raise(nameof(SelectedSubtitle)); Raise(nameof(SelectedMarket)); Raise(nameof(SelectedSale)); Raise(nameof(Trace));

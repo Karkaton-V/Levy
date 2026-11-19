@@ -10,10 +10,7 @@
         <!-- Overview (small map): where you are, and a button one level back out. -->
         <DockPanel x:Name="OverviewControls" VerticalAlignment="Top" Margin="20,20,20,0" LastChildFill="False">
             <Border DockPanel.Dock="Left" Background="{DynamicResource MapOverlay}" CornerRadius="6" Padding="12,8">
-                <StackPanel>
-                    <TextBlock x:Name="Breadcrumb" Foreground="{DynamicResource MapOverlayText}" FontSize="13" FontWeight="SemiBold" />
-                    <TextBlock x:Name="LevelHint" Foreground="{DynamicResource MapOverlayText}" Opacity="0.75" FontSize="12" Margin="0,2,0,0" />
-                </StackPanel>
+                <TextBlock x:Name="Breadcrumb" Foreground="{DynamicResource MapOverlayText}" FontSize="13" FontWeight="SemiBold" />
             </Border>
             <Button x:Name="BackButton" DockPanel.Dock="Right" Style="{StaticResource MapButton}" Click="Back_Click" VerticalAlignment="Top" />
         </DockPanel>
@@ -30,16 +27,18 @@
             <Border Background="{DynamicResource MapControlFill}" BorderBrush="{DynamicResource MapControlBorder}" BorderThickness="1" CornerRadius="6" Padding="4" Margin="0,0,12,12">
                 <StackPanel Orientation="Horizontal">
                     <Grid>
-                        <TextBox x:Name="SearchBox" Width="190" Height="34" VerticalContentAlignment="Center" BorderThickness="0" Padding="8,0"
+                        <TextBox x:Name="SearchBox" Width="150" Height="34" VerticalContentAlignment="Center" BorderThickness="0" Padding="8,0"
                                  FontSize="13" Foreground="{DynamicResource MapControlText}" Background="{DynamicResource MapControlFill}" CaretBrush="{DynamicResource MapControlText}" KeyDown="SearchBox_KeyDown"
                                  AutomationProperties.Name="Find parcel by ID" ToolTip="Type a parcel ID such as 04-2115, or just its last digits" />
-                        <TextBlock x:Name="SearchPlaceholder" Text="Find parcel ID" Foreground="{DynamicResource MapControlPlaceholder}" FontSize="13" IsHitTestVisible="False"
+                        <TextBlock x:Name="SearchPlaceholder" Text="Parcel ID" Foreground="{DynamicResource MapControlPlaceholder}" FontSize="13" IsHitTestVisible="False"
                                    VerticalAlignment="Center" Margin="11,0,0,0" />
                     </Grid>
-                    <Button Content="Find" Style="{StaticResource PrimaryButton}" Click="Find_Click" Margin="4,0,0,0" />
+                    <Button Style="{StaticResource PrimaryButton}" Click="Find_Click" Margin="4,0,0,0" ToolTip="Find" AutomationProperties.Name="Find">
+                        <TextBlock Text="{StaticResource SearchGlyph}" FontFamily="{StaticResource IconFont}" FontSize="14" />
+                    </Button>
                 </StackPanel>
             </Border>
-            <Button Content="Sample parcels" Style="{StaticResource MapButton}" Click="Sample_Click" ToolTip="Zoom to the valued sample parcels" Margin="0,0,10,12" />
+            <Button Content="Samples" Style="{StaticResource MapButton}" Click="Sample_Click" ToolTip="Zoom to the valued sample parcels" Margin="0,0,10,12" />
             <Button Content="Study area" Style="{StaticResource MapButton}" Click="Area_Click" ToolTip="Zoom to the bordered study area" Margin="0,0,10,12" />
             <Button Content="Louisiana" Style="{StaticResource MapButton}" Click="Louisiana_Click" ToolTip="Zoom out to the whole state" Margin="0,0,0,12" />
         </WrapPanel>

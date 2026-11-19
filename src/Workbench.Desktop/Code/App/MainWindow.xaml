@@ -68,7 +68,7 @@
                     </Button>
                     <TextBlock DockPanel.Dock="Right" Text="{Binding StatusLine}" Foreground="{DynamicResource Muted}" VerticalAlignment="Center" Margin="0,0,20,0" />
                     <Border DockPanel.Dock="Right" Style="{StaticResource WarnPill}" Margin="0,0,16,0" Visibility="{Binding IsStale, Converter={StaticResource BoolVis}}">
-                        <TextBlock Text="Edited · not run" Foreground="{DynamicResource WarnStatus}" FontSize="11" FontWeight="SemiBold" />
+                        <TextBlock Text="● Not run" Foreground="{DynamicResource WarnStatus}" FontSize="11" FontWeight="SemiBold" />
                     </Border>
                 </DockPanel>
             </Border>

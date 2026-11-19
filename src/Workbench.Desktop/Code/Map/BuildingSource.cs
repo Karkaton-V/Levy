@@ -48,7 +48,7 @@ public static class BuildingSource
         var ways = File.Exists(cachePath) ? await Task.Run(() => ReadCache(cachePath), ct) : null;
         if (ways is null)
         {
-            progress.Report("Downloading the study area's streets and buildings from OpenStreetMap");
+            progress.Report("Downloading from OpenStreetMap…");
             using var http = new HttpClient { Timeout = TimeSpan.FromMinutes(3) };
             http.DefaultRequestHeaders.UserAgent.ParseAdd("ValuationWorkbench/0.1 (student portfolio project)");
             ways = await DownloadAsync(area, http, ct);
@@ -56,7 +56,7 @@ public static class BuildingSource
             var toSave = ways;
             await Task.Run(() => WriteCache(cachePath, toSave), ct);
         }
-        else progress.Report("Loading the saved study area");
+        else progress.Report("Loading…");
         return await Task.Run(() => Build(area, ways), ct);
     }
 

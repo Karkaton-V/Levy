@@ -97,17 +97,16 @@ public partial class ParcelMapView : UserControl
         ShowLevel();
     }
 
-    // The overview's breadcrumb, hint and back button for the current level.
+    // The overview's breadcrumb and back button for the current level.
     void ShowLevel()
     {
         var city = _parcelMap.CurrentCity?.Name;
         var area = StudyArea.Default.Name;
-        (Breadcrumb.Text, LevelHint.Text, BackButton.Content) = _parcelMap.Level switch
+        (Breadcrumb.Text, BackButton.Content) = _parcelMap.Level switch
         {
-            MapLevel.Area => ($"Louisiana  ›  {city}  ›  {area}", "Click a parcel to open its record.", $"Back to {city}"),
-            MapLevel.City when _parcelMap.CurrentCity?.HasStudyArea == true => ($"Louisiana  ›  {city}", $"Click the shaded {area} study area.", "Back to Louisiana"),
-            MapLevel.City => ($"Louisiana  ›  {city}", "No study area here yet.", "Back to Louisiana"),
-            _ => ("Louisiana", "Click a city to zoom in.", ""),
+            MapLevel.Area => ($"Louisiana  ›  {city}  ›  {area}", $"←  {city}"),
+            MapLevel.City => ($"Louisiana  ›  {city}", "←  Louisiana"),
+            _ => ("Louisiana", ""),
         };
         BackButton.Visibility = _parcelMap.Level == MapLevel.State ? Visibility.Collapsed : Visibility.Visible;
         UpdateZoomHint();
@@ -169,14 +168,14 @@ public partial class ParcelMapView : UserControl
         string? text = null;
         int? building = null;
         if (IsOverview && _parcelMap.Level == MapLevel.State)
-            text = _parcelMap.FindCityAtScreen(position.X, position.Y) is City city ? $"{city.Name} · click to zoom in" : null;
+            text = _parcelMap.FindCityAtScreen(position.X, position.Y) is City city ? $"{city.Name}  →" : null;
         else if (IsOverview && _parcelMap.Level == MapLevel.City)
-            text = _parcelMap.CurrentCity?.HasStudyArea == true && _parcelMap.IsStudyAreaAtScreen(position.X, position.Y) ? $"{StudyArea.Default.Name} study area · click to see its parcels" : null;
+            text = _parcelMap.CurrentCity?.HasStudyArea == true && _parcelMap.IsStudyAreaAtScreen(position.X, position.Y) ? $"{StudyArea.Default.Name}  →" : null;
         else
         {
             building = _parcelMap.FindBuildingAtScreen(position.X, position.Y);
             text = building is int i ? _viewModel.DescribeBuilding(i) : null;
-            if (text is null && !IsOverview && _parcelMap.FindCityAtScreen(position.X, position.Y) is City city) text = $"{city.Name} · click to zoom in";
+            if (text is null && !IsOverview && _parcelMap.FindCityAtScreen(position.X, position.Y) is City city) text = $"{city.Name}  →";
         }
         _parcelMap.Hover(building);
         MapHost.Cursor = text is null ? null : Cursors.Hand;
