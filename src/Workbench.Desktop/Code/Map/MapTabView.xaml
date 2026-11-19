@@ -17,12 +17,19 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Margin="20,16,20,14">
-                <TextBlock Text="Parcels" Style="{StaticResource CardTitle}" />
-                <TextBlock Foreground="{DynamicResource Muted}" TextWrapping="Wrap" Margin="0,4,0,0">
-                    <Run Text="The border follows " /><Run Text="{Binding StudyAreaDescription, Mode=OneWay}" /><Run Text=". Every building inside it is a parcel; the coloured ones carry sample values. Hover to preview, click to open a record." />
-                </TextBlock>
-            </StackPanel>
+            <DockPanel Grid.Row="0" Margin="20,16,16,14">
+                <Button DockPanel.Dock="Right" Style="{StaticResource SecondaryButton}" Command="{Binding ToggleMapSizeCommand}" VerticalAlignment="Center"
+                        ToolTip="Switch between the overview and the full-size map">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource MapSizeGlyph}" />
+                        <TextBlock Style="{StaticResource MapSizeLabel}" Margin="8,0,0,0" />
+                    </StackPanel>
+                </Button>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="Parcels" Style="{StaticResource CardTitle}" />
+                    <TextBlock Text="Every building is a parcel; coloured ones carry sample values." Foreground="{DynamicResource Muted}" TextWrapping="Wrap" Margin="0,4,0,0" />
+                </StackPanel>
+            </DockPanel>
             <Border Grid.Row="1" BorderBrush="{DynamicResource Line}" BorderThickness="0,1">
                 <local:ParcelMapView />
             </Border>

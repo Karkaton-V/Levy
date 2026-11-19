@@ -74,7 +74,7 @@
             </Border>
 
             <!-- Summary strip: roll totals and the ratio study, on every page. -->
-            <ItemsControl Grid.Row="1" ItemsSource="{Binding Summary}" Margin="32,24,20,0" Focusable="False">
+            <ItemsControl Grid.Row="1" ItemsSource="{Binding Summary}" Margin="32,24,20,0" Focusable="False" Style="{StaticResource SummaryStrip}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <UniformGrid Rows="1" />
@@ -99,7 +99,7 @@
             </ItemsControl>
 
             <!-- Pages. The rail above switches them; "Open in Editor" sets SelectedIndex too. -->
-            <TabControl x:Name="Tabs" Grid.Row="2" Style="{StaticResource PageTabs}" SelectedIndex="0">
+            <TabControl x:Name="Tabs" Grid.Row="2" Style="{StaticResource PageTabs}" SelectedIndex="0" SelectionChanged="Tabs_SelectionChanged">
                 <TabItem Header="Rules editor">
                     <local:EditorTabView x:Name="EditorTab" />
                 </TabItem>

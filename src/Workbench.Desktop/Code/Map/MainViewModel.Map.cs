@@ -23,6 +23,17 @@ public sealed partial class MainViewModel
     ParcelCell? _selectedCell;
     int? _selectedEmpty;
     bool _sidebarShowsRules;
+    bool _isMapExpanded;
+
+    // True while the full-size map fills the page under the top bar; false shows the simplified overview.
+    public bool IsMapExpanded
+    {
+        get => _isMapExpanded;
+        set { if (_isMapExpanded == value) return; _isMapExpanded = value; Raise(); }
+    }
+
+    public ICommand ToggleMapSizeCommand => _toggleMapSize ??= new RelayCommand(() => IsMapExpanded = !IsMapExpanded);
+    ICommand? _toggleMapSize;
 
     // Raised when the user asks to zoom the map to the selected parcel.
     public event Action? ZoomToSelectionRequested;

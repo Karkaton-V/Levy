@@ -14,7 +14,8 @@ public sealed record LineLook(string? Label, string Line, double LineWidth, stri
 public sealed record MapStyle(
     AreaLook Under, AreaLook InRange, AreaLook Over, AreaLook NoSale, AreaLook ValuedOutline,
     AreaLook Empty, AreaLook Hover, AreaLook Selection, LineLook Border, AreaLook OutsideLouisiana,
-    double MaskMarginDegrees, double EmptyParcelsMaxResolution)
+    AreaLook City, AreaLook CityLabel, AreaLook StudyAreaFill,
+    double MaskMarginDegrees, double EmptyParcelsMaxResolution, double CityMarkersMinResolution, double StudyAreaFillMinResolution)
 {
     static readonly Lazy<MapStyle> Loaded = new(() => Parse(Shared.ReadAsset("Map", "map-style.json")));
     static readonly JsonSerializerOptions Options = new() { PropertyNameCaseInsensitive = true, ReadCommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true };

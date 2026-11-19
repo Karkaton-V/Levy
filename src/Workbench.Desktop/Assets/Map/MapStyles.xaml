@@ -35,6 +35,32 @@
         </Setter>
     </Style>
 
+    <!-- The map card's Expand / Collapse button: glyph and label follow IsMapExpanded. -->
+    <sys:String x:Key="ExpandGlyph">&#xE740;</sys:String>
+    <sys:String x:Key="CollapseGlyph">&#xE73F;</sys:String>
+
+    <Style x:Key="MapSizeGlyph" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource IconFont}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Text" Value="{StaticResource ExpandGlyph}" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsMapExpanded}" Value="True">
+                <Setter Property="Text" Value="{StaticResource CollapseGlyph}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="MapSizeLabel" TargetType="TextBlock">
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Text" Value="Full-size map" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsMapExpanded}" Value="True">
+                <Setter Property="Text" Value="Overview" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
     <!-- Small round info button that opens and closes a step's drop-down. -->
     <Style x:Key="InfoToggle" TargetType="ToggleButton">
         <Setter Property="Width" Value="24" />

@@ -62,6 +62,15 @@
     <!-- The page area: shows the selected page only; the navigation rail does the switching.
          The tab strip is kept but hidden at zero height: without an items host the TabControl never selects or shows a page. -->
     <Style x:Key="PageTabs" TargetType="TabControl">
+        <!-- WPF's built-in tab style sets black text; pages inherit the theme's text colour instead. -->
+        <Setter Property="Foreground" Value="{DynamicResource Text}" />
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="TabItem">
+                    <Setter Property="Foreground" Value="{DynamicResource Text}" />
+                </Style>
+            </Setter.Value>
+        </Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TabControl">
@@ -148,6 +157,15 @@
         <Setter Property="Height" Value="1" />
         <Setter Property="Background" Value="{DynamicResource Line}" />
         <Setter Property="Margin" Value="0,14" />
+    </Style>
+
+    <!-- Summary strip under the top bar: hidden while the full-size map is open. -->
+    <Style x:Key="SummaryStrip" TargetType="ItemsControl">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsMapExpanded}" Value="True">
+                <Setter Property="Visibility" Value="Collapsed" />
+            </DataTrigger>
+        </Style.Triggers>
     </Style>
 
     <!-- White bar across the top of every page. -->

@@ -83,6 +83,13 @@ public partial class MainWindow : Window
         WindowState = WindowState.Maximized;
     }
 
+    // Leaving the Map page closes the full-size map, so the summary strip comes back on other pages.
+    // SelectionChanged bubbles up from lists inside the pages too; only the page switch itself counts.
+    void Tabs_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+    {
+        if (e.OriginalSource == Tabs && DataContext is MainViewModel viewModel) viewModel.IsMapExpanded = false;
+    }
+
     // Switches to the Editor tab, then jumps to the line once the tab has been laid out.
     void OpenInEditor(int line)
     {
