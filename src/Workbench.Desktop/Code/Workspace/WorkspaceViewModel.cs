@@ -24,6 +24,7 @@ public sealed partial class WorkspaceViewModel : INotifyPropertyChanged
         Reports = CreateReports();
         Team = CreateTeam();
         Companies = CreateCompanies();
+        Activity = CreateActivity();
         Clients.Saved += Relink; Jobs.Saved += Relink; Projects.Saved += Relink; Tasks.Saved += Relink; Reports.Saved += Relink;
     }
 

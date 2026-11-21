@@ -14,6 +14,7 @@ public partial class MainWindow : Window
     readonly MainViewModel _viewModel;
     readonly Dictionary<ListBoxItem, TabItem> _pages;
     readonly HashSet<TabItem> _workflowPages;
+    readonly WorkspaceViewModel _workspace;
 
     public MainWindow(SupabaseClient client, Membership membership)
     {
@@ -28,8 +29,8 @@ public partial class MainWindow : Window
         viewModel.OpenInEditorRequested += OpenInEditor;
 
         // The workflow pages read and save the organization's rows in Supabase.
-        var workspace = new WorkspaceViewModel(client, membership);
-        foreach (var view in new FrameworkElement[] { JobsView, ProjectsView, BoardView, TasksView, ClientsView, ReportsView, TeamView, CompaniesView }) view.DataContext = workspace;
+        var workspace = _workspace = new WorkspaceViewModel(client, membership);
+        foreach (var view in new FrameworkElement[] { JobsView, ProjectsView, BoardView, TasksView, ClientsView, ReportsView, TeamView, ActivityView, CompaniesView }) view.DataContext = workspace;
         viewModel.WorkspaceName = workspace.OrganizationName;
         JobTitleText.SetBinding(TextBlock.TextProperty, new Binding(nameof(WorkspaceViewModel.JobTitle)) { Source = workspace });
         ShowAdminPages(workspace);
@@ -44,9 +45,9 @@ public partial class MainWindow : Window
             [NavRules] = RulesPage, [NavMap] = MapPage, [NavCompare] = ComparePage,
             [NavJobs] = JobsPage, [NavProjects] = ProjectsPage, [NavBoard] = BoardPage,
             [NavTasks] = TasksPage, [NavClients] = ClientsPage, [NavReports] = ReportsPage,
-            [NavTeam] = TeamPage, [NavCompanies] = CompaniesPage,
+            [NavTeam] = TeamPage, [NavActivity] = ActivityPage, [NavCompanies] = CompaniesPage,
         };
-        _workflowPages = [JobsPage, ProjectsPage, BoardPage, TasksPage, ClientsPage, ReportsPage, TeamPage, CompaniesPage];
+        _workflowPages = [JobsPage, ProjectsPage, BoardPage, TasksPage, ClientsPage, ReportsPage, TeamPage, ActivityPage, CompaniesPage];
         Tabs.SelectedItem = RulesPage;
 
         Loaded += async (_, _) => await Task.WhenAll(viewModel.LoadBuildingsAsync(), workspace.LoadAsync());
@@ -112,13 +113,14 @@ public partial class MainWindow : Window
         WindowState = WindowState.Maximized;
     }
 
-    // The ADMIN section: Team for company admins (and platform admins), Companies for platform admins only.
+    // The ADMIN section: Team for company admins (and platform admins), Activity for company admins, Companies for platform admins only.
     void ShowAdminPages(WorkspaceViewModel workspace)
     {
         var team = workspace.IsAdmin || workspace.IsPlatformAdmin;
         NavAdminHeading.Visibility = NavTeam.Visibility = team ? Visibility.Visible : Visibility.Collapsed;
+        NavActivity.Visibility = workspace.IsAdmin ? Visibility.Visible : Visibility.Collapsed;
         NavCompanies.Visibility = workspace.IsPlatformAdmin ? Visibility.Visible : Visibility.Collapsed;
-        if (!team && Nav.SelectedItem == NavTeam) Nav.SelectedItem = NavRules;
+        if ((!team && Nav.SelectedItem == NavTeam) || (!workspace.IsAdmin && Nav.SelectedItem == NavActivity)) Nav.SelectedItem = NavRules;
     }
 
     // A rail item opens its page; workflow pages hide the valuation summary and Run.
@@ -127,6 +129,7 @@ public partial class MainWindow : Window
         if (Nav.SelectedItem is not ListBoxItem item || _pages is null || !_pages.TryGetValue(item, out var page)) return;
         Tabs.SelectedItem = page;
         _viewModel.IsWorkflowPage = _workflowPages.Contains(page);
+        if (page == ActivityPage) _ = _workspace.LoadActivityAsync();
     }
 
     // Leaving the Map page closes the full-size map, so the summary strip comes back on other pages.

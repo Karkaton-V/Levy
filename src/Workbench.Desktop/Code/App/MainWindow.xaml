@@ -41,9 +41,10 @@
                     <ListBoxItem x:Name="NavTasks" Style="{StaticResource NavItem}" Tag="{StaticResource TasksGlyph}" Content="Tasks" />
                     <ListBoxItem x:Name="NavClients" Style="{StaticResource NavItem}" Tag="{StaticResource ClientsGlyph}" Content="Clients" />
                     <ListBoxItem x:Name="NavReports" Style="{StaticResource NavItem}" Tag="{StaticResource ReportsGlyph}" Content="Reports" />
-                    <!-- Shown from code-behind: Team to company admins, Companies to platform admins. -->
+                    <!-- Shown from code-behind: Team and Activity to company admins, Companies to platform admins. -->
                     <ListBoxItem x:Name="NavAdminHeading" Style="{StaticResource NavHeading}" Content="ADMIN" Visibility="Collapsed" />
                     <ListBoxItem x:Name="NavTeam" Style="{StaticResource NavItem}" Tag="{StaticResource TeamGlyph}" Content="Team" Visibility="Collapsed" />
+                    <ListBoxItem x:Name="NavActivity" Style="{StaticResource NavItem}" Tag="{StaticResource ActivityGlyph}" Content="Activity" Visibility="Collapsed" />
                     <ListBoxItem x:Name="NavCompanies" Style="{StaticResource NavItem}" Tag="{StaticResource CompaniesGlyph}" Content="Companies" Visibility="Collapsed" />
                 </ListBox>
             </DockPanel>
@@ -119,6 +120,9 @@
                 </TabItem>
                 <TabItem x:Name="TeamPage" Header="Team">
                     <local:TeamPageView x:Name="TeamView" />
+                </TabItem>
+                <TabItem x:Name="ActivityPage" Header="Activity">
+                    <local:ActivityPageView x:Name="ActivityView" />
                 </TabItem>
                 <TabItem x:Name="CompaniesPage" Header="Companies">
                     <local:CompaniesPageView x:Name="CompaniesView" />

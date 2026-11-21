@@ -121,6 +121,20 @@
         </Style.Triggers>
     </Style>
 
+    <!-- Shown on the Activity page while the log is empty (and nothing went wrong loading it). -->
+    <Style x:Key="EmptyActivity" TargetType="TextBlock" BasedOn="{StaticResource FormHint}">
+        <Setter Property="Visibility" Value="Collapsed" />
+        <Style.Triggers>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Activity.Items.Count}" Value="0" />
+                    <Condition Binding="{Binding HasAdminMessage}" Value="False" />
+                </MultiDataTrigger.Conditions>
+                <Setter Property="Visibility" Value="Visible" />
+            </MultiDataTrigger>
+        </Style.Triggers>
+    </Style>
+
     <!-- The strip on the Team page showing the company code. -->
     <Style x:Key="CodeBanner" TargetType="Border" BasedOn="{StaticResource Card}">
         <Setter Property="Padding" Value="20,12" />

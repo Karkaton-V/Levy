@@ -34,7 +34,7 @@
         <Grid Grid.Row="2" Margin="0,16,0,0">
             <!-- Columns stretch to fill the page and scroll sideways once they would get narrower than a card. -->
             <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
-            <ItemsControl ItemsSource="{Binding Board}" Focusable="False" MinWidth="1080" AutomationProperties.Name="Scrum board">
+            <ItemsControl ItemsSource="{Binding Board}" Focusable="False" MinWidth="940" AutomationProperties.Name="Scrum board">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <UniformGrid Rows="1" />

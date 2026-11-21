@@ -18,7 +18,8 @@ public sealed record PageRules<T>(
     Func<T, string?> Validate,
     Func<IReadOnlyList<T>, IReadOnlyList<SummaryCard>> Counters,
     string? Plural = null,
-    string? NewText = null);
+    string? NewText = null,
+    bool ReadOnly = false);
 
 // One workflow page's rows and edit form: search, one dropdown filter, "Assigned to me", the selected row, its draft, New / Save / Cancel and the counters.
 public sealed class RecordPage<T> : INotifyPropertyChanged where T : Row
@@ -63,6 +64,7 @@ public sealed class RecordPage<T> : INotifyPropertyChanged where T : Row
     public ICollectionView View { get; }
     public IReadOnlyList<string> FilterOptions { get; }
     public bool HasMine => _rules.Mine is not null;
+    public bool CanCreate => !_rules.ReadOnly;
     public IReadOnlyList<SummaryCard> Counters { get; private set; } = [];
     public string CountText => $"{View.Cast<object>().Count()} of {Items.Count}";
 

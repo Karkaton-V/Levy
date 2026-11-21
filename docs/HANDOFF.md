@@ -53,6 +53,12 @@ None of this has been run on Windows yet. The XAML parses, every resource key re
   - App: `Code/Account/Membership.cs` decides at sign-in whether to open the company or explain why not. The rail shows the job title (or the role until one is set). An ADMIN section holds Team (`Code/Team/`, company admins: code, review, job titles, roles, access, add by email) and Companies (`Code/Companies/`, platform admins: create, rename, add people).
   - Tested in rolled-back transactions: pending access, approval, the last-admin guard, platform-only functions, the flag, and the signed-out code check. Setting a job title was tested in the app and then cleared.
   - Open: a platform admin can't open another company's workspace (no company switcher); the advisor suggests turning on leaked-password protection in the Supabase dashboard.
+- Activity log (2026-11-21):
+  - Migration `20261121210040_activity_log.sql`, applied with the Supabase MCP. Table `public.activity` stores org, actor (id and name at the time), action, entity, subject, details and time.
+  - Rows are written only by triggers on clients, jobs, projects, tasks, reports and organization_members, so the app can't skip or forge them. Changes made without a signed-in user (sample data, SQL run by hand) aren't logged.
+  - Only the company's admins can read it, and nobody can write it directly.
+  - App: `Code/Activity/` is a read-only page under ADMIN (company admins). It reloads each time it's opened, shows the latest 500 entries, and filters by kind. `PageRules.ReadOnly` hides the New button.
+  - Tested in a rolled-back transaction, and with a real board move by a member account.
 - `.mcp.json` adds the Supabase MCP server for this project.
 
 ## Still to do, in order

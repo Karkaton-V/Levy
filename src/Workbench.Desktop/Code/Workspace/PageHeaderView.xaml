@@ -11,7 +11,7 @@
                       ItemsSource="{Binding FilterOptions}" SelectedItem="{Binding Filter}" AutomationProperties.Name="Filter" />
             <ToggleButton DockPanel.Dock="Left" Style="{StaticResource FilterChip}" Margin="12,0,0,0" Content="Assigned to me"
                           IsChecked="{Binding AssignedToMe}" Visibility="{Binding HasMine, Converter={StaticResource BoolVis}}" />
-            <Button DockPanel.Dock="Right" Style="{StaticResource PrimaryButton}" Command="{Binding NewCommand}">
+            <Button DockPanel.Dock="Right" Style="{StaticResource PrimaryButton}" Command="{Binding NewCommand}" Visibility="{Binding CanCreate, Converter={StaticResource BoolVis}}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="&#xE710;" FontFamily="{StaticResource IconFont}" FontSize="11" VerticalAlignment="Center" />
                     <TextBlock Text="{Binding NewLabel}" Margin="8,0,0,0" VerticalAlignment="Center" />

@@ -23,6 +23,7 @@ public static class Choices
     public static readonly string[] MemberStatuses = ["Pending", "Active", "Rejected", "Disabled"];
     public static readonly string[] MemberRoles = ["Member", "Admin"];
     public static readonly string[] CompanyStates = ["Waiting for review", "No admin", "All set"];
+    public static readonly string[] ActivityKinds = ["Job", "Task", "Project", "Client", "Report", "Person"];
 
     public static Chip Status(string status) => new(status, status switch
     {
@@ -215,4 +216,23 @@ public sealed class Company : Row
     [JsonIgnore] public string Created => CreatedAt == default ? "—" : Date(DateOnly.FromDateTime(CreatedAt.LocalDateTime));
 
     public override object Columns() => new { Name };
+}
+
+// One entry in the activity log (public.activity): who did what to which record, and when. Written by database triggers; read-only here.
+public sealed class ActivityEntry : Row
+{
+    public Guid? ActorId { get; set; }
+    public string ActorName { get; set; } = "";
+    public string Action { get; set; } = "";
+    public string Entity { get; set; } = "";
+    public string Subject { get; set; } = "";
+    public string Details { get; set; } = "";
+
+    [JsonIgnore] public DateTime When => CreatedAt.LocalDateTime;
+    [JsonIgnore] public string Day => Date(DateOnly.FromDateTime(When));
+    [JsonIgnore] public string Time => When.ToString("h:mm tt", CultureInfo.GetCultureInfo("en-US"));
+    [JsonIgnore] public Chip EntityChip => new(Entity, Entity switch { "Job" => "Blue", "Task" => "Purple", "Person" => "Amber", "Report" => "Green", _ => "Grey" });
+    [JsonIgnore] public string DetailsOrDash => Details.Length > 0 ? Details : "—";
+
+    public override object Columns() => new { };
 }
