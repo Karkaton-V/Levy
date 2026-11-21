@@ -1,7 +1,7 @@
 <Window x:Class="Workbench.Desktop.SignInWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Valuation Workbench · Sign in" Width="900" Height="580" MinWidth="760" MinHeight="540"
+        Title="Levy · Sign in" Width="900" Height="580" MinWidth="760" MinHeight="540"
         Background="{DynamicResource Panel}" Foreground="{DynamicResource Text}" FontSize="13"
         WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize">
     <!-- Sign in or create an account. Styles: Assets/Account/AccountStyles.xaml. -->
@@ -14,12 +14,9 @@
         <!-- Brand panel. -->
         <Border Grid.Column="0" Style="{StaticResource BrandPanel}">
             <DockPanel>
-                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
-                    <ContentControl Style="{StaticResource LevyMark}" Width="36" Height="36" />
-                    <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
-                        <TextBlock Text="Valuation Workbench" Foreground="{DynamicResource NavStrong}" FontSize="14" FontWeight="SemiBold" />
-                        <TextBlock Text="Mass appraisal" Foreground="{DynamicResource NavMuted}" FontSize="11" Margin="0,2,0,0" />
-                    </StackPanel>
+                <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Left">
+                    <ContentControl Style="{StaticResource LevyMark}" Height="34" HorizontalAlignment="Left" AutomationProperties.Name="Levy" />
+                    <TextBlock Text="Mass appraisal" Foreground="{DynamicResource NavMuted}" FontSize="11" Margin="2,6,0,0" />
                 </StackPanel>
 
                 <StackPanel VerticalAlignment="Center">

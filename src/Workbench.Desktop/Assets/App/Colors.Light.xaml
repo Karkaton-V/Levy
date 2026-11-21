@@ -10,8 +10,7 @@
     <SolidColorBrush x:Key="NavAccent" Color="#5B9BFF" />
     <SolidColorBrush x:Key="NavLine" Color="#263042" />
     <!-- The Levy mark: the same in both themes. -->
-    <SolidColorBrush x:Key="BrandTile" Color="#2563EB" />
-    <SolidColorBrush x:Key="BrandTileShade" Color="#1D4ED8" />
+    <SolidColorBrush x:Key="BrandWave" Color="#4F8DF7" />
     <SolidColorBrush x:Key="BrandMark" Color="#FFFFFF" />
     <Color x:Key="MenuShadowColor">#1C2433</Color>
 </ResourceDictionary>

@@ -10,6 +10,8 @@
     <AssemblyName>ValuationWorkbench</AssemblyName>
     <!-- App.xaml lives in Code/App instead of the project root. -->
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
+    <!-- The Levy app icon for the exe, its shortcuts, and (by default) every window and its taskbar button. Built by docs/brand/build-icon.ps1. -->
+    <ApplicationIcon>Assets/App/levy.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
