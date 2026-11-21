@@ -9,6 +9,11 @@
   "selection":      { "fill": "#00000000", "outline": "#1A2230", "outlineWidth": 4 },
   "border":         { "label": "Study area border", "line": "#7C3AED", "lineWidth": 4, "casing": "#FFFFFF", "casingWidth": 8 },
   "outsideLouisiana": { "fill": "#A6F3F5F8", "outline": "#6A7486", "outlineWidth": 1.5 },
+  "city":           { "fill": "#2563EB", "outline": "#FFFFFF", "outlineWidth": 2 },
+  "cityLabel":      { "fill": "#E61C2433", "outline": "#FFFFFF" },
+  "studyAreaFill":  { "fill": "#407C3AED", "outline": null },
   "maskMarginDegrees": 6,
-  "emptyParcelsMaxResolution": 40
+  "emptyParcelsMaxResolution": 40,
+  "cityMarkersMinResolution": 150,
+  "studyAreaFillMinResolution": 8
 }

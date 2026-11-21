@@ -11,17 +11,17 @@
 
         <avalon:TextEditor x:Name="Editor" Grid.Row="0"
                            FontFamily="{StaticResource Mono}" FontSize="14"
-                           Background="Transparent" Foreground="{StaticResource Text}"
-                           ShowLineNumbers="True" LineNumbersForeground="{StaticResource EditorLineNumbers}"
+                           Background="Transparent" Foreground="{DynamicResource Text}"
+                           ShowLineNumbers="True" LineNumbersForeground="{DynamicResource EditorLineNumbers}"
                            Padding="0,12,0,12"
                            HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" />
 
-        <Border Grid.Row="1" Background="{StaticResource TableHead}" BorderBrush="{StaticResource Line}" BorderThickness="0,1,0,0" Padding="16,9">
+        <Border Grid.Row="1" Background="{DynamicResource TableHead}" BorderBrush="{DynamicResource Line}" BorderThickness="0,1,0,0" Padding="16,9">
             <DockPanel LastChildFill="False">
-                <TextBlock x:Name="CaretStatus" DockPanel.Dock="Left" Text="Ln 1, Col 1" Foreground="{StaticResource Muted}" FontFamily="{StaticResource Mono}" FontSize="12" />
-                <TextBlock DockPanel.Dock="Left" Text="Edited · press F5 to run" Foreground="{StaticResource WarnText}" FontSize="12" Margin="20,0,0,0"
+                <TextBlock x:Name="CaretStatus" DockPanel.Dock="Left" Text="Ln 1, Col 1" Foreground="{DynamicResource Muted}" FontFamily="{StaticResource Mono}" FontSize="12" />
+                <TextBlock DockPanel.Dock="Left" Text="● Edited · F5" Foreground="{DynamicResource WarnText}" FontSize="12" Margin="20,0,0,0"
                            Visibility="{Binding IsStale, Converter={StaticResource BoolVis}}" />
-                <TextBlock DockPanel.Dock="Right" Text="Ctrl+Space rule names · Ctrl+F find · F5 run" Foreground="{StaticResource Muted}" FontSize="12" />
+                <TextBlock DockPanel.Dock="Right" Text="Ctrl+Space rule names · Ctrl+F find · F5 run" Foreground="{DynamicResource Muted}" FontSize="12" />
             </DockPanel>
         </Border>
     </Grid>

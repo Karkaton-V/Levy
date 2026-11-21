@@ -11,7 +11,47 @@
     <sys:String x:Key="MapGlyph">&#xE707;</sys:String>
     <sys:String x:Key="CompareGlyph">&#xE9D2;</sys:String>
     <sys:String x:Key="RunGlyph">&#xE768;</sys:String>
-    <sys:String x:Key="BrandGlyph">&#xE80F;</sys:String>
+    <sys:String x:Key="JobsGlyph">&#xE821;</sys:String>
+    <sys:String x:Key="ProjectsGlyph">&#xE8B7;</sys:String>
+    <sys:String x:Key="BoardGlyph">&#xE80A;</sys:String>
+    <sys:String x:Key="TasksGlyph">&#xE9D5;</sys:String>
+    <sys:String x:Key="ClientsGlyph">&#xE716;</sys:String>
+    <sys:String x:Key="ReportsGlyph">&#xE9F9;</sys:String>
+    <sys:String x:Key="TeamGlyph">&#xE77B;</sys:String>
+    <sys:String x:Key="ActivityGlyph">&#xE81C;</sys:String>
+    <sys:String x:Key="RequestsGlyph">&#xEBE8;</sys:String>
+    <sys:String x:Key="IntakeGlyph">&#xE715;</sys:String>
+    <sys:String x:Key="CompaniesGlyph">&#xE825;</sys:String>
+
+    <!-- The Levy wordmark (docs/brand/levy-breaker.svg): a wave breaks on the levee L, whose foot shelters "evy" (Segoe UI Bold, as outlines). Set Height; it scales. -->
+    <Style x:Key="LevyMark" TargetType="ContentControl">
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ContentControl">
+                    <Viewbox>
+                        <Canvas Width="452" Height="190">
+                            <Path Fill="{DynamicResource BrandWave}"
+                                  Data="M0,150 C8,118 28,88 58,74 C76,66 92,64 102,70 L89,80 C78,80 70,88 68,100 C66,114 68,132 72,144 L70,150 Z" />
+                            <Path Fill="{DynamicResource BrandWave}">
+                                <Path.Data>
+                                    <GeometryGroup>
+                                        <EllipseGeometry Center="96,55" RadiusX="3.5" RadiusY="3.5" />
+                                        <EllipseGeometry Center="85,50" RadiusX="2.5" RadiusY="2.5" />
+                                        <EllipseGeometry Center="106,47" RadiusX="2" RadiusY="2" />
+                                    </GeometryGroup>
+                                </Path.Data>
+                            </Path>
+                            <Path Fill="{DynamicResource BrandMark}" Data="M70,150 L100,40 L132,40 L132,118 L206,118 L206,150 Z" />
+                            <Path Fill="{DynamicResource BrandMark}" Data="M256.626953125,88.76953125C252.916015625,88.76953125 249.70556640625,90.3076171875 246.99560546875,93.3837890625 244.28564453125,96.4599609375 242.6376953125,100.29296875 242.0517578125,104.8828125L269.6640625,104.8828125C269.6640625,94.140625,265.318359375,88.76953125,256.626953125,88.76953125z M372.3056640625,75L393.795135498047,75 407.784393310547,120.6298828125C408.663299560547,123.4619140625,409.346893310547,126.806640625,409.835174560547,130.6640625L410.128143310547,130.6640625C410.567596435547,127.83203125,411.373260498047,124.5361328125,412.545135498047,120.7763671875L426.680877685547,75 449.605682373047,75 419.136932373047,156.005859375C411.812713623047,175.48828125 400.777557373047,185.2294921875 386.031463623047,185.2294921875 380.416229248047,185.2294921875 375.801971435547,184.5947265625 372.188690185547,183.3251953125L372.188690185547,164.8681640625C375.264862060547,166.6748046875 378.609588623047,167.578125 382.222869873047,167.578125 388.179901123047,167.578125 392.330291748047,164.7705078125 394.674041748047,159.1552734375L398.629119873047,149.853515625 370.326049804688,80.3205108642578 372.3056640625,75z M291.4462890625,75L316.2021484375,75 329.2392578125,121.2158203125C330.7041015625,126.4404296875,331.55859375,130.8837890625,331.802734375,134.5458984375L332.095703125,134.5458984375C332.4375,131.0791015625,333.3408203125,126.7822265625,334.8056640625,121.6552734375L348.1357421875,75 368.160369873047,75 370.326049804688,80.3205108642578 344.400390625,150 318.033203125,150 291.4462890625,75z M256.7734375,73.1689453125C267.7109375,73.1689453125 276.17041015625,76.416015625 282.15185546875,82.91015625 288.13330078125,89.404296875 291.1240234375,98.2177734375 291.1240234375,109.3505859375L291.1240234375,119.091796875 242.1982421875,119.091796875C242.9794921875,129.98046875 249.83984375,135.4248046875 262.779296875,135.4248046875 271.03125,135.4248046875 278.2822265625,133.4716796875 284.5322265625,129.5654296875L284.5322265625,146.2646484375C277.5986328125,149.9755859375 268.58984375,151.8310546875 257.505859375,151.8310546875 245.396484375,151.8310546875 235.9970703125,148.47412109375 229.3076171875,141.76025390625 222.6181640625,135.04638671875 219.2734375,125.68359375 219.2734375,113.671875 219.2734375,101.220703125 222.88671875,91.357421875 230.11328125,84.08203125 237.33984375,76.806640625 246.2265625,73.1689453125 256.7734375,73.1689453125z" />
+                        </Canvas>
+                    </Viewbox>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 
     <!-- The navigation list: no chrome of its own, the items do the drawing. -->
     <Style x:Key="NavList" TargetType="ListBox">
@@ -21,37 +61,51 @@
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
     </Style>
 
+    <!-- A heading between groups of pages (VALUATION, WORKFLOW): a disabled item, so it can't be selected. -->
+    <Style x:Key="NavHeading" TargetType="ListBoxItem">
+        <Setter Property="IsEnabled" Value="False" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Padding" Value="28,16,0,6" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBoxItem">
+                    <TextBlock Text="{TemplateBinding Content}" Foreground="{DynamicResource NavMuted}" FontSize="10" FontWeight="SemiBold" Margin="{TemplateBinding Padding}" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- One navigation entry. Tag holds its icon glyph; a blue bar marks the open page. -->
     <Style x:Key="NavItem" TargetType="ListBoxItem">
-        <Setter Property="Foreground" Value="{StaticResource NavText}" />
+        <Setter Property="Foreground" Value="{DynamicResource NavText}" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ListBoxItem">
-                    <Grid Margin="12,2">
-                        <Border x:Name="Bd" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" CornerRadius="8" Padding="14,10">
+                    <Grid Margin="12,1">
+                        <Border x:Name="Bd" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" CornerRadius="8" Padding="14,8">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock x:Name="Glyph" Text="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}" FontFamily="{StaticResource IconFont}"
-                                           FontSize="16" Foreground="{StaticResource NavMuted}" VerticalAlignment="Center" />
+                                           FontSize="16" Foreground="{DynamicResource NavMuted}" VerticalAlignment="Center" />
                                 <ContentPresenter Margin="14,0,0,0" VerticalAlignment="Center" />
                             </StackPanel>
                         </Border>
-                        <Border x:Name="Bar" Width="3" CornerRadius="2" Margin="0,9" HorizontalAlignment="Left" Background="{StaticResource NavAccent}" Visibility="Collapsed" />
+                        <Border x:Name="Bar" Width="3" CornerRadius="2" Margin="0,9" HorizontalAlignment="Left" Background="{DynamicResource NavAccent}" Visibility="Collapsed" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource NavHover}" />
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource NavHover}" />
                         </Trigger>
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource NavSelected}" />
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource NavSelected}" />
                             <Setter TargetName="Bar" Property="Visibility" Value="Visible" />
-                            <Setter TargetName="Glyph" Property="Foreground" Value="{StaticResource NavAccent}" />
-                            <Setter Property="Foreground" Value="{StaticResource NavStrong}" />
+                            <Setter TargetName="Glyph" Property="Foreground" Value="{DynamicResource NavAccent}" />
+                            <Setter Property="Foreground" Value="{DynamicResource NavStrong}" />
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="True">
-                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource NavAccent}" />
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource NavAccent}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -59,28 +113,124 @@
         </Setter>
     </Style>
 
-    <!-- The page area: shows the selected page only; the navigation rail does the switching. -->
+    <!-- The page area: shows the selected page only; the navigation rail does the switching.
+         The tab strip is kept but hidden at zero height: without an items host the TabControl never selects or shows a page. -->
     <Style x:Key="PageTabs" TargetType="TabControl">
+        <!-- WPF's built-in tab style sets black text; pages inherit the theme's text colour instead. -->
+        <Setter Property="Foreground" Value="{DynamicResource Text}" />
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="TabItem">
+                    <Setter Property="Foreground" Value="{DynamicResource Text}" />
+                </Style>
+            </Setter.Value>
+        </Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TabControl">
-                    <ContentPresenter ContentSource="SelectedContent" />
+                    <Grid>
+                        <TabPanel IsItemsHost="True" Height="0" Visibility="Hidden" />
+                        <ContentPresenter ContentSource="SelectedContent" />
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
+    <!-- Account footer at the bottom of the rail, and the settings menu that opens upward from it. -->
+    <sys:String x:Key="SettingsGlyph">&#xE713;</sys:String>
+    <sys:String x:Key="SignOutGlyph">&#xF3B1;</sys:String>
+
+    <Style x:Key="RailFooter" TargetType="Border">
+        <Setter Property="BorderBrush" Value="{DynamicResource NavLine}" />
+        <Setter Property="BorderThickness" Value="0,1,0,0" />
+        <Setter Property="Padding" Value="20,14,14,14" />
+    </Style>
+
+    <!-- Round badge with the user's initials. -->
+    <Style x:Key="Avatar" TargetType="Border">
+        <Setter Property="Width" Value="32" />
+        <Setter Property="Height" Value="32" />
+        <Setter Property="CornerRadius" Value="16" />
+        <Setter Property="Background" Value="{DynamicResource Accent}" />
+    </Style>
+
+    <Style x:Key="AvatarText" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource OnAccent}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- The gear: an icon toggle drawn in the rail's colours. -->
+    <Style x:Key="RailIconToggle" TargetType="ToggleButton">
+        <Setter Property="Foreground" Value="{DynamicResource NavMuted}" />
+        <Setter Property="FontFamily" Value="{StaticResource IconFont}" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="Width" Value="34" />
+        <Setter Property="Height" Value="34" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border x:Name="Bd" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" CornerRadius="8">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource NavHover}" />
+                            <Setter Property="Foreground" Value="{DynamicResource NavStrong}" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource NavSelected}" />
+                            <Setter Property="Foreground" Value="{DynamicResource NavAccent}" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource NavAccent}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- The popup's card: a Card with a soft shadow, as wide as the rail less an equal 12px gap each side. -->
+    <Style x:Key="MenuCard" TargetType="Border" BasedOn="{StaticResource Card}">
+        <Setter Property="Padding" Value="16,20" />
+        <Setter Property="Margin" Value="12,12,12,8" />
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect Color="{DynamicResource MenuShadowColor}" BlurRadius="18" ShadowDepth="4" Direction="270" Opacity="0.28" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="MenuDivider" TargetType="Border">
+        <Setter Property="Height" Value="1" />
+        <Setter Property="Background" Value="{DynamicResource Line}" />
+        <Setter Property="Margin" Value="0,14" />
+    </Style>
+
+    <!-- Summary strip under the top bar: hidden on workflow pages and while the full-size map is open. -->
+    <Style x:Key="SummaryStrip" TargetType="ItemsControl">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsWorkflowPage}" Value="True">
+                <Setter Property="Visibility" Value="Collapsed" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding IsMapExpanded}" Value="True">
+                <Setter Property="Visibility" Value="Collapsed" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
     <!-- White bar across the top of every page. -->
     <Style x:Key="TopBar" TargetType="Border">
-        <Setter Property="Background" Value="{StaticResource Panel}" />
-        <Setter Property="BorderBrush" Value="{StaticResource Line}" />
+        <Setter Property="Background" Value="{DynamicResource Panel}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Line}" />
         <Setter Property="BorderThickness" Value="0,0,0,1" />
         <Setter Property="Padding" Value="32,16" />
     </Style>
 
-    <!-- One number in the summary strip. -->
-    <Style x:Key="SummaryCard" TargetType="Border" BasedOn="{StaticResource Card}">
-        <Setter Property="Padding" Value="18,14" />
-        <Setter Property="Margin" Value="0,0,12,0" />
-    </Style>
 </ResourceDictionary>

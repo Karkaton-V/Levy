@@ -1,0 +1,102 @@
+<UserControl x:Class="Workbench.Desktop.ProjectsPageView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Workbench.Desktop">
+    <!-- Projects: counters, toolbar, the projects table and the edit form. DataContext: WorkspaceViewModel. Styles: Assets/Workspace/WorkspaceStyles.xaml. -->
+    <Grid Margin="32,24,32,32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="340" />
+        </Grid.ColumnDefinitions>
+
+        <local:PageHeaderView Grid.ColumnSpan="2" DataContext="{Binding Projects}" />
+
+        <Border Grid.Row="1" Style="{StaticResource TableCard}" Margin="0,16,20,0">
+            <Grid>
+                <DataGrid Style="{StaticResource Table}" ItemsSource="{Binding Projects.View}" SelectedItem="{Binding Projects.Selected, Mode=TwoWay}" AutomationProperties.Name="Projects">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="Project" SortMemberPath="Name" Width="*" MinWidth="200">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Name}" Style="{StaticResource CellStrong}" />
+                                        <TextBlock Text="{Binding Description}" Style="{StaticResource CellMuted}" FontSize="12" Margin="0,2,0,0" TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Status" SortMemberPath="Status" Width="Auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ContentPresenter Content="{Binding StatusChip}" ContentTemplate="{StaticResource ChipTemplate}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Owner" Binding="{Binding OwnerName}" Width="Auto" />
+                        <DataGridTemplateColumn Header="Due" SortMemberPath="DueDate" Width="Auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Due}" Style="{StaticResource DueText}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Progress" SortMemberPath="Progress" Width="Auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <ProgressBar Style="{StaticResource ProgressCell}" Value="{Binding Progress, Mode=OneWay}" />
+                                        <TextBlock Text="{Binding Progress, StringFormat={}{0}%}" Style="{StaticResource CellMuted}" Margin="10,0,0,0" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <TextBlock Style="{StaticResource TableMessage}" Text="{Binding Message}" />
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource FormCard}" Margin="0,16,0,0" DataContext="{Binding Projects}">
+            <Grid>
+                <TextBlock Style="{StaticResource FormHint}" Text="Pick a project to edit it, or press New project." />
+                <ScrollViewer Style="{StaticResource FormScroll}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding FormTitle}" Style="{StaticResource CardTitle}" />
+                        <TextBlock Text="Name" Style="{StaticResource FormLabel}" />
+                        <TextBox Style="{StaticResource Input}" Text="{Binding Draft.Name}" Tag="2027 roll reappraisal" AutomationProperties.Name="Name" />
+                        <TextBlock Text="Description" Style="{StaticResource FormLabel}" />
+                        <TextBox Style="{StaticResource TextArea}" Text="{Binding Draft.Description}" AutomationProperties.Name="Description" />
+                        <UniformGrid Columns="2">
+                            <StackPanel Margin="0,0,6,0">
+                                <TextBlock Text="Status" Style="{StaticResource FormLabel}" />
+                                <ComboBox Style="{StaticResource Select}" MinWidth="0" ItemsSource="{x:Static local:Choices.ProjectStatuses}" SelectedItem="{Binding Draft.Status}" AutomationProperties.Name="Status" />
+                            </StackPanel>
+                            <StackPanel Margin="6,0,0,0">
+                                <TextBlock Text="Owner" Style="{StaticResource FormLabel}" />
+                                <ComboBox Style="{StaticResource Select}" MinWidth="0" ItemsSource="{Binding Workspace.People}" DisplayMemberPath="Name" SelectedValuePath="Id"
+                                          SelectedValue="{Binding Draft.OwnerKey}" AutomationProperties.Name="Owner" />
+                            </StackPanel>
+                        </UniformGrid>
+                        <UniformGrid Columns="2">
+                            <StackPanel Margin="0,0,6,0">
+                                <TextBlock Text="Start" Style="{StaticResource FormLabel}" />
+                                <TextBox Style="{StaticResource Input}" Text="{Binding Draft.StartDate, StringFormat=yyyy-MM-dd, TargetNullValue=''}" Tag="yyyy-mm-dd" AutomationProperties.Name="Start date" />
+                            </StackPanel>
+                            <StackPanel Margin="6,0,0,0">
+                                <TextBlock Text="Due" Style="{StaticResource FormLabel}" />
+                                <TextBox Style="{StaticResource Input}" Text="{Binding Draft.DueDate, StringFormat=yyyy-MM-dd, TargetNullValue=''}" Tag="yyyy-mm-dd" AutomationProperties.Name="Due date" />
+                            </StackPanel>
+                        </UniformGrid>
+                        <TextBlock Text="Progress (%)" Style="{StaticResource FormLabel}" />
+                        <TextBox Style="{StaticResource Input}" Text="{Binding Draft.Progress}" AutomationProperties.Name="Progress" />
+                        <local:FormActionsView />
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

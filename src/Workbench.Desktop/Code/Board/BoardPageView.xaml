@@ -1,0 +1,93 @@
+<UserControl x:Class="Workbench.Desktop.BoardPageView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Workbench.Desktop">
+    <!-- Scrum board: task counters, filters, five status columns of cards, and the task form while a task is open. DataContext: WorkspaceViewModel. Styles: Assets/Board/BoardStyles.xaml. -->
+    <Grid Margin="32,24,32,32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <ItemsControl Grid.ColumnSpan="2" ItemsSource="{Binding Tasks.Counters}" Style="{StaticResource PageCounters}" />
+
+        <DockPanel Grid.Row="1" Grid.ColumnSpan="2" Margin="0,20,0,0" LastChildFill="False">
+            <ComboBox DockPanel.Dock="Left" Style="{StaticResource Select}" MinWidth="240" ItemsSource="{Binding BoardProjects}" DisplayMemberPath="Name"
+                      SelectedValuePath="Id" SelectedValue="{Binding BoardProject}" AutomationProperties.Name="Project" />
+            <ToggleButton DockPanel.Dock="Left" Style="{StaticResource FilterChip}" Margin="12,0,0,0" Content="Assigned to me" IsChecked="{Binding BoardMine}" />
+            <TextBlock DockPanel.Dock="Left" Style="{StaticResource ErrorText}" Text="{Binding BoardError}" Margin="16,0,0,0" VerticalAlignment="Center"
+                       Visibility="{Binding HasBoardError, Converter={StaticResource BoolVis}}" />
+            <Button DockPanel.Dock="Right" Style="{StaticResource PrimaryButton}" Command="{Binding Tasks.NewCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="&#xE710;" FontFamily="{StaticResource IconFont}" FontSize="11" VerticalAlignment="Center" />
+                    <TextBlock Text="New task" Margin="8,0,0,0" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+            <TextBlock DockPanel.Dock="Right" Style="{StaticResource CountText}" Text="Drag a card to move it" />
+        </DockPanel>
+
+        <Grid Grid.Row="2" Margin="0,16,0,0">
+            <!-- Columns stretch to fill the page and scroll sideways once they would get narrower than a card. -->
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+            <ItemsControl ItemsSource="{Binding Board}" Focusable="False" MinWidth="940" AutomationProperties.Name="Scrum board">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Rows="1" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource BoardColumn}" DragEnter="Column_DragOver" DragOver="Column_DragOver" DragLeave="Column_DragLeave" Drop="Column_Drop">
+                            <DockPanel>
+                                <DockPanel DockPanel.Dock="Top" Margin="4,0,4,12">
+                                    <TextBlock DockPanel.Dock="Right" Text="{Binding Points}" Style="{StaticResource CardMeta}" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Status}" Style="{StaticResource BoardColumnTitle}" />
+                                        <Border Style="{StaticResource BoardCount}">
+                                            <TextBlock Text="{Binding Count}" Style="{StaticResource CardMeta}" />
+                                        </Border>
+                                    </StackPanel>
+                                </DockPanel>
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <ItemsControl ItemsSource="{Binding Cards}" Focusable="False">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Style="{StaticResource TaskCard}" PreviewMouseLeftButtonDown="Card_Down" MouseMove="Card_Move" PreviewMouseLeftButtonUp="Card_Up"
+                                                        AutomationProperties.Name="{Binding Title}">
+                                                    <StackPanel>
+                                                        <TextBlock Text="{Binding Title}" Style="{StaticResource CardTitleText}" />
+                                                        <TextBlock Text="{Binding ProjectName}" Style="{StaticResource CardMeta}" Margin="0,4,0,0" />
+                                                        <DockPanel Margin="0,10,0,0">
+                                                            <Border DockPanel.Dock="Right" Style="{StaticResource CardInitials}" ToolTip="{Binding AssigneeName}"
+                                                                    Visibility="{Binding HasAssignee, Converter={StaticResource BoolVis}}">
+                                                                <TextBlock Text="{Binding Initials}" Style="{StaticResource CardInitialsText}" />
+                                                            </Border>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <ContentPresenter Content="{Binding PriorityChip}" ContentTemplate="{StaticResource ChipTemplate}" />
+                                                                <TextBlock Text="{Binding Due}" Style="{StaticResource DueText}" FontSize="11" Margin="8,0,0,0" />
+                                                            </StackPanel>
+                                                        </DockPanel>
+                                                    </StackPanel>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                            </DockPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            </ScrollViewer>
+            <TextBlock Style="{StaticResource TableMessage}" Text="{Binding Message}" />
+        </Grid>
+
+        <!-- The form opens beside the board when a card is clicked or New task is pressed, and closes on Cancel. -->
+        <local:TaskFormView Grid.Row="2" Grid.Column="1" Width="340" Margin="8,16,0,0" DataContext="{Binding Tasks}" Visibility="{Binding HasDraft, Converter={StaticResource BoolVis}}" />
+    </Grid>
+</UserControl>

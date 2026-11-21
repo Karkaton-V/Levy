@@ -10,11 +10,14 @@
     <AssemblyName>ValuationWorkbench</AssemblyName>
     <!-- App.xaml lives in Code/App instead of the project root. -->
     <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
+    <!-- The Levy app icon for the exe, its shortcuts, and (by default) every window and its taskbar button. Built by docs/brand/build-icon.ps1. -->
+    <ApplicationIcon>Assets/App/levy.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AvalonEdit" Version="6.3.1.120" />
     <PackageReference Include="Mapsui.Wpf" Version="5.0.2" />
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>

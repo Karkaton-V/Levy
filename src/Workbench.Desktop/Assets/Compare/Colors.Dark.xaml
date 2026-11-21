@@ -1,0 +1,7 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Chart colours (dark theme). Swapped at runtime by ThemeManager; the other theme's file has the same keys. -->
+    <SolidColorBrush x:Key="BeforeBar" Color="#4B5563" />
+    <SolidColorBrush x:Key="AfterBar" Color="#3B82F6" />
+    <SolidColorBrush x:Key="InTargetLabel" Color="#FFFFFF" />
+</ResourceDictionary>

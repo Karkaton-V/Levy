@@ -1,0 +1,45 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Workspace, status and control colours (dark theme). Swapped at runtime by ThemeManager; the other theme's file has the same keys. -->
+
+    <!-- Workspace -->
+    <SolidColorBrush x:Key="Ground" Color="#0F1218" />
+    <SolidColorBrush x:Key="Panel" Color="#171B22" />
+    <SolidColorBrush x:Key="Line" Color="#262C36" />
+    <SolidColorBrush x:Key="TableHead" Color="#1B2028" />
+    <SolidColorBrush x:Key="Text" Color="#E6E9EF" />
+    <SolidColorBrush x:Key="Soft" Color="#C2C8D2" />
+    <SolidColorBrush x:Key="Muted" Color="#8A93A3" />
+    <SolidColorBrush x:Key="Accent" Color="#3B82F6" />
+    <SolidColorBrush x:Key="AccentHover" Color="#2563EB" />
+    <SolidColorBrush x:Key="AccentSoft" Color="#1B2A44" />
+    <SolidColorBrush x:Key="OnAccent" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="Link" Color="#7DB0FF" />
+    <SolidColorBrush x:Key="WarnText" Color="#F2B062" />
+    <SolidColorBrush x:Key="PassStatus" Color="#6EDC9C" />
+    <SolidColorBrush x:Key="PassFill" Color="#143224" />
+    <SolidColorBrush x:Key="WarnStatus" Color="#FDB07A" />
+    <SolidColorBrush x:Key="WarnFill" Color="#3A2416" />
+    <SolidColorBrush x:Key="HoverFill" Color="#222833" />
+    <SolidColorBrush x:Key="HoverFillSoft" Color="#1C212A" />
+    <SolidColorBrush x:Key="ControlBorder" Color="#363E4B" />
+    <SolidColorBrush x:Key="InputFill" Color="#12161C" />
+    <SolidColorBrush x:Key="SegmentTrack" Color="#0F1218" />
+    <SolidColorBrush x:Key="SegmentChecked" Color="#262C36" />
+    <SolidColorBrush x:Key="ScrollThumb" Color="#3A4250" />
+    <SolidColorBrush x:Key="ScrollThumbHover" Color="#4B5563" />
+
+    <!-- Status chips: fill and text per tone -->
+    <SolidColorBrush x:Key="ToneBlueFill" Color="#17284A" />
+    <SolidColorBrush x:Key="ToneBlueText" Color="#8DB8FF" />
+    <SolidColorBrush x:Key="ToneGreenFill" Color="#143224" />
+    <SolidColorBrush x:Key="ToneGreenText" Color="#6EDC9C" />
+    <SolidColorBrush x:Key="ToneAmberFill" Color="#3A2A12" />
+    <SolidColorBrush x:Key="ToneAmberText" Color="#F5C26B" />
+    <SolidColorBrush x:Key="ToneRedFill" Color="#3B1A1D" />
+    <SolidColorBrush x:Key="ToneRedText" Color="#F59E9E" />
+    <SolidColorBrush x:Key="ToneGreyFill" Color="#262C36" />
+    <SolidColorBrush x:Key="ToneGreyText" Color="#AEB6C2" />
+    <SolidColorBrush x:Key="TonePurpleFill" Color="#2A1F45" />
+    <SolidColorBrush x:Key="TonePurpleText" Color="#C4A8FF" />
+</ResourceDictionary>

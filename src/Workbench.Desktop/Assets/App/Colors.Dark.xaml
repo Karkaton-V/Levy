@@ -1,0 +1,16 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Navigation rail colours (dark theme). Swapped at runtime by ThemeManager; the other theme's file has the same keys. -->
+    <SolidColorBrush x:Key="NavBackground" Color="#0B0E13" />
+    <SolidColorBrush x:Key="NavStrong" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="NavText" Color="#B9C1CD" />
+    <SolidColorBrush x:Key="NavMuted" Color="#6F7A8C" />
+    <SolidColorBrush x:Key="NavHover" Color="#161B23" />
+    <SolidColorBrush x:Key="NavSelected" Color="#1D2430" />
+    <SolidColorBrush x:Key="NavAccent" Color="#5B9BFF" />
+    <SolidColorBrush x:Key="NavLine" Color="#1A2029" />
+    <!-- The Levy mark: the same in both themes. -->
+    <SolidColorBrush x:Key="BrandWave" Color="#4F8DF7" />
+    <SolidColorBrush x:Key="BrandMark" Color="#FFFFFF" />
+    <Color x:Key="MenuShadowColor">#000000</Color>
+</ResourceDictionary>

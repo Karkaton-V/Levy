@@ -1,0 +1,11 @@
+[
+  { "name": "Shreveport", "lat": 32.4950, "lon": -93.7550, "hasStudyArea": true },
+  { "name": "Monroe", "lat": 32.5093, "lon": -92.1193 },
+  { "name": "Natchitoches", "lat": 31.7607, "lon": -93.0863 },
+  { "name": "Alexandria", "lat": 31.3113, "lon": -92.4451 },
+  { "name": "Lake Charles", "lat": 30.2266, "lon": -93.2174 },
+  { "name": "Lafayette", "lat": 30.2241, "lon": -92.0198 },
+  { "name": "Baton Rouge", "lat": 30.4515, "lon": -91.1871 },
+  { "name": "Houma", "lat": 29.5958, "lon": -90.7195 },
+  { "name": "New Orleans", "lat": 29.9511, "lon": -90.0715 }
+]

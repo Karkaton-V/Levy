@@ -1,0 +1,129 @@
+<UserControl x:Class="Workbench.Desktop.IntakePageView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Workbench.Desktop">
+    <!-- Intake (account managers): requests from the companies they manage; triage, send to GitLab, follow merge requests. DataContext: WorkspaceViewModel. Styles: Assets/Workspace/WorkspaceStyles.xaml. -->
+    <Grid Margin="32,24,32,32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="340" />
+        </Grid.ColumnDefinitions>
+
+        <local:PageHeaderView Grid.ColumnSpan="2" DataContext="{Binding Intake}" />
+
+        <!-- The GitLab connection: who Levy acts as, refresh, and the last result. -->
+        <Border Grid.Row="1" Grid.ColumnSpan="2" Style="{StaticResource CodeBanner}" Margin="0,16,0,0">
+            <DockPanel>
+                <Button DockPanel.Dock="Right" Style="{StaticResource SecondaryButton}" Content="Refresh from GitLab" Command="{Binding RefreshGitLabCommand}"
+                        IsEnabled="{Binding IsGitLabIdle}" VerticalAlignment="Center" Margin="10,0,0,0" />
+                <Button DockPanel.Dock="Right" Style="{StaticResource SecondaryButton}" Content="Open mock GitLab" Command="{Binding OpenMockGitLabCommand}"
+                        Visibility="{Binding IsMockGitLab, Converter={StaticResource BoolVis}}" VerticalAlignment="Center" Margin="10,0,0,0" />
+                <Button DockPanel.Dock="Right" Style="{StaticResource PrimaryButton}" Content="Connect GitLab" Command="{Binding ConnectGitLabCommand}"
+                        IsEnabled="{Binding IsGitLabIdle}" Visibility="{Binding NeedsGitLab, Converter={StaticResource BoolVis}}" VerticalAlignment="Center" />
+                <TextBlock DockPanel.Dock="Left" Text="{Binding GitLabStatus}" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,16,0" />
+                <TextBlock Style="{StaticResource IntakeResult}" Text="{Binding IntakeMessage}" />
+            </DockPanel>
+        </Border>
+
+        <Border Grid.Row="2" Style="{StaticResource TableCard}" Margin="0,16,20,0">
+            <Grid>
+                <DataGrid Style="{StaticResource Table}" ItemsSource="{Binding Intake.View}" SelectedItem="{Binding Intake.Selected, Mode=TwoWay}" AutomationProperties.Name="Intake">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="Request" SortMemberPath="Title" Width="*" MinWidth="200">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Title}" Style="{StaticResource CellStrong}" />
+                                        <TextBlock Style="{StaticResource CellMuted}" FontSize="12" Margin="0,2,0,0" TextTrimming="CharacterEllipsis">
+                                            <Run Text="{Binding OrgName, Mode=OneWay}" /> <Run Text="·" /> <Run Text="{Binding ReporterName, Mode=OneWay}" />
+                                        </TextBlock>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Status" SortMemberPath="Status" Width="Auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ContentPresenter Content="{Binding StatusChip}" ContentTemplate="{StaticResource ChipTemplate}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Priority" SortMemberPath="Priority" Width="Auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ContentPresenter Content="{Binding PriorityChip}" ContentTemplate="{StaticResource ChipTemplate}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="GitLab" Binding="{Binding IssueNumber}" SortMemberPath="GitlabIid" Width="Auto" />
+                    </DataGrid.Columns>
+                </DataGrid>
+                <TextBlock Style="{StaticResource AdminMessage}" Text="{Binding AdminMessage}" />
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="2" Grid.Column="1" Style="{StaticResource FormCard}" Margin="0,16,0,0" DataContext="{Binding Intake}">
+            <Grid>
+                <TextBlock Style="{StaticResource FormHint}" Text="Pick a request to triage it and send it to GitLab." />
+                <ScrollViewer Style="{StaticResource FormScroll}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding Draft.OrgName}" Style="{StaticResource CardTitle}" />
+                        <TextBlock Style="{StaticResource FormNote}">
+                            <Run Text="Filed by" /> <Run Text="{Binding Draft.ReporterName, Mode=OneWay}" /> <Run Text="on" /> <Run Text="{Binding Draft.Filed, Mode=OneWay}" />
+                        </TextBlock>
+                        <TextBlock Text="Where in Levy" Style="{StaticResource FormLabel}" />
+                        <TextBlock Text="{Binding Draft.Context}" Style="{StaticResource DetailText}" />
+
+                        <TextBlock Text="Title" Style="{StaticResource FormLabel}" />
+                        <TextBox Style="{StaticResource Input}" Text="{Binding Draft.Title}" AutomationProperties.Name="Title" />
+                        <TextBlock Text="Details" Style="{StaticResource FormLabel}" />
+                        <TextBox Style="{StaticResource TextArea}" Text="{Binding Draft.Description}" AutomationProperties.Name="Details" />
+                        <UniformGrid Columns="2">
+                            <StackPanel Margin="0,0,6,0">
+                                <TextBlock Text="Kind" Style="{StaticResource FormLabel}" />
+                                <ComboBox Style="{StaticResource Select}" MinWidth="0" ItemsSource="{x:Static local:Choices.RequestKinds}" SelectedItem="{Binding Draft.Kind}" AutomationProperties.Name="Kind" />
+                            </StackPanel>
+                            <StackPanel Margin="6,0,0,0">
+                                <TextBlock Text="Priority" Style="{StaticResource FormLabel}" />
+                                <ComboBox Style="{StaticResource Select}" MinWidth="0" ItemsSource="{x:Static local:Choices.RequestPriorities}" SelectedItem="{Binding Draft.Priority}" AutomationProperties.Name="Priority" />
+                            </StackPanel>
+                        </UniformGrid>
+                        <UniformGrid Columns="2">
+                            <StackPanel Margin="0,0,6,0">
+                                <TextBlock Text="Codebase" Style="{StaticResource FormLabel}" />
+                                <ComboBox Style="{StaticResource Select}" MinWidth="0" ItemsSource="{x:Static local:Choices.Stacks}" SelectedItem="{Binding Draft.Stack}" AutomationProperties.Name="Codebase" />
+                            </StackPanel>
+                            <StackPanel Margin="6,0,0,0">
+                                <TextBlock Text="Status" Style="{StaticResource FormLabel}" />
+                                <ComboBox Style="{StaticResource Select}" MinWidth="0" ItemsSource="{x:Static local:Choices.RequestStatuses}" SelectedItem="{Binding Draft.Status}" AutomationProperties.Name="Status" />
+                            </StackPanel>
+                        </UniformGrid>
+                        <TextBlock Text="Note to the client and developers" Style="{StaticResource FormLabel}" />
+                        <TextBox Style="{StaticResource TextArea}" Text="{Binding Draft.TriageNote}" MinHeight="70" AutomationProperties.Name="Note" />
+                        <local:FormActionsView />
+
+                        <!-- GitLab: send it, or follow it once it's there. -->
+                        <Border Style="{StaticResource FormDivider}" />
+                        <TextBlock Text="GitLab" Style="{StaticResource CardTitle}" />
+                        <StackPanel Visibility="{Binding Draft.CanSend, Converter={StaticResource BoolVis}}">
+                            <TextBlock Text="Opens an issue in the project for the codebase, labelled with type, priority, codebase and client so developers can pull it from their board." Style="{StaticResource FormNote}" />
+                            <Button Style="{StaticResource PrimaryButton}" Content="Send to GitLab" Command="{Binding Workspace.SendToGitLabCommand}" IsEnabled="{Binding Workspace.IsGitLabIdle}"
+                                    HorizontalAlignment="Left" Margin="0,14,0,0" />
+                        </StackPanel>
+                        <StackPanel Visibility="{Binding Draft.IsInGitLab, Converter={StaticResource BoolVis}}" Margin="0,8,0,0">
+                            <TextBlock>
+                                <Hyperlink NavigateUri="{Binding Draft.GitlabUrl}" RequestNavigate="Link_RequestNavigate"><Run Text="{Binding Draft.Where, Mode=OneWay}" /></Hyperlink>
+                            </TextBlock>
+                            <TextBlock Text="{Binding Draft.Progress}" Style="{StaticResource DetailText}" Foreground="{DynamicResource Muted}" Margin="0,6,0,0" />
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

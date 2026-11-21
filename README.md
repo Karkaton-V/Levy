@@ -1,62 +1,130 @@
-# Valuation Workbench (starter)
+<p align="center"><img src="docs/brand/levy-breaker.svg" alt="Levy" width="320"></p>
 
-A small "IDE for assessors": edit valuation rules, press Run, and see the effect on a parcel map, a ratio study and tax bills.
+# Levy
 
-## Open and run in Rider
+[![CI](https://github.com/Karkaton-V/Levy/actions/workflows/ci.yml/badge.svg)](https://github.com/Karkaton-V/Levy/actions/workflows/ci.yml)
 
-1. Open `ValuationWorkbench.sln` in JetBrains Rider.
-2. Pick the `Workbench.Desktop` run configuration and press Run.
-3. On the Editor tab, change `LandRate.N-04 = 9.00` to `11.50` and press F5. Then look at the Map and Compare tabs.
+A Windows desktop app for property tax assessors. It has two sides:
 
-Needs the .NET 8 SDK or newer on Windows (the desktop app is WPF). The first build downloads the Mapsui and AvalonEdit packages from NuGet. The map needs an internet connection for its tiles, and the first launch downloads the study area's streets and buildings from OpenStreetMap (one request, usually under a minute). They are saved in `%LOCALAPPDATA%\ValuationWorkbench\buildings`; delete that folder to download them again.
+- **Valuation:** mass appraisal where the valuation rules are code. Edit them, press Run, and see the effect on a parcel map, an IAAO ratio study and tax bills.
+- **Workflow:** jobs, projects, a scrum board, tasks, clients and reports for the office, plus bug reports and feature requests that flow to the developers in GitLab and back.
 
-## Using it
+Built with C# / .NET 8 and WPF, with Supabase (Postgres, Auth, row-level security) behind it. It's a portfolio piece for government-software roles. It's set in Shreveport, Louisiana, and every name, value and sale in it is made up.
 
-- **Editor tab:** the rules are code. The editor has line numbers, syntax colours and live problem squiggles. Hover a line to see what its rule does or what is wrong with it, Ctrl+Space to pick a rule name, Ctrl+F to find, F5 to run. Click a problem in the list to jump to its line.
-- **Map tab:** hover a parcel to preview it, click to open its record, or type a parcel ID (or its last digits) in the search box. In the record, the ⓘ button beside each step of "Why this value" opens the Editor lines behind it and how they combine. Switch the sidebar to **Rules** for a plain-words, read-only summary of what the code does.
+## Run it
 
-## What is in here
+1. Open `ValuationWorkbench.sln` in JetBrains Rider (or Visual Studio) on Windows with the .NET 8 SDK or newer.
+2. Run the `Workbench.Desktop` configuration.
+3. Choose **Create account**, and leave **Company code** blank. You get an office of your own with sample clients, jobs, projects, tasks and reports. You're its admin.
+4. On **Rules**, change `LandRate.N-04 = 9.00` to `11.50` and press F5, then look at **Parcel map** and **Compare runs**.
 
-| Project | What it does |
+**Internet use:**
+- The app signs in to the Supabase project in `Assets/Account/supabase.json`. That file holds a publishable key, which is safe to ship because row-level security protects the data.
+- The map needs an internet connection for its tiles.
+- The first launch downloads the study area's streets and buildings from OpenStreetMap, then keeps them in `%LOCALAPPDATA%\ValuationWorkbench\buildings`.
+
+## What's in it
+
+### Valuation
+- **Rules:** a code editor (AvalonEdit) for the valuation rules, with syntax colours, live problem squiggles, hover help, completion and F5 to run.
+- **Parcel map:**
+  - **Overview:** a simplified Louisiana map. Click a city, then the study area. The full-size map (Mapsui and OpenStreetMap) has search and zoom.
+  - **Parcel record:** clicking a parcel shows its record and a step-by-step "why this value" trace. Each step links back to the rule lines behind it.
+- **Compare runs:** before and after statistics for median ratio, COD and PRD against IAAO targets, with each neighborhood's result.
+
+### Workflow (one company's shared data)
+- **Jobs, Projects, Tasks, Clients, Reports:**
+  - counters, search, a status filter and "Assigned to me";
+  - sortable tables with status chips and overdue dates;
+  - an edit form beside the table.
+- **Scrum board:** five status columns; dragging a card saves its new status.
+- **Requests:** anyone in the company reports a bug or asks for a feature, and Levy records where they were (page and parcel). They then follow it to **Fixed** without needing GitLab.
+
+### Accounts, companies and admins
+- **Signing up:**
+  - **Company code:** people sign up with their company's code and wait for an admin to approve them. Until then, they see nothing.
+  - **No code:** without one, they start an office of their own.
+- **Team** (company admins): approve or decline people, set job titles (shown under the logo), roles and access, and add existing accounts by email.
+- **Activity** (company admins): who did what, to which record, on what date and at what time. The database writes it with triggers, so the app can't skip or forge an entry, and nobody can edit it.
+- **Companies** (platform admins): create and rename companies, assign people, and choose each company's account manager.
+- **Intake** (account managers):
+  - triage requests from the companies they manage, setting priority, codebase (Rails or .NET) and a note;
+  - **Send to GitLab** opens the issue with `type::`, `priority::`, `stack::` and `client::` labels;
+  - Levy then reads back the issue, its merge requests and their pipelines, and shows the status to the client.
+- **Settings menu:** in the side panel, with light and dark themes that switch instantly, and sign out.
+
+### GitLab, live or demo
+`Assets/Account/gitlab.json` starts in **demo mode**.
+
+**Demo mode:**
+- A **mock GitLab** is kept on your PC, so the whole request → issue → merge request → review → merge flow works with no server.
+- In the Mock GitLab window you play developer and reviewer: assign, start work, open a draft merge request, run the pipeline (pass or fail), mark it ready, approve and merge.
+- Its rules: the pipeline must pass, drafts can't merge, and authors can't approve their own merge request.
+
+**Live:** point the file at your own GitLab (for example a self-managed one) to send real issues and **Sign in with GitLab**. See [docs/GITLAB.md](docs/GITLAB.md) for the workflow and setup.
+
+## How it's built
+
+| Part | What it is |
 |---|---|
-| `src/Workbench.Engine` | Rules parser, cost-approach valuation with a step-by-step trace, ratio study (median, COD, PRD), sample parcels. No UI code. |
-| `src/Workbench.Desktop` | WPF app with three tabs: Editor, Map, Compare. See the layout below. |
-| `tests/Workbench.Engine.Tests` | xUnit tests for the engine. They read the same `DefaultRules.rules` asset the app starts with. |
+| `src/Workbench.Engine` | The rules parser, cost-approach valuation with a step-by-step trace, the ratio study (median, COD, PRD) and sample parcels. Plain .NET 8, no UI. |
+| `src/Workbench.Desktop` | The WPF app. |
+| `tests/Workbench.Engine.Tests` | xUnit tests for the engine. |
+| `supabase/migrations` | The database: tables, row-level security, the functions the app calls, triggers for sign-up, the activity log and request stamping. |
+| `supabase/tests` | 24 pgTAP security tests, run in CI against a fresh database. |
+| `.github/workflows/ci.yml` | CI/CD. |
 
 ### Desktop app layout
-
-Code and assets are kept apart, and both use the same sub-folders: one per tab, plus `App` for the window and `Shared` for anything more than one tab uses. No colours, styles, starting rules or map data are written in code.
+Code and assets are kept apart, and both use the same sub-folders: one per page, plus `App`, `Shared` and a few for shared parts. No colours, styles, starting data or settings are written in code.
 
 ```
 Workbench.Desktop/
   Code/
-    App/       App.xaml, MainWindow.xaml (header and tab bar only), MainViewModel.cs (state and Run)
-    Editor/    EditorTabView, RulesEditorView (AvalonEdit), MainViewModel.Editor.cs
-    Map/       MapTabView, ParcelMapView, ParcelInspectorView, CodeSnippetView, ParcelMap.cs,
-               BuildingSource.cs, MapStyle.cs, StudyArea.cs, LouisianaOutline.cs, MainViewModel.Map.cs
-    Compare/   CompareTabView, MainViewModel.Compare.cs
-    Shared/    Shared.cs (helpers and asset loading), StatTileView
+    App/        App startup (sign-in or main window), MainWindow (side panel, top bar), MainViewModel
+    Account/    SignInWindow, SupabaseClient (Auth + REST, PKCE sign-in), Membership, GitLabClient
+    Settings/   AccountMenu (side-panel footer and settings menu), ThemeManager, AppSettings
+    Editor/ Map/ Compare/               valuation pages (MainViewModel.<Page>.cs each)
+    Workspace/  RecordPage<T> (search, filter, form, save), models, WorkspaceViewModel, shared header and form parts
+    Jobs/ Projects/ Board/ Tasks/ Clients/ Reports/ Requests/   workflow pages (WorkspaceViewModel.<Page>.cs each)
+    Team/ Activity/ Intake/ Companies/  admin pages
+    MockGitLab/ the demo GitLab and its window
+    Shared/     helpers used by several files
   Assets/
-    App/       AppStyles.xaml (tab bar)
-    Editor/    EditorStyles.xaml, DefaultRules.rules (the rules the app starts with)
-    Map/       MapStyles.xaml, map-style.json (parcel and border colours), study-area.json (border streets, boxes, sample size), louisiana.geojson
-    Compare/   CompareStyles.xaml
-    Shared/    Theme.xaml (palette, fonts, shared styles), Rules.xshd (syntax colours)
+    <same folders>/  styles (.xaml) and Colors.Light.xaml / Colors.Dark.xaml
+    Account/    supabase.json, gitlab.json
+    Editor/     DefaultRules.rules       Map/  map-style.json, study-area.json, cities.json, louisiana.geojson
+    MockGitLab/ seed.json (the demo GitLab's starting issues)
 ```
 
-`MainViewModel` is one class split across files: each tab's folder holds the part that tab uses. The `.xaml` styles are compiled into the app; the data files are copied next to it and read at startup, so you can change a colour, the study area or the starting rules without touching code. The map legend is built from `map-style.json`, so it always matches what the map draws. Changing `study-area.json` downloads that area's streets and buildings again.
+All colours are `DynamicResource` look-ups from the colour files, so the theme switches while the app is open. `MainViewModel` (valuation) and `WorkspaceViewModel` (workflow) are each one class split into a file per page.
 
-## What is placeholder
+### Security
+- **Isolation:** every workflow row belongs to one company. Row-level security lets people read and write only their own company's rows, and only once an admin has approved them.
+- **Checked functions:** admin actions (approving, job titles, roles, adding people, companies, account managers) go through security-definer functions that check who is calling.
+- **Self-promotion blocked:** column-level grants stop people from changing their own role or making themselves platform admin.
+- **No deletes:** the app has no delete permission on any table.
+- **Requests:** filing stamps who and when and always starts at New. Only the company's account manager (or a platform admin) can triage.
+- **Tests:** the pgTAP tests in `supabase/tests` cover all of the above.
 
-- **Parcels and sales are made up** (`SampleData.cs`), built so neighborhood N-04 starts out under-assessed.
-- **One study area, not the whole city.** The map covers the area around Forest Park Cemetery in Shreveport, bordered by Linwood Avenue, Kings Highway, Fairfield Avenue, and Avery and Parker Streets (set in `Assets/Map/study-area.json`). The border is traced from those streets' real OpenStreetMap geometry (`BuildingSource.TraceBorder`), with a straight join where Avery Street is cut by I-49. If tracing fails, the area falls back to a box.
-- **Parcels are building footprints, not lot lines.** Every building inside the border becomes an empty parcel. Real parcel boundaries come from the parish assessor or GIS office.
-- **The map stops at Louisiana.** Panning and zooming are limited to the state, and everything outside a simplified state outline (from the PublicaMundi MappingAPI `us-states.json`, saved as `Assets/Map/louisiana.geojson`) is greyed out.
-- **The 96 valued parcels sit on real houses but their values are made up.** Their living area is the footprint's area; lot size, age and sales are invented.
-- **Millage of 120 is a sample rate.** The 10% assessment ratio and $7,500 homestead exemption follow Louisiana's residential rules.
+### CI/CD
+- **Every push and pull request:**
+  - Windows build plus engine tests;
+  - a fresh local Supabase database with every migration applied, plus the security tests.
+- **Merge to `main`:** applies new migrations to the hosted project with `supabase db push`, using the `SUPABASE_ACCESS_TOKEN` and `SUPABASE_DB_PASSWORD` repository secrets.
 
-## Ideas for next steps
+## What's placeholder
+- **Parcels:** parcels and sales are made up (`SampleData.cs`), built so neighborhood N-04 starts out under-assessed.
+- **Study area:** one area of Shreveport around Forest Park Cemetery, with its border traced from real OpenStreetMap streets.
+- **Parcel shapes:** they're building footprints, not lot lines. Real parcel boundaries come from the parish assessor or GIS office.
+- **Tax rates:** the millage of 120 is a sample rate. The 10% assessment ratio and the $7,500 homestead exemption follow Louisiana's residential rules.
+- **Workflow data:** the sample clients, jobs and reports a new office starts with are invented.
 
-- Load real parcel shapes and sales in place of `SampleData.cs`.
-- Add PRB and the newer vertical-equity measures to `RatioStudy.cs`.
-- Scale to 100k+ parcels, then profile and speed up `Valuer.ValueAll`.
+## Next steps
+- **Instant GitLab status:** a GitLab webhook into a Supabase Edge Function.
+- **Roles:** developer and reviewer roles inside Levy.
+- **Switching companies:** a company switcher for platform admins.
+- **Real data:** real parcel shapes and sales, and the Louisiana Tax Commission's JSON tax-roll export.
+- **Ratio study:** PRB and vertical-equity measures.
+- **Scale:** 100k+ parcels, then profiling `Valuer.ValueAll`.
+
+More detail: [docs/HANDOFF.md](docs/HANDOFF.md) (what was built and how) and [docs/GITLAB.md](docs/GITLAB.md).

@@ -1,0 +1,10 @@
+{
+  "mock": true,
+  "url": "https://gitlab.mock",
+  "callback_port": 53682,
+  "scopes": "api read_user",
+  "projects": {
+    "Rails": "levy-dev/cama-rails",
+    ".NET": "levy-dev/levy-desktop"
+  }
+}

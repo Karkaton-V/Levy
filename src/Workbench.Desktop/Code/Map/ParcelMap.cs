@@ -17,13 +17,24 @@ using Nts = NetTopologySuite.Geometries;
 
 namespace Workbench.Desktop;
 
-// The Mapsui map: an OpenStreetMap basemap limited to Louisiana, the study area's border, one parcel per building, and click hit-testing.
-// Colours and widths come from Assets/Map/map-style.json, the outline from Assets/Map/louisiana.geojson.
+// How far in the overview map is: the whole state, one city, or the study area's parcels.
+public enum MapLevel { State, City, Area }
+
+// The Mapsui map: an OpenStreetMap basemap limited to Louisiana, city markers, the study area's border, one parcel per building, and click hit-testing.
+// Colours and widths come from Assets/Map/map-style.json, the outline from Assets/Map/louisiana.geojson, the cities from Assets/Map/cities.json.
 public sealed class ParcelMap
 {
+    // Half the size of a city view, in degrees of latitude; longitude is scaled to keep it roughly square.
+    const double CityHalfHeight = 0.045;
+    // How close to a city marker a click must land, in screen pixels.
+    const double CityHitRadius = 22;
+
     readonly MapStyle _style;
     readonly StudyArea _area;
     readonly LouisianaOutline _louisiana;
+    readonly IReadOnlyList<City> _cities;
+    readonly MemoryLayer _cityLayer;
+    readonly MemoryLayer _areaFillLayer;
     readonly MemoryLayer _emptyLayer;
     readonly MemoryLayer _valuedLayer = new("ValuedParcels") { Style = null };
     readonly MemoryLayer _hoverLayer = new("Hover") { Style = null };
@@ -36,12 +47,16 @@ public sealed class ParcelMap
     STRtree<int> _index = new();
     int? _hovered;
     MRect? _borderBox;
+    Nts.Polygon? _border;
 
-    public ParcelMap(MapStyle style, StudyArea area, LouisianaOutline louisiana)
+    public ParcelMap(MapStyle style, StudyArea area, LouisianaOutline louisiana, IReadOnlyList<City> cities)
     {
         _style = style;
         _area = area;
         _louisiana = louisiana;
+        _cities = cities;
+        _cityLayer = CreateCityLayer();
+        _areaFillLayer = new MemoryLayer("StudyAreaFill") { Style = null, MinVisible = style.StudyAreaFillMinResolution };
         _emptyLayer = new MemoryLayer("EmptyParcels") { Style = null, MaxVisible = style.EmptyParcelsMaxResolution };
         _emptyStyle = AreaStyle(style.Empty);
         _hoverStyle = AreaStyle(style.Hover);
@@ -60,11 +75,14 @@ public sealed class ParcelMap
 
         Map.Layers.Add(OpenStreetMap.CreateTileLayer("ValuationWorkbench/0.1 (student portfolio project)"));
         Map.Layers.Add(CreateLouisianaLayer());
+        Map.Layers.Add(_areaFillLayer);
         Map.Layers.Add(_emptyLayer);
         Map.Layers.Add(_valuedLayer);
         Map.Layers.Add(_borderLayer);
         Map.Layers.Add(_hoverLayer);
         Map.Layers.Add(_selectionLayer);
+        Map.Layers.Add(_cityLayer);
+        SetAreaFill();
         Map.Widgets.Add(new ScaleBarWidget(Map)
         {
             HorizontalAlignment = Mapsui.Widgets.HorizontalAlignment.Left,
@@ -75,7 +93,8 @@ public sealed class ParcelMap
         });
 
         Map.Navigator.Limiter = new ViewportLimiterKeepWithinExtent();
-        Map.Navigator.OverridePanBounds = ToMapBox(louisiana.West, louisiana.South, louisiana.East, louisiana.North);
+        // Room around the state so a wide map can still show all of it; the grey mask covers what lies outside.
+        Map.Navigator.OverridePanBounds = ToMapBox(louisiana.West - 4, louisiana.South - 1.5, louisiana.East + 4, louisiana.North + 1.5);
         Map.Navigator.OverrideZoomBounds = new MMinMax(0.15, 20000);
         Map.Tapped += OnTapped;
         Map.Navigator.ViewportChanged += (_, _) => ViewChanged?.Invoke();
@@ -127,8 +146,148 @@ public sealed class ParcelMap
             var e = border.EnvelopeInternal;
             _borderBox = new MRect(e.MinX, e.MinY, e.MaxX, e.MaxY);
         }
+        _border = border;
         _borderLayer.Features = features;
         _borderLayer.DataHasChanged();
+        SetAreaFill();
+    }
+
+    // Tints the study area so it reads as something to click from the city view; it fades out once zoomed in to the parcels.
+    void SetAreaFill()
+    {
+        var b = _area.BuildingBox;
+        var box = ToMapBox(b.West, b.South, b.East, b.North);
+        Nts.Geometry shape = _border ?? new Nts.Polygon(new Nts.LinearRing(new[]
+        {
+            new Nts.Coordinate(box.MinX, box.MinY), new Nts.Coordinate(box.MaxX, box.MinY), new Nts.Coordinate(box.MaxX, box.MaxY),
+            new Nts.Coordinate(box.MinX, box.MaxY), new Nts.Coordinate(box.MinX, box.MinY),
+        }));
+        var feature = new GeometryFeature(shape);
+        feature.Styles.Add(AreaStyle(_style.StudyAreaFill));
+        _areaFillLayer.Features = new List<IFeature> { feature };
+        _areaFillLayer.DataHasChanged();
+    }
+
+    // Overview navigation ------------------------------------------------------------------------------------------
+
+    public MapLevel Level { get; private set; } = MapLevel.State;
+
+    // The city being shown at the City level, and the study area's city at the Area level.
+    public City? CurrentCity { get; private set; }
+
+    // The city the study area is in.
+    public City? StudyCity => _cities.FirstOrDefault(c => c.HasStudyArea);
+
+    // Raised when the overview moves to another level or city.
+    public event Action? LevelChanged;
+
+    public void GoToState()
+    {
+        SetLevel(MapLevel.State, null);
+        ZoomToLouisiana();
+    }
+
+    public void GoToCity(City city)
+    {
+        SetLevel(MapLevel.City, city);
+        Map.Navigator.ZoomToBox(CityBox(city), duration: 450);
+    }
+
+    public void GoToArea()
+    {
+        SetLevel(MapLevel.Area, StudyCity);
+        ZoomToStudyArea();
+    }
+
+    // One level out: parcels to city, city to state.
+    public void LevelUp()
+    {
+        if (Level == MapLevel.Area && StudyCity is City city) GoToCity(city);
+        else if (Level != MapLevel.State) GoToState();
+    }
+
+    // Moves back to a level remembered earlier, e.g. after the full-size map is closed.
+    public void GoTo(MapLevel level, City? city)
+    {
+        if (level == MapLevel.Area) GoToArea();
+        else if (level == MapLevel.City && city is not null) GoToCity(city);
+        else GoToState();
+    }
+
+    void SetLevel(MapLevel level, City? city)
+    {
+        Level = level;
+        CurrentCity = city;
+        LevelChanged?.Invoke();
+    }
+
+    // The city marker under a point on screen, while markers are drawn at this zoom level.
+    public City? FindCityAtScreen(double screenX, double screenY)
+    {
+        var viewport = Map.Navigator.Viewport;
+        if (viewport.Resolution < _style.CityMarkersMinResolution) return null;
+        City? best = null;
+        var bestDistance = CityHitRadius;
+        foreach (var city in _cities)
+        {
+            var (x, y) = SphericalMercator.FromLonLat(city.Lon, city.Lat);
+            var screen = viewport.WorldToScreen(x, y);
+            var distance = Math.Sqrt(Math.Pow(screen.X - screenX, 2) + Math.Pow(screen.Y - screenY, 2));
+            // The name drawn above the dot counts too.
+            var onLabel = Math.Abs(screenX - screen.X) <= 55 && screenY >= screen.Y - 38 && screenY <= screen.Y - 8;
+            if (onLabel) distance = Math.Min(distance, CityHitRadius - 1);
+            if (distance > bestDistance) continue;
+            bestDistance = distance;
+            best = city;
+        }
+        return best;
+    }
+
+    // True when a point on screen falls inside the study area's border (or its box before the border has loaded).
+    public bool IsStudyAreaAtScreen(double screenX, double screenY)
+    {
+        var viewport = Map.Navigator.Viewport;
+        if (viewport.Resolution <= 0) return false;
+        var world = viewport.ScreenToWorld(screenX, screenY);
+        if (_border is not null) return _border.Contains(new Nts.Point(world.X, world.Y));
+        var b = _area.BuildingBox;
+        return ToMapBox(b.West, b.South, b.East, b.North).Contains(world);
+    }
+
+    static MRect CityBox(City city)
+    {
+        var halfWidth = CityHalfHeight / Math.Cos(city.Lat * Math.PI / 180);
+        return ToMapBox(city.Lon - halfWidth, city.Lat - CityHalfHeight, city.Lon + halfWidth, city.Lat + CityHalfHeight);
+    }
+
+    // A dot and a name for every city; drawn only when zoomed out far enough to see the state.
+    MemoryLayer CreateCityLayer()
+    {
+        var dot = new SymbolStyle
+        {
+            SymbolType = SymbolType.Ellipse,
+            SymbolScale = 0.45,
+            Fill = new MBrush(ToColor(_style.City.Fill)),
+            Outline = new MPen(ToColor(_style.City.Outline), _style.City.OutlineWidth),
+        };
+        var features = new List<IFeature>();
+        foreach (var city in _cities)
+        {
+            var (x, y) = SphericalMercator.FromLonLat(city.Lon, city.Lat);
+            var feature = new PointFeature(x, y);
+            feature.Styles.Add(dot);
+            feature.Styles.Add(new LabelStyle
+            {
+                Text = city.Name,
+                ForeColor = ToColor(_style.CityLabel.Outline),
+                BackColor = new MBrush(ToColor(_style.CityLabel.Fill)),
+                Font = new Font { Size = 12 },
+                Offset = new Offset(0, -20),
+                CollisionDetection = false,
+            });
+            features.Add(feature);
+        }
+        return new MemoryLayer("Cities") { Style = null, Features = features, MinVisible = _style.CityMarkersMinResolution };
     }
 
     // Recolours the valued parcels; they stay visible at every zoom level.
@@ -228,9 +387,12 @@ public sealed class ParcelMap
         Map.Navigator.ZoomToBox(box.Grow(box.Width * 0.12, box.Height * 0.12), duration: 400);
     }
 
-    // Zooms out as far as the map allows, which shows all of Louisiana.
-    public void ZoomToLouisiana() =>
-        Map.Navigator.ZoomToBox(ToMapBox(_louisiana.West, _louisiana.South, _louisiana.East, _louisiana.North), duration: 400);
+    // Frames the whole state with a little room around it.
+    public void ZoomToLouisiana()
+    {
+        var box = ToMapBox(_louisiana.West, _louisiana.South, _louisiana.East, _louisiana.North);
+        Map.Navigator.ZoomToBox(box.Grow(box.Width * 0.06, box.Height * 0.06), duration: 400);
+    }
 
     // Greys out everything outside Louisiana and outlines the state.
     MemoryLayer CreateLouisianaLayer()
@@ -280,10 +442,18 @@ public sealed class ParcelMap
         return new MRect(minX, minY, maxX, maxY);
     }
 
+    // Taps on the full-size map: a parcel opens its record, a city marker zooms to that city.
     void OnTapped(object? sender, MapEventArgs e)
     {
-        if (FindBuildingAt(e.WorldPosition.X, e.WorldPosition.Y, e.Map.Navigator.Viewport.Resolution) is not int i) return;
-        BuildingTapped?.Invoke(i);
-        e.Handled = true;
+        if (FindBuildingAt(e.WorldPosition.X, e.WorldPosition.Y, e.Map.Navigator.Viewport.Resolution) is int i)
+        {
+            BuildingTapped?.Invoke(i);
+            e.Handled = true;
+        }
+        else if (FindCityAtScreen(e.ScreenPosition.X, e.ScreenPosition.Y) is City city)
+        {
+            Map.Navigator.ZoomToBox(CityBox(city), duration: 450);
+            e.Handled = true;
+        }
     }
 }

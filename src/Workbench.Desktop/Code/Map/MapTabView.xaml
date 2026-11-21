@@ -17,13 +17,14 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Margin="20,16,20,14">
-                <TextBlock Text="Parcels" Style="{StaticResource CardTitle}" />
-                <TextBlock Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,4,0,0">
-                    <Run Text="The border follows " /><Run Text="{Binding StudyAreaDescription, Mode=OneWay}" /><Run Text=". Every building inside it is a parcel; the coloured ones carry sample values. Hover to preview, click to open a record." />
-                </TextBlock>
-            </StackPanel>
-            <Border Grid.Row="1" BorderBrush="{StaticResource Line}" BorderThickness="0,1">
+            <DockPanel Grid.Row="0" Margin="20,16,16,14">
+                <Button DockPanel.Dock="Right" Style="{StaticResource IconButton}" Command="{Binding ToggleMapSizeCommand}" VerticalAlignment="Center"
+                        ToolTip="Full-size map / overview" AutomationProperties.Name="Full-size map">
+                    <TextBlock Style="{StaticResource MapSizeGlyph}" />
+                </Button>
+                <TextBlock Text="Parcels" Style="{StaticResource CardTitle}" VerticalAlignment="Center" />
+            </DockPanel>
+            <Border Grid.Row="1" BorderBrush="{DynamicResource Line}" BorderThickness="0,1">
                 <local:ParcelMapView />
             </Border>
 
@@ -39,7 +40,7 @@
                         <StackPanel Orientation="Horizontal" Margin="0,0,28,6">
                             <Border Width="{Binding Width}" Height="{Binding Height}" CornerRadius="2" VerticalAlignment="Center"
                                     Background="{Binding Fill}" BorderBrush="{Binding Outline}" BorderThickness="{Binding OutlineThickness}" />
-                            <TextBlock Text="{Binding Label}" Foreground="{StaticResource Soft}" Margin="8,0,0,0" VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding Label}" Foreground="{DynamicResource Soft}" Margin="8,0,0,0" VerticalAlignment="Center" />
                         </StackPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
@@ -54,9 +55,9 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <Border Grid.Row="0" Background="{StaticResource SegmentTrack}" CornerRadius="8" Padding="3" Margin="24,20,24,0" HorizontalAlignment="Left">
+                <Border Grid.Row="0" Background="{DynamicResource SegmentTrack}" CornerRadius="8" Padding="3" Margin="24,20,24,0" HorizontalAlignment="Left">
                     <StackPanel Orientation="Horizontal">
-                        <RadioButton GroupName="Sidebar" Content="Property record" Style="{StaticResource SegmentButton}" IsChecked="{Binding SidebarShowsRecord, Mode=TwoWay}" />
+                        <RadioButton GroupName="Sidebar" Content="Record" Style="{StaticResource SegmentButton}" IsChecked="{Binding SidebarShowsRecord, Mode=TwoWay}" />
                         <RadioButton GroupName="Sidebar" Content="Rules" Style="{StaticResource SegmentButton}" IsChecked="{Binding SidebarShowsRules, Mode=TwoWay}" Margin="4,0,0,0" />
                     </StackPanel>
                 </Border>
@@ -75,17 +76,16 @@
                     <DockPanel Grid.Row="0" LastChildFill="False">
                         <StackPanel DockPanel.Dock="Left">
                             <TextBlock Text="Rules in plain words" Style="{StaticResource CardTitle}" />
-                            <TextBlock Text="What the Editor's code does. Read-only." Foreground="{StaticResource Muted}" FontSize="12" Margin="0,4,0,0" />
                         </StackPanel>
-                        <Button DockPanel.Dock="Right" Content="Edit in Editor" Command="{Binding OpenInEditorCommand}" Style="{StaticResource SecondaryButton}" VerticalAlignment="Top" />
+                        <Button DockPanel.Dock="Right" Content="Edit" Command="{Binding OpenInEditorCommand}" Style="{StaticResource SecondaryButton}" VerticalAlignment="Top" />
                     </DockPanel>
                     <TextBox Grid.Row="1" Margin="0,16,0,0" Text="{Binding RulesInWords, Mode=OneWay}" IsReadOnly="True"
                              TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
                              FontFamily="Segoe UI" FontSize="14" Padding="20,18"
-                             Background="{StaticResource Ground}" Foreground="{StaticResource Text}" CaretBrush="{StaticResource Text}"
-                             BorderBrush="{StaticResource Line}" BorderThickness="1" SelectionBrush="{StaticResource Accent}"
+                             Background="{DynamicResource Ground}" Foreground="{DynamicResource Text}" CaretBrush="{DynamicResource Text}"
+                             BorderBrush="{DynamicResource Line}" BorderThickness="1" SelectionBrush="{DynamicResource Accent}"
                              AutomationProperties.Name="Rules in plain words" />
-                    <TextBlock Grid.Row="2" Text="Edited in the Editor but not run yet · press F5 to apply" Foreground="{StaticResource WarnText}" FontSize="12" Margin="0,12,0,0"
+                    <TextBlock Grid.Row="2" Text="● Not run · F5" Foreground="{DynamicResource WarnText}" FontSize="12" Margin="0,12,0,0"
                                Visibility="{Binding IsStale, Converter={StaticResource BoolVis}}" />
                 </Grid>
             </Grid>

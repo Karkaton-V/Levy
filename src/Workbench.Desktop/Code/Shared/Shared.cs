@@ -15,11 +15,8 @@ public enum RatioCategory { Under, InRange, Over, NoSale }
 public static class Shared
 {
     static readonly CultureInfo Us = CultureInfo.GetCultureInfo("en-US");
-    static readonly Lazy<IHighlightingDefinition> Syntax = new(() =>
-    {
-        using var reader = XmlReader.Create(AssetPath("Shared", "Rules.xshd"));
-        return HighlightingLoader.Load(reader, HighlightingManager.Instance);
-    });
+    static readonly Lazy<IHighlightingDefinition> LightSyntax = new(() => LoadSyntax("Rules.Light.xshd"));
+    static readonly Lazy<IHighlightingDefinition> DarkSyntax = new(() => LoadSyntax("Rules.Dark.xshd"));
 
     // Full path of a file in the Assets folder that the build copies next to the app, e.g. AssetPath("Map", "study-area.json").
     public static string AssetPath(params string[] parts) => Path.Combine(new[] { AppContext.BaseDirectory, "Assets" }.Concat(parts).ToArray());
@@ -27,8 +24,14 @@ public static class Shared
     // The text of an asset file.
     public static string ReadAsset(params string[] parts) => File.ReadAllText(AssetPath(parts));
 
-    // Syntax colours for the rules language from Assets/Shared/Rules.xshd, loaded once; used by the Editor and the Map's code snippets.
-    public static IHighlightingDefinition RulesSyntax => Syntax.Value;
+    // Syntax colours for the rules language from Assets/Shared/Rules.Light.xshd or Rules.Dark.xshd, each loaded once; used by the Editor and the Map's code snippets.
+    public static IHighlightingDefinition RulesSyntax(bool dark) => dark ? DarkSyntax.Value : LightSyntax.Value;
+
+    static IHighlightingDefinition LoadSyntax(string file)
+    {
+        using var reader = XmlReader.Create(AssetPath("Shared", file));
+        return HighlightingLoader.Load(reader, HighlightingManager.Instance);
+    }
 
     // Which side of the 0.95 to 1.05 target a parcel's ratio falls on.
     public static RatioCategory CategoryOf(double? ratio) => ratio switch

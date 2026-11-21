@@ -1,0 +1,63 @@
+<UserControl x:Class="Workbench.Desktop.TasksPageView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Workbench.Desktop">
+    <!-- Tasks: counters, toolbar, the tasks table and the task form. DataContext: WorkspaceViewModel. Styles: Assets/Workspace/WorkspaceStyles.xaml. -->
+    <Grid Margin="32,24,32,32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="340" />
+        </Grid.ColumnDefinitions>
+
+        <local:PageHeaderView Grid.ColumnSpan="2" DataContext="{Binding Tasks}" />
+
+        <Border Grid.Row="1" Style="{StaticResource TableCard}" Margin="0,16,20,0">
+            <Grid>
+                <DataGrid Style="{StaticResource Table}" ItemsSource="{Binding Tasks.View}" SelectedItem="{Binding Tasks.Selected, Mode=TwoWay}" AutomationProperties.Name="Tasks">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="Task" SortMemberPath="Title" Width="*" MinWidth="200">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Title}" Style="{StaticResource CellStrong}" />
+                                        <TextBlock Text="{Binding ProjectName}" Style="{StaticResource CellMuted}" FontSize="12" Margin="0,2,0,0" TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Status" SortMemberPath="Status" Width="Auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ContentPresenter Content="{Binding StatusChip}" ContentTemplate="{StaticResource ChipTemplate}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Priority" SortMemberPath="Priority" Width="Auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ContentPresenter Content="{Binding PriorityChip}" ContentTemplate="{StaticResource ChipTemplate}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Assignee" Binding="{Binding AssigneeName}" Width="Auto" />
+                        <DataGridTemplateColumn Header="Due" SortMemberPath="DueDate" Width="Auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Due}" Style="{StaticResource DueText}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Pts" Binding="{Binding Points}" Width="Auto" />
+                    </DataGrid.Columns>
+                </DataGrid>
+                <TextBlock Style="{StaticResource TableMessage}" Text="{Binding Message}" />
+            </Grid>
+        </Border>
+
+        <local:TaskFormView Grid.Row="1" Grid.Column="1" Margin="0,16,0,0" DataContext="{Binding Tasks}" />
+    </Grid>
+</UserControl>

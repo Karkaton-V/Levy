@@ -1,0 +1,5 @@
+# Minimal Supabase CLI config: CI uses it to start a local database and to push migrations to the hosted project.
+project_id = "levy"
+
+[db]
+major_version = 17
