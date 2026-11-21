@@ -1,0 +1,48 @@
+<UserControl x:Class="Workbench.Desktop.TaskFormView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Workbench.Desktop">
+    <!-- The task edit form, on the Tasks page and beside the scrum board. DataContext: the Tasks RecordPage. -->
+    <Border Style="{StaticResource FormCard}">
+        <Grid>
+            <TextBlock Style="{StaticResource FormHint}" Text="Pick a task to edit it, or press New task." />
+            <ScrollViewer Style="{StaticResource FormScroll}">
+                <StackPanel>
+                    <TextBlock Text="{Binding FormTitle}" Style="{StaticResource CardTitle}" />
+                    <TextBlock Text="Title" Style="{StaticResource FormLabel}" />
+                    <TextBox Style="{StaticResource Input}" Text="{Binding Draft.Title}" Tag="Field-check outlier parcels" AutomationProperties.Name="Title" />
+                    <UniformGrid Columns="2">
+                        <StackPanel Margin="0,0,6,0">
+                            <TextBlock Text="Status" Style="{StaticResource FormLabel}" />
+                            <ComboBox Style="{StaticResource Select}" MinWidth="0" ItemsSource="{x:Static local:Choices.TaskStatuses}" SelectedItem="{Binding Draft.Status}" AutomationProperties.Name="Status" />
+                        </StackPanel>
+                        <StackPanel Margin="6,0,0,0">
+                            <TextBlock Text="Priority" Style="{StaticResource FormLabel}" />
+                            <ComboBox Style="{StaticResource Select}" MinWidth="0" ItemsSource="{x:Static local:Choices.Priorities}" SelectedItem="{Binding Draft.Priority}" AutomationProperties.Name="Priority" />
+                        </StackPanel>
+                    </UniformGrid>
+                    <TextBlock Text="Project" Style="{StaticResource FormLabel}" />
+                    <ComboBox Style="{StaticResource Select}" ItemsSource="{Binding Workspace.ProjectOptions}" DisplayMemberPath="Name" SelectedValuePath="Id"
+                              SelectedValue="{Binding Draft.ProjectKey}" AutomationProperties.Name="Project" />
+                    <TextBlock Text="Job" Style="{StaticResource FormLabel}" />
+                    <ComboBox Style="{StaticResource Select}" ItemsSource="{Binding Workspace.JobOptions}" DisplayMemberPath="Name" SelectedValuePath="Id"
+                              SelectedValue="{Binding Draft.JobKey}" AutomationProperties.Name="Job" />
+                    <TextBlock Text="Assignee" Style="{StaticResource FormLabel}" />
+                    <ComboBox Style="{StaticResource Select}" ItemsSource="{Binding Workspace.People}" DisplayMemberPath="Name" SelectedValuePath="Id"
+                              SelectedValue="{Binding Draft.AssigneeKey}" AutomationProperties.Name="Assignee" />
+                    <UniformGrid Columns="2">
+                        <StackPanel Margin="0,0,6,0">
+                            <TextBlock Text="Due" Style="{StaticResource FormLabel}" />
+                            <TextBox Style="{StaticResource Input}" Text="{Binding Draft.DueDate, StringFormat=yyyy-MM-dd, TargetNullValue=''}" Tag="yyyy-mm-dd" AutomationProperties.Name="Due date" />
+                        </StackPanel>
+                        <StackPanel Margin="6,0,0,0">
+                            <TextBlock Text="Points" Style="{StaticResource FormLabel}" />
+                            <TextBox Style="{StaticResource Input}" Text="{Binding Draft.Points}" AutomationProperties.Name="Points" />
+                        </StackPanel>
+                    </UniformGrid>
+                    <local:FormActionsView />
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Border>
+</UserControl>

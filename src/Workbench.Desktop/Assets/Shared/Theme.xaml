@@ -99,6 +99,22 @@
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
+    <!-- One SummaryCard (label, value, detail and an optional pass/review pill): the summary strip and the workflow pages counters. -->
+    <DataTemplate x:Key="SummaryCardTemplate">
+        <Border Style="{StaticResource SummaryCard}">
+            <StackPanel>
+                <TextBlock Text="{Binding Label}" Foreground="{DynamicResource Muted}" FontSize="12" TextTrimming="CharacterEllipsis" />
+                <TextBlock Text="{Binding Value}" FontSize="22" FontWeight="SemiBold" Margin="0,6,0,6" />
+                <DockPanel LastChildFill="True">
+                    <Border DockPanel.Dock="Right" Style="{StaticResource StatusPill}" Margin="8,0,0,0" Visibility="{Binding HasStatus, Converter={StaticResource BoolVis}}">
+                        <TextBlock Text="{Binding Status}" Style="{StaticResource PillText}" />
+                    </Border>
+                    <TextBlock Text="{Binding Detail}" Foreground="{DynamicResource Muted}" FontSize="11" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                </DockPanel>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
     <!-- Status and priority chips: the bound item is a Chip with Text and Tone (Blue, Green, Amber, Red, Purple or Grey). -->
     <Style x:Key="Chip" TargetType="Border">
         <Setter Property="Background" Value="{DynamicResource ToneGreyFill}" />

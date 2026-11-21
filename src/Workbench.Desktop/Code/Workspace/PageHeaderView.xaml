@@ -1,0 +1,23 @@
+<UserControl x:Class="Workbench.Desktop.PageHeaderView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- A workflow page's counters and toolbar (search, filter, "Assigned to me", New). DataContext: the page's RecordPage. Styles: Assets/Workspace/WorkspaceStyles.xaml. -->
+    <StackPanel>
+        <ItemsControl ItemsSource="{Binding Counters}" Style="{StaticResource PageCounters}" />
+        <DockPanel Margin="0,20,0,0" LastChildFill="False">
+            <TextBox DockPanel.Dock="Left" Style="{StaticResource SearchInput}" Width="260" Tag="{Binding SearchHint}"
+                     Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Search" />
+            <ComboBox DockPanel.Dock="Left" Style="{StaticResource Select}" Margin="12,0,0,0" MinWidth="150"
+                      ItemsSource="{Binding FilterOptions}" SelectedItem="{Binding Filter}" AutomationProperties.Name="Filter" />
+            <ToggleButton DockPanel.Dock="Left" Style="{StaticResource FilterChip}" Margin="12,0,0,0" Content="Assigned to me"
+                          IsChecked="{Binding AssignedToMe}" Visibility="{Binding HasMine, Converter={StaticResource BoolVis}}" />
+            <Button DockPanel.Dock="Right" Style="{StaticResource PrimaryButton}" Command="{Binding NewCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="&#xE710;" FontFamily="{StaticResource IconFont}" FontSize="11" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding NewLabel}" Margin="8,0,0,0" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+            <TextBlock DockPanel.Dock="Right" Style="{StaticResource CountText}" Text="{Binding CountText}" />
+        </DockPanel>
+    </StackPanel>
+</UserControl>

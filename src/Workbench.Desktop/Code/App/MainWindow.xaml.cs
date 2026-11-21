@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
 
@@ -9,6 +10,10 @@ public partial class MainWindow : Window
     // Raised by Sign out in the account menu; the app closes this window and returns to sign-in.
     public event Action? SignOutRequested;
 
+    readonly MainViewModel _viewModel;
+    readonly Dictionary<ListBoxItem, TabItem> _pages;
+    readonly HashSet<TabItem> _workflowPages;
+
     public MainWindow(SupabaseClient client)
     {
         InitializeComponent();
@@ -17,10 +22,25 @@ public partial class MainWindow : Window
         Account.Email = client.User?.Email ?? "";
         Account.SignOutRequested += () => SignOutRequested?.Invoke();
         // The starting rules and the study area are assets, not strings in code.
-        var viewModel = new MainViewModel(Shared.ReadAsset("Editor", "DefaultRules.rules"), StudyArea.Default);
+        var viewModel = _viewModel = new MainViewModel(Shared.ReadAsset("Editor", "DefaultRules.rules"), StudyArea.Default);
         DataContext = viewModel;
         viewModel.OpenInEditorRequested += OpenInEditor;
-        Loaded += async (_, _) => await viewModel.LoadBuildingsAsync();
+
+        // The workflow pages read and save the organization's rows in Supabase.
+        var workspace = new WorkspaceViewModel(client);
+        foreach (var view in new FrameworkElement[] { JobsView, ProjectsView, BoardView, TasksView, ClientsView, ReportsView }) view.DataContext = workspace;
+        workspace.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(WorkspaceViewModel.OrganizationName)) viewModel.WorkspaceName = workspace.OrganizationName; };
+
+        _pages = new()
+        {
+            [NavRules] = RulesPage, [NavMap] = MapPage, [NavCompare] = ComparePage,
+            [NavJobs] = JobsPage, [NavProjects] = ProjectsPage, [NavBoard] = BoardPage,
+            [NavTasks] = TasksPage, [NavClients] = ClientsPage, [NavReports] = ReportsPage,
+        };
+        _workflowPages = [JobsPage, ProjectsPage, BoardPage, TasksPage, ClientsPage, ReportsPage];
+        Tabs.SelectedItem = RulesPage;
+
+        Loaded += async (_, _) => await Task.WhenAll(viewModel.LoadBuildingsAsync(), workspace.LoadAsync());
     }
 
     // With display scaling (125%, 150%) the screen can be smaller than the default size; shrink to fit and centre in the space above the taskbar.
@@ -83,17 +103,25 @@ public partial class MainWindow : Window
         WindowState = WindowState.Maximized;
     }
 
+    // A rail item opens its page; workflow pages hide the valuation summary and Run.
+    void Nav_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (Nav.SelectedItem is not ListBoxItem item || _pages is null || !_pages.TryGetValue(item, out var page)) return;
+        Tabs.SelectedItem = page;
+        _viewModel.IsWorkflowPage = _workflowPages.Contains(page);
+    }
+
     // Leaving the Map page closes the full-size map, so the summary strip comes back on other pages.
     // SelectionChanged bubbles up from lists inside the pages too; only the page switch itself counts.
-    void Tabs_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+    void Tabs_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (e.OriginalSource == Tabs && DataContext is MainViewModel viewModel) viewModel.IsMapExpanded = false;
+        if (e.OriginalSource == Tabs && _viewModel is not null) _viewModel.IsMapExpanded = false;
     }
 
     // Switches to the Editor tab, then jumps to the line once the tab has been laid out.
     void OpenInEditor(int line)
     {
-        Tabs.SelectedIndex = 0;
+        Nav.SelectedItem = NavRules;
         Dispatcher.InvokeAsync(() => EditorTab.JumpToLine(line), DispatcherPriority.Loaded);
     }
 }

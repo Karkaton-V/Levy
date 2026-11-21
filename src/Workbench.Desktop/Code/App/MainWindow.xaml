@@ -27,15 +27,20 @@
 
                 <local:AccountMenu x:Name="Account" DockPanel.Dock="Bottom" />
 
-                <StackPanel>
-                    <TextBlock Text="WORKSPACE" Foreground="{DynamicResource NavMuted}" FontSize="10" FontWeight="SemiBold" Margin="28,0,0,8" />
-                    <ListBox x:Name="Nav" Style="{StaticResource NavList}" SelectedIndex="{Binding SelectedIndex, ElementName=Tabs, Mode=TwoWay}"
-                             AutomationProperties.Name="Pages">
-                        <ListBoxItem Style="{StaticResource NavItem}" Tag="{StaticResource EditorGlyph}" Content="Rules" />
-                        <ListBoxItem Style="{StaticResource NavItem}" Tag="{StaticResource MapGlyph}" Content="Parcel map" />
-                        <ListBoxItem Style="{StaticResource NavItem}" Tag="{StaticResource CompareGlyph}" Content="Compare runs" />
-                    </ListBox>
-                </StackPanel>
+                <!-- Pages, under two headings; the headings are disabled items, so they can't be selected. Code-behind maps each item to its page by name. -->
+                <ListBox x:Name="Nav" Style="{StaticResource NavList}" SelectionChanged="Nav_SelectionChanged" AutomationProperties.Name="Pages">
+                    <ListBoxItem Style="{StaticResource NavHeading}" Content="VALUATION" Padding="28,0,0,8" />
+                    <ListBoxItem x:Name="NavRules" Style="{StaticResource NavItem}" Tag="{StaticResource EditorGlyph}" Content="Rules" IsSelected="True" />
+                    <ListBoxItem x:Name="NavMap" Style="{StaticResource NavItem}" Tag="{StaticResource MapGlyph}" Content="Parcel map" />
+                    <ListBoxItem x:Name="NavCompare" Style="{StaticResource NavItem}" Tag="{StaticResource CompareGlyph}" Content="Compare runs" />
+                    <ListBoxItem Style="{StaticResource NavHeading}" Content="WORKFLOW" />
+                    <ListBoxItem x:Name="NavJobs" Style="{StaticResource NavItem}" Tag="{StaticResource JobsGlyph}" Content="Jobs" />
+                    <ListBoxItem x:Name="NavProjects" Style="{StaticResource NavItem}" Tag="{StaticResource ProjectsGlyph}" Content="Projects" />
+                    <ListBoxItem x:Name="NavBoard" Style="{StaticResource NavItem}" Tag="{StaticResource BoardGlyph}" Content="Scrum board" />
+                    <ListBoxItem x:Name="NavTasks" Style="{StaticResource NavItem}" Tag="{StaticResource TasksGlyph}" Content="Tasks" />
+                    <ListBoxItem x:Name="NavClients" Style="{StaticResource NavItem}" Tag="{StaticResource ClientsGlyph}" Content="Clients" />
+                    <ListBoxItem x:Name="NavReports" Style="{StaticResource NavItem}" Tag="{StaticResource ReportsGlyph}" Content="Reports" />
+                </ListBox>
             </DockPanel>
         </Border>
 
@@ -46,62 +51,66 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <!-- Top bar: page title, study area and tax year, last run, Run button. -->
+            <!-- Top bar: page title and subtitle (study area on valuation pages, organization on workflow pages), then last run and Run on valuation pages. -->
             <Border Grid.Row="0" Style="{StaticResource TopBar}">
                 <DockPanel LastChildFill="False">
                     <StackPanel DockPanel.Dock="Left" VerticalAlignment="Center">
                         <TextBlock Text="{Binding SelectedItem.Header, ElementName=Tabs}" FontSize="20" FontWeight="SemiBold" />
-                        <TextBlock Text="{Binding Subtitle}" Foreground="{DynamicResource Muted}" Margin="0,3,0,0" />
+                        <TextBlock Text="{Binding PageSubtitle}" Foreground="{DynamicResource Muted}" Margin="0,3,0,0" />
                     </StackPanel>
-                    <Button DockPanel.Dock="Right" Command="{Binding RunCommand}" Style="{StaticResource PrimaryButton}" VerticalAlignment="Center"
-                            ToolTip="Revalue every parcel with the current rules (F5)">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{StaticResource RunGlyph}" FontFamily="{StaticResource IconFont}" FontSize="12" VerticalAlignment="Center" />
-                            <TextBlock Text="Run model" Margin="8,0,0,0" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </Button>
-                    <TextBlock DockPanel.Dock="Right" Text="{Binding StatusLine}" Foreground="{DynamicResource Muted}" VerticalAlignment="Center" Margin="0,0,20,0" />
-                    <Border DockPanel.Dock="Right" Style="{StaticResource WarnPill}" Margin="0,0,16,0" Visibility="{Binding IsStale, Converter={StaticResource BoolVis}}">
-                        <TextBlock Text="● Not run" Foreground="{DynamicResource WarnStatus}" FontSize="11" FontWeight="SemiBold" />
-                    </Border>
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Visibility="{Binding IsValuationPage, Converter={StaticResource BoolVis}}">
+                        <Border Style="{StaticResource WarnPill}" Margin="0,0,16,0" Visibility="{Binding IsStale, Converter={StaticResource BoolVis}}">
+                            <TextBlock Text="● Not run" Foreground="{DynamicResource WarnStatus}" FontSize="11" FontWeight="SemiBold" />
+                        </Border>
+                        <TextBlock Text="{Binding StatusLine}" Foreground="{DynamicResource Muted}" VerticalAlignment="Center" Margin="0,0,20,0" />
+                        <Button Command="{Binding RunCommand}" Style="{StaticResource PrimaryButton}" VerticalAlignment="Center"
+                                ToolTip="Revalue every parcel with the current rules (F5)">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{StaticResource RunGlyph}" FontFamily="{StaticResource IconFont}" FontSize="12" VerticalAlignment="Center" />
+                                <TextBlock Text="Run model" Margin="8,0,0,0" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
                 </DockPanel>
             </Border>
 
-            <!-- Summary strip: roll totals and the ratio study, on every page. -->
-            <ItemsControl Grid.Row="1" ItemsSource="{Binding Summary}" Margin="32,24,20,0" Focusable="False" Style="{StaticResource SummaryStrip}">
+            <!-- Summary strip: roll totals and the ratio study, on the valuation pages. -->
+            <ItemsControl Grid.Row="1" ItemsSource="{Binding Summary}" Margin="32,24,20,0" Focusable="False" Style="{StaticResource SummaryStrip}" ItemTemplate="{StaticResource SummaryCardTemplate}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <UniformGrid Rows="1" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border Style="{StaticResource SummaryCard}">
-                            <StackPanel>
-                                <TextBlock Text="{Binding Label}" Foreground="{DynamicResource Muted}" FontSize="12" TextTrimming="CharacterEllipsis" />
-                                <TextBlock Text="{Binding Value}" FontSize="22" FontWeight="SemiBold" Margin="0,6,0,6" />
-                                <DockPanel LastChildFill="True">
-                                    <Border DockPanel.Dock="Right" Style="{StaticResource StatusPill}" Margin="8,0,0,0" Visibility="{Binding HasStatus, Converter={StaticResource BoolVis}}">
-                                        <TextBlock Text="{Binding Status}" Style="{StaticResource PillText}" />
-                                    </Border>
-                                    <TextBlock Text="{Binding Detail}" Foreground="{DynamicResource Muted}" FontSize="11" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-                                </DockPanel>
-                            </StackPanel>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
             </ItemsControl>
 
-            <!-- Pages. The rail above switches them; "Open in Editor" sets SelectedIndex too. -->
-            <TabControl x:Name="Tabs" Grid.Row="2" Style="{StaticResource PageTabs}" SelectedIndex="0" SelectionChanged="Tabs_SelectionChanged">
-                <TabItem Header="Rules editor">
+            <!-- Pages. The rail switches them by name; the workflow pages get the WorkspaceViewModel as DataContext from code-behind. -->
+            <TabControl x:Name="Tabs" Grid.Row="2" Style="{StaticResource PageTabs}" SelectionChanged="Tabs_SelectionChanged">
+                <TabItem x:Name="RulesPage" Header="Rules editor">
                     <local:EditorTabView x:Name="EditorTab" />
                 </TabItem>
-                <TabItem Header="Parcel map">
+                <TabItem x:Name="MapPage" Header="Parcel map">
                     <local:MapTabView />
                 </TabItem>
-                <TabItem Header="Compare runs">
+                <TabItem x:Name="ComparePage" Header="Compare runs">
                     <local:CompareTabView />
+                </TabItem>
+                <TabItem x:Name="JobsPage" Header="Jobs">
+                    <local:JobsPageView x:Name="JobsView" />
+                </TabItem>
+                <TabItem x:Name="ProjectsPage" Header="Projects">
+                    <local:ProjectsPageView x:Name="ProjectsView" />
+                </TabItem>
+                <TabItem x:Name="BoardPage" Header="Scrum board">
+                    <local:BoardPageView x:Name="BoardView" />
+                </TabItem>
+                <TabItem x:Name="TasksPage" Header="Tasks">
+                    <local:TasksPageView x:Name="TasksView" />
+                </TabItem>
+                <TabItem x:Name="ClientsPage" Header="Clients">
+                    <local:ClientsPageView x:Name="ClientsView" />
+                </TabItem>
+                <TabItem x:Name="ReportsPage" Header="Reports">
+                    <local:ReportsPageView x:Name="ReportsView" />
                 </TabItem>
             </TabControl>
         </Grid>

@@ -64,6 +64,20 @@ public sealed partial class MainViewModel : INotifyPropertyChanged
     public IReadOnlyList<SummaryCard> Summary { get; private set; } = Array.Empty<SummaryCard>();
     public string Subtitle { get; private set; } = "";
 
+    bool _isWorkflowPage;
+    string _workspaceName = "";
+
+    // True on the workflow pages (Jobs, Projects, ...), which hide the summary strip and Run and show the organization as the subtitle.
+    public bool IsWorkflowPage
+    {
+        get => _isWorkflowPage;
+        set { if (_isWorkflowPage == value) return; _isWorkflowPage = value; Raise(); Raise(nameof(IsValuationPage)); Raise(nameof(PageSubtitle)); }
+    }
+
+    public bool IsValuationPage => !_isWorkflowPage;
+    public string WorkspaceName { get => _workspaceName; set { _workspaceName = value; Raise(); Raise(nameof(PageSubtitle)); } }
+    public string PageSubtitle => _isWorkflowPage ? _workspaceName : Subtitle;
+
     // Parses the rules, revalues every parcel, then lets each tab rebuild what it shows.
     void Run()
     {

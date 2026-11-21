@@ -1,0 +1,102 @@
+<UserControl x:Class="Workbench.Desktop.JobsPageView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Workbench.Desktop">
+    <!-- Jobs: counters, toolbar, the jobs table and the edit form. DataContext: WorkspaceViewModel. Styles: Assets/Workspace/WorkspaceStyles.xaml. -->
+    <Grid Margin="32,24,32,32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="340" />
+        </Grid.ColumnDefinitions>
+
+        <local:PageHeaderView Grid.ColumnSpan="2" DataContext="{Binding Jobs}" />
+
+        <Border Grid.Row="1" Style="{StaticResource TableCard}" Margin="0,16,20,0">
+            <Grid>
+                <DataGrid Style="{StaticResource Table}" ItemsSource="{Binding Jobs.View}" SelectedItem="{Binding Jobs.Selected, Mode=TwoWay}" AutomationProperties.Name="Jobs">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="Job" SortMemberPath="Title" Width="*" MinWidth="200">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Title}" Style="{StaticResource CellStrong}" />
+                                        <TextBlock Text="{Binding Detail}" Style="{StaticResource CellMuted}" FontSize="12" Margin="0,2,0,0" TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Status" SortMemberPath="Status" Width="Auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ContentPresenter Content="{Binding StatusChip}" ContentTemplate="{StaticResource ChipTemplate}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Due" SortMemberPath="DueDate" Width="Auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Due}" Style="{StaticResource DueText}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Assignee" Binding="{Binding AssigneeName}" Width="Auto" />
+                        <DataGridTextColumn Header="Hours" Binding="{Binding Hours}" SortMemberPath="ActualHours" Width="Auto" />
+                    </DataGrid.Columns>
+                </DataGrid>
+                <TextBlock Style="{StaticResource TableMessage}" Text="{Binding Message}" />
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource FormCard}" Margin="0,16,0,0" DataContext="{Binding Jobs}">
+            <Grid>
+                <TextBlock Style="{StaticResource FormHint}" Text="Pick a job to edit it, or press New job." />
+                <ScrollViewer Style="{StaticResource FormScroll}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding FormTitle}" Style="{StaticResource CardTitle}" />
+                        <TextBlock Text="Title" Style="{StaticResource FormLabel}" />
+                        <TextBox Style="{StaticResource Input}" Text="{Binding Draft.Title}" Tag="Homestead appeal: 123 Main St" AutomationProperties.Name="Title" />
+                        <TextBlock Text="Client" Style="{StaticResource FormLabel}" />
+                        <ComboBox Style="{StaticResource Select}" ItemsSource="{Binding Workspace.ClientOptions}" DisplayMemberPath="Name" SelectedValuePath="Id"
+                                  SelectedValue="{Binding Draft.ClientKey}" AutomationProperties.Name="Client" />
+                        <UniformGrid Columns="2">
+                            <StackPanel Margin="0,0,6,0">
+                                <TextBlock Text="Type" Style="{StaticResource FormLabel}" />
+                                <ComboBox Style="{StaticResource Select}" MinWidth="0" ItemsSource="{x:Static local:Choices.JobTypes}" SelectedItem="{Binding Draft.JobType}" AutomationProperties.Name="Type" />
+                            </StackPanel>
+                            <StackPanel Margin="6,0,0,0">
+                                <TextBlock Text="Status" Style="{StaticResource FormLabel}" />
+                                <ComboBox Style="{StaticResource Select}" MinWidth="0" ItemsSource="{x:Static local:Choices.JobStatuses}" SelectedItem="{Binding Draft.Status}" AutomationProperties.Name="Status" />
+                            </StackPanel>
+                        </UniformGrid>
+                        <UniformGrid Columns="2">
+                            <StackPanel Margin="0,0,6,0">
+                                <TextBlock Text="Assignee" Style="{StaticResource FormLabel}" />
+                                <ComboBox Style="{StaticResource Select}" MinWidth="0" ItemsSource="{Binding Workspace.People}" DisplayMemberPath="Name" SelectedValuePath="Id"
+                                          SelectedValue="{Binding Draft.AssigneeKey}" AutomationProperties.Name="Assignee" />
+                            </StackPanel>
+                            <StackPanel Margin="6,0,0,0">
+                                <TextBlock Text="Due" Style="{StaticResource FormLabel}" />
+                                <TextBox Style="{StaticResource Input}" Text="{Binding Draft.DueDate, StringFormat=yyyy-MM-dd, TargetNullValue=''}" Tag="yyyy-mm-dd" AutomationProperties.Name="Due date" />
+                            </StackPanel>
+                        </UniformGrid>
+                        <UniformGrid Columns="2">
+                            <StackPanel Margin="0,0,6,0">
+                                <TextBlock Text="Budget (h)" Style="{StaticResource FormLabel}" />
+                                <TextBox Style="{StaticResource Input}" Text="{Binding Draft.BudgetHours}" AutomationProperties.Name="Budget hours" />
+                            </StackPanel>
+                            <StackPanel Margin="6,0,0,0">
+                                <TextBlock Text="Logged (h)" Style="{StaticResource FormLabel}" />
+                                <TextBox Style="{StaticResource Input}" Text="{Binding Draft.ActualHours}" AutomationProperties.Name="Logged hours" />
+                            </StackPanel>
+                        </UniformGrid>
+                        <local:FormActionsView />
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

@@ -35,6 +35,14 @@ None of this has been run on Windows yet. The XAML parses, every resource key re
 ## Progress (2026-11-17, branch `claude/supabase-mcp-setup-5b491a`)
 - Step 1 done: `Code/Settings/AccountMenu.xaml` is the rail footer and settings menu. The gear spins one turn and the menu slides up from behind the footer; `SignOutRequested` shows the Sign out button once step 3 handles it, and `UserName` / `Email` fill the footer.
 - Step 2 done: `supabase/migrations/20261117164716_workspace.sql` was applied to the hosted project with the Supabase MCP (it is recorded in the migration history, so `supabase db push` skips it). Security advisors are clean; the performance advisor only lists unused indexes on the empty tables. Sign-up seeding, organization isolation, blocked deletes and signed-out access were tested in a rolled-back transaction.
+- Step 3 done: `Code/Account/SupabaseClient.cs`, `SignInWindow.xaml` and the startup flow in `App.xaml.cs`. Sign-in, session restore and sign-out were run on Windows; sign-up has not been run end to end yet.
+- Step 4 done (2026-11-21):
+  - `Code/Workspace/` holds the models (`Models.cs`), the generic `RecordPage<T>` with its `PageRules<T>`, `WorkspaceViewModel.cs` (load, name lookups, pickers, save), and the shared `PageHeaderView` (counters and toolbar) and `FormActionsView` (error, Save, Cancel).
+  - One folder per page under `Code/` (`Jobs`, `Projects`, `Board`, `Tasks`, `Clients`, `Reports`), each with its `WorkspaceViewModel.<Page>.cs` and `<Page>PageView.xaml`. The task form is `Code/Tasks/TaskFormView.xaml`, shared with the board.
+  - Styles are in `Assets/Workspace/WorkspaceStyles.xaml` and `Assets/Board/BoardStyles.xaml`; no new colours were needed. `SummaryCardTemplate` moved to `Assets/Shared/Theme.xaml`.
+  - The rail has VALUATION and WORKFLOW headings (`NavHeading`) and switches pages by item name in `MainWindow.xaml.cs`. Workflow pages hide the summary strip and Run, and show the organization as the subtitle.
+  - Cancel discards the draft and closes the form. Dragging a board card saves its status and puts it at the bottom of the new column.
+  - Checked on Windows against the hosted project: every page loads, an edit saved and was put back, and a board card was dragged out and back.
 - `.mcp.json` adds the Supabase MCP server for this project.
 
 ## Still to do, in order

@@ -11,6 +11,12 @@
     <sys:String x:Key="MapGlyph">&#xE707;</sys:String>
     <sys:String x:Key="CompareGlyph">&#xE9D2;</sys:String>
     <sys:String x:Key="RunGlyph">&#xE768;</sys:String>
+    <sys:String x:Key="JobsGlyph">&#xE821;</sys:String>
+    <sys:String x:Key="ProjectsGlyph">&#xE8B7;</sys:String>
+    <sys:String x:Key="BoardGlyph">&#xE80A;</sys:String>
+    <sys:String x:Key="TasksGlyph">&#xE9D5;</sys:String>
+    <sys:String x:Key="ClientsGlyph">&#xE716;</sys:String>
+    <sys:String x:Key="ReportsGlyph">&#xE9F9;</sys:String>
 
     <!-- The Levy wordmark (docs/brand/levy-breaker.svg): a wave breaks on the levee L, whose foot shelters "evy" (Segoe UI Bold, as outlines). Set Height; it scales. -->
     <Style x:Key="LevyMark" TargetType="ContentControl">
@@ -48,6 +54,20 @@
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+    </Style>
+
+    <!-- A heading between groups of pages (VALUATION, WORKFLOW): a disabled item, so it can't be selected. -->
+    <Style x:Key="NavHeading" TargetType="ListBoxItem">
+        <Setter Property="IsEnabled" Value="False" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Padding" Value="28,22,0,8" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBoxItem">
+                    <TextBlock Text="{TemplateBinding Content}" Foreground="{DynamicResource NavMuted}" FontSize="10" FontWeight="SemiBold" Margin="{TemplateBinding Padding}" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <!-- One navigation entry. Tag holds its icon glyph; a blue bar marks the open page. -->
@@ -188,9 +208,12 @@
         <Setter Property="Margin" Value="0,14" />
     </Style>
 
-    <!-- Summary strip under the top bar: hidden while the full-size map is open. -->
+    <!-- Summary strip under the top bar: hidden on workflow pages and while the full-size map is open. -->
     <Style x:Key="SummaryStrip" TargetType="ItemsControl">
         <Style.Triggers>
+            <DataTrigger Binding="{Binding IsWorkflowPage}" Value="True">
+                <Setter Property="Visibility" Value="Collapsed" />
+            </DataTrigger>
             <DataTrigger Binding="{Binding IsMapExpanded}" Value="True">
                 <Setter Property="Visibility" Value="Collapsed" />
             </DataTrigger>
