@@ -30,7 +30,7 @@ public partial class MainWindow : Window
 
         // The workflow pages read and save the organization's rows in Supabase.
         var workspace = _workspace = new WorkspaceViewModel(client, membership);
-        foreach (var view in new FrameworkElement[] { JobsView, ProjectsView, BoardView, TasksView, ClientsView, ReportsView, TeamView, ActivityView, CompaniesView }) view.DataContext = workspace;
+        foreach (var view in new FrameworkElement[] { JobsView, ProjectsView, BoardView, TasksView, ClientsView, ReportsView, RequestsView, IntakeView, TeamView, ActivityView, CompaniesView }) view.DataContext = workspace;
         viewModel.WorkspaceName = workspace.OrganizationName;
         JobTitleText.SetBinding(TextBlock.TextProperty, new Binding(nameof(WorkspaceViewModel.JobTitle)) { Source = workspace });
         ShowAdminPages(workspace);
@@ -45,9 +45,11 @@ public partial class MainWindow : Window
             [NavRules] = RulesPage, [NavMap] = MapPage, [NavCompare] = ComparePage,
             [NavJobs] = JobsPage, [NavProjects] = ProjectsPage, [NavBoard] = BoardPage,
             [NavTasks] = TasksPage, [NavClients] = ClientsPage, [NavReports] = ReportsPage,
+            [NavRequests] = RequestsPage, [NavIntake] = IntakePage,
             [NavTeam] = TeamPage, [NavActivity] = ActivityPage, [NavCompanies] = CompaniesPage,
         };
-        _workflowPages = [JobsPage, ProjectsPage, BoardPage, TasksPage, ClientsPage, ReportsPage, TeamPage, ActivityPage, CompaniesPage];
+        _workflowPages = [JobsPage, ProjectsPage, BoardPage, TasksPage, ClientsPage, ReportsPage, RequestsPage, IntakePage, TeamPage, ActivityPage, CompaniesPage];
+        workspace.ContextSource = DescribeContext;
         Tabs.SelectedItem = RulesPage;
 
         Loaded += async (_, _) => await Task.WhenAll(viewModel.LoadBuildingsAsync(), workspace.LoadAsync());
@@ -113,11 +115,13 @@ public partial class MainWindow : Window
         WindowState = WindowState.Maximized;
     }
 
-    // The ADMIN section: Team for company admins (and platform admins), Activity for company admins, Companies for platform admins only.
+    // The ADMIN section: Team for company admins (and platform admins), Activity for company admins, Intake for account managers, Companies for platform admins.
     void ShowAdminPages(WorkspaceViewModel workspace)
     {
         var team = workspace.IsAdmin || workspace.IsPlatformAdmin;
-        NavAdminHeading.Visibility = NavTeam.Visibility = team ? Visibility.Visible : Visibility.Collapsed;
+        NavAdminHeading.Visibility = team || workspace.IsAccountManager ? Visibility.Visible : Visibility.Collapsed;
+        NavTeam.Visibility = team ? Visibility.Visible : Visibility.Collapsed;
+        NavIntake.Visibility = workspace.IsAccountManager ? Visibility.Visible : Visibility.Collapsed;
         NavActivity.Visibility = workspace.IsAdmin ? Visibility.Visible : Visibility.Collapsed;
         NavCompanies.Visibility = workspace.IsPlatformAdmin ? Visibility.Visible : Visibility.Collapsed;
         if ((!team && Nav.SelectedItem == NavTeam) || (!workspace.IsAdmin && Nav.SelectedItem == NavActivity)) Nav.SelectedItem = NavRules;
@@ -130,7 +134,16 @@ public partial class MainWindow : Window
         Tabs.SelectedItem = page;
         _viewModel.IsWorkflowPage = _workflowPages.Contains(page);
         if (page == ActivityPage) _ = _workspace.LoadActivityAsync();
+        if (page == IntakePage) _ = _workspace.LoadIntakeAsync();
+        if (page == RequestsPage) _ = _workspace.LoadRequestsAsync();
+        if (!_workflowPages.Contains(page)) _lastValuationPage = (string)page.Header;
     }
+
+    // The last valuation page the person was on, for "Where in Levy" on a new request.
+    string _lastValuationPage = "Rules editor";
+
+    // "Parcel map · Parcel 04-2115": the page and selected parcel, filled into a new request.
+    string DescribeContext() => _lastValuationPage == (string)MapPage.Header && _viewModel.SelectedCell is not null ? $"{_lastValuationPage} · {_viewModel.SelectedTitle}" : _lastValuationPage;
 
     // Leaving the Map page closes the full-size map, so the summary strip comes back on other pages.
     // SelectionChanged bubbles up from lists inside the pages too; only the page switch itself counts.

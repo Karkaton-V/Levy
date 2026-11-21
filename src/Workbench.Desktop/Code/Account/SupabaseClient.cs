@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -17,6 +18,22 @@ public sealed record AuthUser(string Id, string? Email, Dictionary<string, JsonE
         UserMetadata is not null && UserMetadata.TryGetValue("full_name", out var name) && name.ValueKind == JsonValueKind.String && !string.IsNullOrWhiteSpace(name.GetString())
             ? name.GetString()!.Trim()
             : Email?.Split('@')[0] ?? "";
+
+    // The GitLab username, when the account signed in with GitLab.
+    public string? GitLabUsername =>
+        UserMetadata is not null && UserMetadata.TryGetValue("user_name", out var user) && user.ValueKind == JsonValueKind.String ? user.GetString() : null;
+}
+
+// A GitLab access token from "Sign in with GitLab", and when GitLab stops accepting it.
+public sealed record GitLabToken(string AccessToken, DateTimeOffset ExpiresAt)
+{
+    public bool IsValid => ExpiresAt - DateTimeOffset.UtcNow > TimeSpan.FromMinutes(1);
+}
+
+// Where Levy's GitLab lives and which projects requests go to (Assets/Account/gitlab.json).
+public sealed record GitLabSettings(string Url, int CallbackPort, string Scopes, Dictionary<string, string> Projects)
+{
+    public static GitLabSettings FromAssets() => JsonSerializer.Deserialize<GitLabSettings>(Shared.ReadAsset("Account", "gitlab.json"), SupabaseClient.Json)!;
 }
 
 public sealed record AuthSession(string AccessToken, string RefreshToken, DateTimeOffset ExpiresAt, AuthUser User);
@@ -44,6 +61,10 @@ public sealed class SupabaseClient
 
     public AuthSession? Session { get; private set; }
     public AuthUser? User => Session?.User;
+
+    // GitLab's token for the signed-in person, while it lasts (GitLab tokens expire after about two hours; signing in with GitLab again renews it).
+    public GitLabToken? GitLab { get; private set; } = TokenStore.LoadGitLab();
+    public bool HasGitLab => GitLab?.IsValid == true;
 
     public SupabaseClient(string url, string publishableKey)
     {
@@ -76,11 +97,73 @@ public sealed class SupabaseClient
         Accept(await reply.Content.ReadFromJsonAsync<JsonElement>(Json));
     }
 
+    // Sign in with GitLab: the browser opens GitLab's sign-in (through Supabase), which comes back to a one-off local address with a code
+    // that is exchanged for a session (PKCE, so no secret lives in the app). With onlyFor set, the code must belong to that user, so
+    // reconnecting GitLab never swaps the signed-in account.
+    public async Task SignInWithGitLabAsync(GitLabSettings settings, CancellationToken cancel, string? onlyFor = null)
+    {
+        var verifier = Base64Url(RandomNumberGenerator.GetBytes(32));
+        var challenge = Base64Url(SHA256.HashData(Encoding.ASCII.GetBytes(verifier)));
+        var callback = $"http://localhost:{settings.CallbackPort}/gitlab/";
+        using var listener = new HttpListener();
+        listener.Prefixes.Add(callback);
+        try { listener.Start(); }
+        catch (HttpListenerException) { throw new SupabaseException($"Port {settings.CallbackPort} is in use, so GitLab can't hand the sign-in back. Close whatever is using it and try again."); }
+
+        var authorize = $"{_http.BaseAddress}auth/v1/authorize?provider=gitlab&redirect_to={Uri.EscapeDataString(callback)}" +
+                        $"&code_challenge={challenge}&code_challenge_method=s256&scopes={Uri.EscapeDataString(settings.Scopes)}";
+        await CheckProviderAsync(authorize);
+        Process.Start(new ProcessStartInfo(authorize) { UseShellExecute = true });
+
+        HttpListenerContext context;
+        try { context = await listener.GetContextAsync().WaitAsync(TimeSpan.FromMinutes(5), cancel); }
+        catch (TimeoutException) { throw new SupabaseException("GitLab sign-in timed out. Try again."); }
+        var code = context.Request.QueryString["code"];
+        var problem = context.Request.QueryString["error_description"];
+        await Reply(context, code is null ? "Sign-in didn't finish. You can close this tab and try again in Levy." : "Signed in. You can close this tab and go back to Levy.");
+        if (code is null) throw new SupabaseException(problem is { Length: > 0 } ? Sentence(problem.Replace('+', ' ')) : "GitLab sign-in was cancelled.");
+
+        using var reply = await SendAsync(HttpMethod.Post, "auth/v1/token?grant_type=pkce", new { auth_code = code, code_verifier = verifier }, authorize: false);
+        var json = await reply.Content.ReadFromJsonAsync<JsonElement>(Json);
+        if (onlyFor is not null && json.GetProperty("user").GetProperty("id").GetString() != onlyFor)
+            throw new SupabaseException("That GitLab account belongs to a different Levy account. Sign in to GitLab as yourself and try again.");
+        Accept(json);
+    }
+
+    // Supabase answers the sign-in address with a redirect to GitLab when GitLab sign-in is set up, and an error when it isn't;
+    // asking first means a missing setup shows here instead of as an error page in the browser.
+    static async Task CheckProviderAsync(string authorize)
+    {
+        using var probe = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false }) { Timeout = TimeSpan.FromSeconds(15) };
+        HttpResponseMessage reply;
+        try { reply = await probe.GetAsync(authorize); }
+        catch (Exception e) when (e is HttpRequestException or TaskCanceledException) { throw new SupabaseException("Couldn't reach the sign-in server. Check your internet connection and try again."); }
+        using (reply)
+        {
+            if ((int)reply.StatusCode is >= 300 and < 400) return;
+            var detail = await ErrorMessageAsync(reply);
+            throw new SupabaseException(detail.Contains("not enabled", StringComparison.OrdinalIgnoreCase)
+                ? "Sign in with GitLab isn't set up yet: turn on the GitLab provider in Supabase (Authentication → Sign In / Providers) with your GitLab server's address."
+                : detail);
+        }
+    }
+
+    static async Task Reply(HttpListenerContext context, string message)
+    {
+        var page = Encoding.UTF8.GetBytes($"<!DOCTYPE html><meta charset=utf-8><title>Levy</title><body style=\"font:16px Segoe UI,sans-serif;margin:3em\">{WebUtility.HtmlEncode(message)}</body>");
+        context.Response.ContentType = "text/html; charset=utf-8";
+        context.Response.ContentLength64 = page.Length;
+        await context.Response.OutputStream.WriteAsync(page);
+        context.Response.Close();
+    }
+
+    static string Base64Url(byte[] bytes) => Convert.ToBase64String(bytes).TrimEnd('=').Replace('+', '-').Replace('/', '_');
+
     // Signs back in with the refresh token saved at the last sign-in. Returns false when there is none or Supabase refuses it;
     // a network failure keeps the saved token for next time and is passed on to the caller.
     public async Task<bool> RestoreAsync()
     {
-        var token = SessionStore.Load();
+        var token = TokenStore.LoadSession();
         if (token is null) return false;
         try
         {
@@ -89,7 +172,7 @@ public sealed class SupabaseClient
         }
         catch (SupabaseException e) when (e.IsRejection)
         {
-            SessionStore.Clear();
+            TokenStore.Clear();
             return false;
         }
     }
@@ -104,7 +187,8 @@ public sealed class SupabaseClient
         finally
         {
             Session = null;
-            SessionStore.Clear();
+            GitLab = null;
+            TokenStore.Clear();
         }
     }
 
@@ -137,7 +221,13 @@ public sealed class SupabaseClient
             json.GetProperty("refresh_token").GetString()!,
             expiresAt,
             json.GetProperty("user").Deserialize<AuthUser>(Json)!);
-        SessionStore.Save(Session.RefreshToken);
+        TokenStore.SaveSession(Session.RefreshToken);
+        // Only a GitLab sign-in carries GitLab's own token; Supabase doesn't send its expiry, and GitLab's tokens last two hours.
+        if (json.TryGetProperty("provider_token", out var provider) && provider.ValueKind == JsonValueKind.String && provider.GetString() is { Length: > 0 } token)
+        {
+            GitLab = new GitLabToken(token, DateTimeOffset.UtcNow.AddHours(2));
+            TokenStore.SaveGitLab(GitLab);
+        }
     }
 
     // Rows -----------------------------------------------------------------------------------------------------------
@@ -213,26 +303,40 @@ public sealed class SupabaseClient
 
     static string Sentence(string text) => text.EndsWith('.') ? text : text + ".";
 
-    // The refresh token, encrypted for the current Windows user (DPAPI) in %LOCALAPPDATA%\ValuationWorkbench\session.bin.
-    static class SessionStore
+    // The Supabase refresh token and the GitLab token, encrypted for the current Windows user (DPAPI) in %LOCALAPPDATA%\ValuationWorkbench.
+    static class TokenStore
     {
-        static readonly string FilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ValuationWorkbench", "session.bin");
+        static readonly string Folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ValuationWorkbench");
+        static readonly string SessionFile = Path.Combine(Folder, "session.bin");
+        static readonly string GitLabFile = Path.Combine(Folder, "gitlab.bin");
 
-        public static string? Load()
+        public static string? LoadSession() => Read(SessionFile);
+        public static void SaveSession(string refreshToken) => Write(SessionFile, refreshToken);
+
+        public static GitLabToken? LoadGitLab()
         {
-            try { return File.Exists(FilePath) ? Encoding.UTF8.GetString(ProtectedData.Unprotect(File.ReadAllBytes(FilePath), null, DataProtectionScope.CurrentUser)) : null; }
-            catch (Exception e) when (e is IOException or CryptographicException or UnauthorizedAccessException) { return null; }
+            var parts = Read(GitLabFile)?.Split('\n');
+            return parts is [var token, var expires] && long.TryParse(expires, out var unix) ? new GitLabToken(token, DateTimeOffset.FromUnixTimeSeconds(unix)) : null;
         }
 
-        public static void Save(string refreshToken)
-        {
-            Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);
-            File.WriteAllBytes(FilePath, ProtectedData.Protect(Encoding.UTF8.GetBytes(refreshToken), null, DataProtectionScope.CurrentUser));
-        }
+        public static void SaveGitLab(GitLabToken token) => Write(GitLabFile, token.AccessToken + "\n" + token.ExpiresAt.ToUnixTimeSeconds());
 
         public static void Clear()
         {
-            try { File.Delete(FilePath); } catch (IOException) { }
+            foreach (var file in new[] { SessionFile, GitLabFile })
+                try { File.Delete(file); } catch (IOException) { }
+        }
+
+        static string? Read(string file)
+        {
+            try { return File.Exists(file) ? Encoding.UTF8.GetString(ProtectedData.Unprotect(File.ReadAllBytes(file), null, DataProtectionScope.CurrentUser)) : null; }
+            catch (Exception e) when (e is IOException or CryptographicException or UnauthorizedAccessException) { return null; }
+        }
+
+        static void Write(string file, string text)
+        {
+            Directory.CreateDirectory(Folder);
+            File.WriteAllBytes(file, ProtectedData.Protect(Encoding.UTF8.GetBytes(text), null, DataProtectionScope.CurrentUser));
         }
     }
 }

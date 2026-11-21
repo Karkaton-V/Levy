@@ -23,7 +23,11 @@ public static class Choices
     public static readonly string[] MemberStatuses = ["Pending", "Active", "Rejected", "Disabled"];
     public static readonly string[] MemberRoles = ["Member", "Admin"];
     public static readonly string[] CompanyStates = ["Waiting for review", "No admin", "All set"];
-    public static readonly string[] ActivityKinds = ["Job", "Task", "Project", "Client", "Report", "Person"];
+    public static readonly string[] ActivityKinds = ["Job", "Task", "Project", "Client", "Report", "Person", "Request"];
+    public static readonly string[] RequestKinds = ["Bug", "Feature", "Question"];
+    public static readonly string[] RequestStatuses = ["New", "Triaged", "In GitLab", "In progress", "In review", "Fixed", "Closed", "Declined"];
+    public static readonly string[] RequestPriorities = ["Low", "Medium", "High", "Critical"];
+    public static readonly string[] Stacks = ["Rails", ".NET"];
 
     public static Chip Status(string status) => new(status, status switch
     {
@@ -206,9 +210,13 @@ public sealed class Company : Row
     public int Members { get; set; }
     public int Pending { get; set; }
     public int Admins { get; set; }
+    public Guid? AccountManagerId { get; set; }
+    public string AccountManagerName { get; set; } = "";
 
     // Only used when creating: start the company with the sample clients, jobs and tasks.
     [JsonIgnore] public bool WithSampleData { get; set; }
+    [JsonIgnore] public Guid AccountManagerKey { get => Key(AccountManagerId); set => AccountManagerId = FromKey(value); }
+    [JsonIgnore] public string Manager => AccountManagerName.Length > 0 ? AccountManagerName : "—";
     [JsonIgnore] public bool IsExisting => Id != Guid.Empty;
     [JsonIgnore] public bool IsNewCompany => Id == Guid.Empty;
     [JsonIgnore] public string State => Pending > 0 ? "Waiting for review" : Admins == 0 ? "No admin" : "All set";
@@ -231,8 +239,63 @@ public sealed class ActivityEntry : Row
     [JsonIgnore] public DateTime When => CreatedAt.LocalDateTime;
     [JsonIgnore] public string Day => Date(DateOnly.FromDateTime(When));
     [JsonIgnore] public string Time => When.ToString("h:mm tt", CultureInfo.GetCultureInfo("en-US"));
-    [JsonIgnore] public Chip EntityChip => new(Entity, Entity switch { "Job" => "Blue", "Task" => "Purple", "Person" => "Amber", "Report" => "Green", _ => "Grey" });
+    [JsonIgnore] public Chip EntityChip => new(Entity, Entity switch { "Job" => "Blue", "Task" => "Purple", "Person" => "Amber", "Report" => "Green", "Request" => "Red", _ => "Grey" });
     [JsonIgnore] public string DetailsOrDash => Details.Length > 0 ? Details : "—";
 
     public override object Columns() => new { };
+}
+
+// A merge request linked to a request's GitLab issue, as last read from GitLab (stored in issue_reports.merge_requests).
+public sealed record MergeRequestInfo(int Iid, string Title, string State, string Url, bool Draft, string? Pipeline)
+{
+    public string Summary => $"!{Iid} {Title} · {(State == "opened" && Draft ? "draft" : State)}{(Pipeline is { } p ? " · pipeline " + p : "")}";
+}
+
+// A bug report or feature request (public.issue_reports): filed by a company's staff, triaged by its account manager, worked in GitLab.
+// OrgName is filled only on the Intake page (public.list_intake), where requests from several companies appear together.
+public sealed class IssueReport : Row
+{
+    public Guid? ReportedBy { get; set; }
+    public string ReporterName { get; set; } = "";
+    public string? OrgName { get; set; }
+    public string Title { get; set; } = "";
+    public string Kind { get; set; } = "Bug";
+    public string Description { get; set; } = "";
+    public string Context { get; set; } = "";
+    public string Status { get; set; } = "New";
+    public string? Priority { get; set; }
+    public string? Stack { get; set; }
+    public string TriageNote { get; set; } = "";
+    public string? GitlabProject { get; set; }
+    public int? GitlabIid { get; set; }
+    public string? GitlabUrl { get; set; }
+    public string? GitlabState { get; set; }
+    public List<MergeRequestInfo> MergeRequests { get; set; } = [];
+    public DateTimeOffset UpdatedAt { get; set; }
+
+    [JsonIgnore] public bool IsNewReport => Id == Guid.Empty;
+    [JsonIgnore] public bool IsFiled => Id != Guid.Empty;
+    [JsonIgnore] public bool IsInGitLab => GitlabIid is not null;
+    [JsonIgnore] public bool CanSend => IsFiled && GitlabIid is null;
+    [JsonIgnore] public bool IsOpen => Status is not ("Fixed" or "Closed" or "Declined");
+    [JsonIgnore] public Chip StatusChip => new(Status, Status switch
+    {
+        "New" => "Amber", "Triaged" or "In GitLab" => "Blue", "In progress" or "In review" => "Purple", "Fixed" => "Green", "Declined" => "Red", _ => "Grey",
+    });
+    [JsonIgnore] public Chip KindChip => new(Kind, Kind switch { "Bug" => "Red", "Feature" => "Blue", _ => "Grey" });
+    [JsonIgnore] public Chip PriorityChip => new(Priority ?? "Not set", Priority switch { "Critical" or "High" => "Red", "Medium" => "Amber", _ => "Grey" });
+    [JsonIgnore] public string Filed => CreatedAt == default ? "—" : Date(DateOnly.FromDateTime(CreatedAt.LocalDateTime));
+    [JsonIgnore] public string Where => GitlabIid is { } iid ? $"{GitlabProject}#{iid}" : "—";
+    [JsonIgnore] public string Progress => MergeRequests.Count == 0 ? (IsInGitLab ? "No merge request yet" : "Your account manager sends it to the developers after triage.") : string.Join("\n", MergeRequests.Select(m => m.Summary));
+    [JsonIgnore] public string NoteOrDash => TriageNote.Length > 0 ? TriageNote : "—";
+
+    // Filing sends only what the reporter writes; the database fills in who, when and the starting status.
+    public override object Columns() => new { OrgId, Title = Title.Trim(), Kind, Description = Description.Trim(), Context = Context.Trim() };
+
+    // What the account manager changes while triaging.
+    public object TriageColumns() => new { Title = Title.Trim(), Kind, Description = Description.Trim(), Status, Priority, Stack, TriageNote = TriageNote.Trim() };
+
+    // Triage plus where the request lives in GitLab and what GitLab says about it.
+    public object GitLabColumns() => new { Title = Title.Trim(), Kind, Description = Description.Trim(), Status, Priority, Stack, TriageNote = TriageNote.Trim(),
+        GitlabProject, GitlabIid, GitlabUrl, GitlabState, MergeRequests };
 }

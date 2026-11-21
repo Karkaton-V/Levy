@@ -1,7 +1,9 @@
 namespace Workbench.Desktop;
 
 // The signed-in user's place in one company (public.my_memberships): role, review status and job title. JoinCode is filled for admins only.
-public sealed record Membership(Guid OrgId, string OrgName, string Role, string Status, string JobTitle, string? JoinCode, bool IsPlatformAdmin, DateTimeOffset JoinedAt)
+// IsAccountManager: the user manages at least one company's requests; AccountManagerName: who manages this company's.
+public sealed record Membership(Guid OrgId, string OrgName, string Role, string Status, string JobTitle, string? JoinCode, bool IsPlatformAdmin, DateTimeOffset JoinedAt,
+    bool IsAccountManager = false, string AccountManagerName = "")
 {
     public bool IsActive => Status == "active";
     public bool IsAdmin => IsActive && Role == "admin";

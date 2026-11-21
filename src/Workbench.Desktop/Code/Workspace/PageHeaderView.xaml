@@ -9,7 +9,7 @@
                      Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Search" />
             <ComboBox DockPanel.Dock="Left" Style="{StaticResource Select}" Margin="12,0,0,0" MinWidth="150"
                       ItemsSource="{Binding FilterOptions}" SelectedItem="{Binding Filter}" AutomationProperties.Name="Filter" />
-            <ToggleButton DockPanel.Dock="Left" Style="{StaticResource FilterChip}" Margin="12,0,0,0" Content="Assigned to me"
+            <ToggleButton DockPanel.Dock="Left" Style="{StaticResource FilterChip}" Margin="12,0,0,0" Content="{Binding MineLabel}"
                           IsChecked="{Binding AssignedToMe}" Visibility="{Binding HasMine, Converter={StaticResource BoolVis}}" />
             <Button DockPanel.Dock="Right" Style="{StaticResource PrimaryButton}" Command="{Binding NewCommand}" Visibility="{Binding CanCreate, Converter={StaticResource BoolVis}}">
                 <StackPanel Orientation="Horizontal">

@@ -19,6 +19,8 @@
     <sys:String x:Key="ReportsGlyph">&#xE9F9;</sys:String>
     <sys:String x:Key="TeamGlyph">&#xE77B;</sys:String>
     <sys:String x:Key="ActivityGlyph">&#xE81C;</sys:String>
+    <sys:String x:Key="RequestsGlyph">&#xEBE8;</sys:String>
+    <sys:String x:Key="IntakeGlyph">&#xE715;</sys:String>
     <sys:String x:Key="CompaniesGlyph">&#xE825;</sys:String>
 
     <!-- The Levy wordmark (docs/brand/levy-breaker.svg): a wave breaks on the levee L, whose foot shelters "evy" (Segoe UI Bold, as outlines). Set Height; it scales. -->

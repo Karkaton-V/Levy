@@ -1,0 +1,9 @@
+{
+  "url": "https://gitlab.com",
+  "callback_port": 53682,
+  "scopes": "api read_user",
+  "projects": {
+    "Rails": "your-group/smartcama",
+    ".NET": "your-group/levy"
+  }
+}

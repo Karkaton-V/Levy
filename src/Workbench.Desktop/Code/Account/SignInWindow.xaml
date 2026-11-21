@@ -70,6 +70,21 @@
             <Button x:Name="SubmitButton" Style="{StaticResource WideButton}" Margin="0,22,0,0" IsDefault="True" Click="Submit">
                 <TextBlock x:Name="SubmitText" Text="Sign in" />
             </Button>
+
+            <!-- Agency staff: sign in with the agency's GitLab (opens the browser). -->
+            <Grid Margin="0,18,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Border Style="{StaticResource OrLine}" />
+                <TextBlock Grid.Column="1" Text="or" Style="{StaticResource OrText}" />
+                <Border Grid.Column="2" Style="{StaticResource OrLine}" />
+            </Grid>
+            <Button x:Name="GitLabButton" Style="{StaticResource WideSecondaryButton}" Margin="0,18,0,0" Click="GitLab_Click">
+                <TextBlock x:Name="GitLabText" Text="Sign in with GitLab" />
+            </Button>
         </StackPanel>
     </Grid>
 </Window>

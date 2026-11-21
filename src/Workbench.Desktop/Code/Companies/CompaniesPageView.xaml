@@ -38,6 +38,7 @@
                         </DataGridTemplateColumn>
                         <DataGridTextColumn Header="People" Binding="{Binding Members}" Width="Auto" />
                         <DataGridTextColumn Header="Admins" Binding="{Binding Admins}" Width="Auto" />
+                        <DataGridTextColumn Header="Account manager" Binding="{Binding Manager}" SortMemberPath="AccountManagerName" Width="Auto" />
                         <DataGridTextColumn Header="Created" Binding="{Binding Created}" SortMemberPath="CreatedAt" Width="Auto" />
                     </DataGrid.Columns>
                 </DataGrid>
@@ -53,6 +54,10 @@
                         <TextBlock Text="{Binding FormTitle}" Style="{StaticResource CardTitle}" />
                         <TextBlock Text="Name" Style="{StaticResource FormLabel}" />
                         <TextBox Style="{StaticResource Input}" Text="{Binding Draft.Name}" Tag="Caddo Parish Assessor" AutomationProperties.Name="Company name" />
+                        <TextBlock Text="Account manager" Style="{StaticResource FormLabel}" />
+                        <ComboBox Style="{StaticResource Select}" ItemsSource="{Binding Workspace.StaffOptions}" DisplayMemberPath="Name" SelectedValuePath="Id"
+                                  SelectedValue="{Binding Draft.AccountManagerKey}" AutomationProperties.Name="Account manager" />
+                        <TextBlock Text="Triages this company's requests on the Intake page and sends them to GitLab." Style="{StaticResource FormNote}" />
                         <CheckBox Style="{StaticResource FormCheck}" Content="Start with sample clients, jobs and tasks" IsChecked="{Binding Draft.WithSampleData}"
                                   Visibility="{Binding Draft.IsNewCompany, Converter={StaticResource BoolVis}}" />
                         <StackPanel Visibility="{Binding Draft.IsExisting, Converter={StaticResource BoolVis}}">

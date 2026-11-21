@@ -1,0 +1,100 @@
+<UserControl x:Class="Workbench.Desktop.RequestsPageView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Workbench.Desktop">
+    <!-- Requests: the company's bug reports and feature requests, filing a new one, and where each stands. DataContext: WorkspaceViewModel. Styles: Assets/Workspace/WorkspaceStyles.xaml. -->
+    <Grid Margin="32,24,32,32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="340" />
+        </Grid.ColumnDefinitions>
+
+        <local:PageHeaderView Grid.ColumnSpan="2" DataContext="{Binding Requests}" />
+
+        <Border Grid.Row="1" Style="{StaticResource TableCard}" Margin="0,16,20,0">
+            <Grid>
+                <DataGrid Style="{StaticResource Table}" ItemsSource="{Binding Requests.View}" SelectedItem="{Binding Requests.Selected, Mode=TwoWay}" AutomationProperties.Name="Requests">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="Request" SortMemberPath="Title" Width="*" MinWidth="200">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Title}" Style="{StaticResource CellStrong}" />
+                                        <TextBlock Text="{Binding ReporterName}" Style="{StaticResource CellMuted}" FontSize="12" Margin="0,2,0,0" TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Kind" SortMemberPath="Kind" Width="Auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ContentPresenter Content="{Binding KindChip}" ContentTemplate="{StaticResource ChipTemplate}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Status" SortMemberPath="Status" Width="Auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ContentPresenter Content="{Binding StatusChip}" ContentTemplate="{StaticResource ChipTemplate}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Filed" Binding="{Binding Filed}" SortMemberPath="CreatedAt" Width="Auto" />
+                    </DataGrid.Columns>
+                </DataGrid>
+                <TextBlock Style="{StaticResource TableMessage}" Text="{Binding Message}" />
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource FormCard}" Margin="0,16,0,0" DataContext="{Binding Requests}">
+            <Grid>
+                <TextBlock Style="{StaticResource FormHint}" Text="Pick a request to see where it stands, or press Report an issue." />
+                <ScrollViewer Style="{StaticResource FormScroll}">
+                    <StackPanel>
+                        <!-- Filing a new request. -->
+                        <StackPanel Visibility="{Binding Draft.IsNewReport, Converter={StaticResource BoolVis}}">
+                            <TextBlock Text="Report an issue" Style="{StaticResource CardTitle}" />
+                            <TextBlock Text="Title" Style="{StaticResource FormLabel}" />
+                            <TextBox Style="{StaticResource Input}" Text="{Binding Draft.Title}" Tag="Map freezes when zooming into a subdivision" AutomationProperties.Name="Title" />
+                            <TextBlock Text="Kind" Style="{StaticResource FormLabel}" />
+                            <ComboBox Style="{StaticResource Select}" ItemsSource="{x:Static local:Choices.RequestKinds}" SelectedItem="{Binding Draft.Kind}" AutomationProperties.Name="Kind" />
+                            <TextBlock Text="What happened, or what you need" Style="{StaticResource FormLabel}" />
+                            <TextBox Style="{StaticResource TextArea}" Text="{Binding Draft.Description}" MinHeight="120" AutomationProperties.Name="Description" />
+                            <TextBlock Text="Where in Levy" Style="{StaticResource FormLabel}" />
+                            <TextBox Style="{StaticResource Input}" Text="{Binding Draft.Context}" Tag="Page and parcel" AutomationProperties.Name="Where in Levy" />
+                            <TextBlock Text="{Binding Workspace.RequestRouting}" Style="{StaticResource FormNote}" />
+                            <local:FormActionsView />
+                        </StackPanel>
+
+                        <!-- A filed request: read-only, kept up to date by the account manager and GitLab. -->
+                        <StackPanel Visibility="{Binding Draft.IsFiled, Converter={StaticResource BoolVis}}">
+                            <TextBlock Text="{Binding Draft.Title}" Style="{StaticResource CardTitle}" TextWrapping="Wrap" />
+                            <WrapPanel Margin="0,10,0,0">
+                                <ContentPresenter Content="{Binding Draft.StatusChip}" ContentTemplate="{StaticResource ChipTemplate}" Margin="0,0,6,0" />
+                                <ContentPresenter Content="{Binding Draft.KindChip}" ContentTemplate="{StaticResource ChipTemplate}" Margin="0,0,6,0" />
+                                <ContentPresenter Content="{Binding Draft.PriorityChip}" ContentTemplate="{StaticResource ChipTemplate}" />
+                            </WrapPanel>
+                            <TextBlock Style="{StaticResource FormNote}">
+                                <Run Text="Filed by" /> <Run Text="{Binding Draft.ReporterName, Mode=OneWay}" /> <Run Text="on" /> <Run Text="{Binding Draft.Filed, Mode=OneWay}" />
+                            </TextBlock>
+                            <TextBlock Text="Details" Style="{StaticResource FormLabel}" />
+                            <TextBlock Text="{Binding Draft.Description}" Style="{StaticResource DetailText}" />
+                            <TextBlock Text="Where in Levy" Style="{StaticResource FormLabel}" />
+                            <TextBlock Text="{Binding Draft.Context}" Style="{StaticResource DetailText}" />
+                            <TextBlock Text="Account manager's note" Style="{StaticResource FormLabel}" />
+                            <TextBlock Text="{Binding Draft.NoteOrDash}" Style="{StaticResource DetailText}" />
+                            <TextBlock Text="Development" Style="{StaticResource FormLabel}" />
+                            <TextBlock Text="{Binding Draft.Where}" Style="{StaticResource DetailText}" />
+                            <TextBlock Text="{Binding Draft.Progress}" Style="{StaticResource DetailText}" Foreground="{DynamicResource Muted}" Margin="0,4,0,0" />
+                            <Button Style="{StaticResource SecondaryButton}" Content="Close" Command="{Binding CancelCommand}" HorizontalAlignment="Left" Margin="0,20,0,0" />
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

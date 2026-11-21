@@ -25,6 +25,8 @@ public sealed partial class WorkspaceViewModel : INotifyPropertyChanged
         Team = CreateTeam();
         Companies = CreateCompanies();
         Activity = CreateActivity();
+        Requests = CreateRequests();
+        Intake = CreateIntake();
         Clients.Saved += Relink; Jobs.Saved += Relink; Projects.Saved += Relink; Tasks.Saved += Relink; Reports.Saved += Relink;
     }
 
@@ -76,6 +78,7 @@ public sealed partial class WorkspaceViewModel : INotifyPropertyChanged
             Message = "";
         }
         catch (SupabaseException e) { Message = e.Message; }
+        await LoadRequestsAsync();
         await LoadAdminAsync();
     }
 

@@ -81,8 +81,35 @@ public partial class SignInWindow : Window
         }
     }
 
+    CancellationTokenSource? _gitLab;
+
+    // Opens GitLab's sign-in in the browser and waits for it; pressing the button again cancels the wait.
+    async void GitLab_Click(object sender, RoutedEventArgs e)
+    {
+        if (_gitLab is not null) { _gitLab.Cancel(); return; }
+        _gitLab = new CancellationTokenSource();
+        SubmitButton.IsEnabled = false;
+        GitLabText.Text = "Cancel GitLab sign-in";
+        ShowInfo("Finish signing in to GitLab in your browser. Levy will continue on its own.");
+        try
+        {
+            await _client.SignInWithGitLabAsync(GitLabSettings.FromAssets(), _gitLab.Token);
+            SignedIn?.Invoke();
+        }
+        catch (OperationCanceledException) { ShowInfo("GitLab sign-in cancelled."); }
+        catch (SupabaseException ex) { ShowError(ex.Message); }
+        finally
+        {
+            _gitLab.Dispose();
+            _gitLab = null;
+            SubmitButton.IsEnabled = true;
+            GitLabText.Text = "Sign in with GitLab";
+        }
+    }
+
     void SetBusy(bool busy)
     {
+        GitLabButton.IsEnabled = !busy;
         SubmitButton.IsEnabled = !busy;
         SubmitText.Text = busy ? (Creating ? "Creating account…" : "Signing in…") : Creating ? "Create account" : "Sign in";
         Cursor = busy ? System.Windows.Input.Cursors.Wait : null;

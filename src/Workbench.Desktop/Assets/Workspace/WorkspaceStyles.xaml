@@ -183,6 +183,25 @@
         <Setter Property="Margin" Value="0,24,0,20" />
     </Style>
 
+    <!-- Read-only text in a form (a filed request's details). -->
+    <Style x:Key="DetailText" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Text}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="LineHeight" Value="19" />
+    </Style>
+
+    <!-- The outcome of a GitLab action on the Intake page: muted when it worked, red when it didn't (IntakeFailed). -->
+    <Style x:Key="IntakeResult" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Muted}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IntakeFailed}" Value="True">
+                <Setter Property="Foreground" Value="{DynamicResource ToneRedText}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
     <!-- The outcome of "Add to company": green when it worked, red when it didn't (AssignFailed). -->
     <Style x:Key="AssignResult" TargetType="TextBlock">
         <Setter Property="Foreground" Value="{DynamicResource ToneGreenText}" />

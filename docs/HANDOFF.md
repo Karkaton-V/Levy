@@ -59,6 +59,19 @@ None of this has been run on Windows yet. The XAML parses, every resource key re
   - Only the company's admins can read it, and nobody can write it directly.
   - App: `Code/Activity/` is a read-only page under ADMIN (company admins). It reloads each time it's opened, shows the latest 500 entries, and filters by kind. `PageRules.ReadOnly` hides the New button.
   - Tested in a rolled-back transaction, and with a real board move by a member account.
+- GitLab sign-in and issue intake (2026-11-21; see `docs/GITLAB.md` for the workflow and the one-time setup):
+  - Migration `20261121213216_gitlab_intake.sql`, applied with the Supabase MCP.
+    - GitLab sign-ups get a profile with `gitlab_username` and no office of their own.
+    - `organizations.account_manager_id`, plus `private.can_triage`.
+    - `public.issue_reports` (filed by members, triaged by the company's account manager or a platform admin), and `list_intake` / `list_staff`.
+    - `my_memberships` and `list_companies` / `save_company` now carry the account manager. Requests are written to the activity log.
+  - App:
+    - `SupabaseClient.SignInWithGitLabAsync` uses PKCE through the browser and a listener on `localhost:53682`, after first checking that Supabase has GitLab turned on. It keeps GitLab's token (DPAPI, about 2 h).
+    - `GitLabClient` creates issues and reads issue state, related merge requests and pipelines.
+    - Pages: Requests under WORKFLOW (everyone), and Intake under ADMIN (account managers: triage, Send to GitLab, Refresh from GitLab). The account manager is chosen on Companies. Settings are in `Assets/Account/gitlab.json`.
+  - Tested: database rules in a rolled-back transaction; filing, triage and the "not set up" message in the app (the test request was then deleted).
+  - Not tested: the GitLab side. It needs the OAuth application on the GitLab server and the GitLab provider turned on in Supabase.
+  - Next: a GitLab webhook into a Supabase Edge Function for instant status, and developer/reviewer roles.
 - `.mcp.json` adds the Supabase MCP server for this project.
 
 ## Still to do, in order

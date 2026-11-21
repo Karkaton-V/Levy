@@ -14,6 +14,9 @@ public sealed partial class WorkspaceViewModel
 
     public RecordPage<Company> Companies { get; }
 
+    // Platform staff who can be a company's account manager, led by "None".
+    public IReadOnlyList<Option> StaffOptions { get; private set; } = [new(Guid.Empty, "None")];
+
     // The "Add a person" fields on the selected company.
     public string AssignEmail { get => _assignEmail; set { _assignEmail = value; Raise(); } }
     public string AssignRole { get => _assignRole; set { _assignRole = value; Raise(); } }
@@ -49,7 +52,7 @@ public sealed partial class WorkspaceViewModel
     }
 
     async Task<Company> SaveCompanyAsync(Company draft, bool isNew) =>
-        (await _client.RpcAsync<Company>("save_company", new { Company = isNew ? (Guid?)null : draft.Id, CompanyName = draft.Name.Trim(), WithSampleData = isNew && draft.WithSampleData })).Single();
+        (await _client.RpcAsync<Company>("save_company", new { Company = isNew ? (Guid?)null : draft.Id, CompanyName = draft.Name.Trim(), WithSampleData = isNew && draft.WithSampleData, Manager = draft.AccountManagerId })).Single();
 
     // Renaming the user's own company updates the page subtitle.
     void OnCompanySaved()
