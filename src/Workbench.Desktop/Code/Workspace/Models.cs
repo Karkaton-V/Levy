@@ -20,6 +20,9 @@ public static class Choices
     public static readonly string[] Priorities = ["Low", "Medium", "High"];
     public static readonly string[] ReportKinds = ["Ratio study", "Appeal decision", "Roll summary", "Field review"];
     public static readonly string[] ReportStatuses = ["Draft", "In review", "Closed"];
+    public static readonly string[] MemberStatuses = ["Pending", "Active", "Rejected", "Disabled"];
+    public static readonly string[] MemberRoles = ["Member", "Admin"];
+    public static readonly string[] CompanyStates = ["Waiting for review", "No admin", "All set"];
 
     public static Chip Status(string status) => new(status, status switch
     {
@@ -58,12 +61,6 @@ public sealed class Person
     public string FullName { get; set; } = "";
     public string Email { get; set; } = "";
     public string Name => FullName.Length > 0 ? FullName : Email;
-}
-
-public sealed class Organization
-{
-    public Guid Id { get; set; }
-    public string Name { get; set; } = "";
 }
 
 public sealed class Client : Row
@@ -174,4 +171,48 @@ public sealed class Report : Row
 
     // Closing stamps the time once; reopening clears it.
     public override object Columns() => new { OrgId, Title = Title.Trim(), Kind, Status, AuthorId, ClosedAt = Status == "Closed" ? ClosedAt ?? DateTimeOffset.UtcNow : (DateTimeOffset?)null, Summary = Summary.Trim() };
+}
+
+// One person in a company (public.team_members); Id is their user id. Saved through update_member and add_member, not the table.
+public sealed class Member : Row
+{
+    public string FullName { get; set; } = "";
+    public string Email { get; set; } = "";
+    public string Role { get; set; } = "member";
+    public string Status { get; set; } = "active";
+    public string JobTitle { get; set; } = "";
+    public DateTimeOffset? DecidedAt { get; set; }
+
+    // The database keeps lower-case values; the form shows them capitalised.
+    [JsonIgnore] public string RoleLabel { get => Role == "admin" ? "Admin" : "Member"; set => Role = value == "Admin" ? "admin" : "member"; }
+    [JsonIgnore] public string StatusLabel { get => Status.Length == 0 ? "" : char.ToUpperInvariant(Status[0]) + Status[1..]; set => Status = (value ?? "").ToLowerInvariant(); }
+    [JsonIgnore] public Chip StatusChip => new(StatusLabel, Status switch { "pending" => "Amber", "active" => "Green", "rejected" => "Red", _ => "Grey" });
+    [JsonIgnore] public Chip RoleChip => new(RoleLabel, Role == "admin" ? "Purple" : "Grey");
+    [JsonIgnore] public bool IsPending => Status == "pending";
+    [JsonIgnore] public bool IsNewPerson => Id == Guid.Empty;
+    [JsonIgnore] public bool IsExisting => Id != Guid.Empty;
+    [JsonIgnore] public string Name => FullName.Length > 0 ? FullName : Email;
+    [JsonIgnore] public string Title => JobTitle.Length > 0 ? JobTitle : "—";
+
+    public override object Columns() => new { Role, Status, JobTitle };
+}
+
+// A company using Levy (public.list_companies), for platform admins. Saved through save_company.
+public sealed class Company : Row
+{
+    public string Name { get; set; } = "";
+    public string JoinCode { get; set; } = "";
+    public int Members { get; set; }
+    public int Pending { get; set; }
+    public int Admins { get; set; }
+
+    // Only used when creating: start the company with the sample clients, jobs and tasks.
+    [JsonIgnore] public bool WithSampleData { get; set; }
+    [JsonIgnore] public bool IsExisting => Id != Guid.Empty;
+    [JsonIgnore] public bool IsNewCompany => Id == Guid.Empty;
+    [JsonIgnore] public string State => Pending > 0 ? "Waiting for review" : Admins == 0 ? "No admin" : "All set";
+    [JsonIgnore] public Chip StateChip => new(Pending > 0 ? $"{Pending} waiting" : State, Pending > 0 ? "Amber" : Admins == 0 ? "Red" : "Green");
+    [JsonIgnore] public string Created => CreatedAt == default ? "—" : Date(DateOnly.FromDateTime(CreatedAt.LocalDateTime));
+
+    public override object Columns() => new { Name };
 }

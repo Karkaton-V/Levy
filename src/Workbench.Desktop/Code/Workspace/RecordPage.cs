@@ -16,7 +16,9 @@ public sealed record PageRules<T>(
     Func<T, Guid?>? Mine,
     Func<T> Create,
     Func<T, string?> Validate,
-    Func<IReadOnlyList<T>, IReadOnlyList<SummaryCard>> Counters);
+    Func<IReadOnlyList<T>, IReadOnlyList<SummaryCard>> Counters,
+    string? Plural = null,
+    string? NewText = null);
 
 // One workflow page's rows and edit form: search, one dropdown filter, "Assigned to me", the selected row, its draft, New / Save / Cancel and the counters.
 public sealed class RecordPage<T> : INotifyPropertyChanged where T : Row
@@ -55,8 +57,8 @@ public sealed class RecordPage<T> : INotifyPropertyChanged where T : Row
 
     public WorkspaceViewModel Workspace { get; }
     public string Noun => _rules.Noun;
-    public string NewLabel => "New " + _rules.Noun;
-    public string SearchHint => $"Search {_rules.Noun}s";
+    public string NewLabel => _rules.NewText ?? "New " + _rules.Noun;
+    public string SearchHint => $"Search {_rules.Plural ?? _rules.Noun + "s"}";
     public ObservableCollection<T> Items { get; } = new();
     public ICollectionView View { get; }
     public IReadOnlyList<string> FilterOptions { get; }

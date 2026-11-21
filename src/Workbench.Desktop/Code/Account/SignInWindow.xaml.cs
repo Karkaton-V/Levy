@@ -2,7 +2,7 @@ using System.Windows;
 
 namespace Workbench.Desktop;
 
-// Sign in, or create an account (name, email, password). Raises SignedIn once there is a session.
+// Sign in, or create an account (name, optional company code, email, password). Raises SignedIn once there is a session.
 public partial class SignInWindow : Window
 {
     const int MinimumPassword = 6;
@@ -25,7 +25,7 @@ public partial class SignInWindow : Window
         if (SubmitText is null) return; // Fires once while InitializeComponent is still building the form; SubmitText is its last named element.
         NameSection.Visibility = Creating ? Visibility.Visible : Visibility.Collapsed;
         Heading.Text = Creating ? "Create your account" : "Welcome back";
-        Subheading.Text = Creating ? "You get a workspace of your own, with sample work to explore." : "Sign in to your workspace.";
+        Subheading.Text = Creating ? "Join your company with its code, or leave it blank for an office of your own." : "Sign in to your workspace.";
         SubmitText.Text = Creating ? "Create account" : "Sign in";
         ShowError(null);
         (Creating ? NameBox : EmailBox).Focus();
@@ -36,6 +36,7 @@ public partial class SignInWindow : Window
         var name = NameBox.Text.Trim();
         var email = EmailBox.Text.Trim();
         var password = PasswordBox.Password;
+        var code = CompanyBox.Text.Trim();
         var problem = Creating && name.Length == 0 ? "Enter your name."
             : !email.Contains('@') ? "Enter your email address."
             : password.Length == 0 ? "Enter your password."
@@ -52,7 +53,13 @@ public partial class SignInWindow : Window
         {
             if (Creating)
             {
-                if (!await _client.SignUpAsync(name, email, password))
+                // Check the code first, so a typo doesn't make an account that belongs nowhere.
+                if (code.Length > 0 && await _client.CompanyForCodeAsync(code) is null)
+                {
+                    ShowError($"No company uses the code {code}. Check it with your company's admin.");
+                    return;
+                }
+                if (!await _client.SignUpAsync(name, email, password, code))
                 {
                     // Email confirmation is on: no session until the link is clicked.
                     SignInMode.IsChecked = true;

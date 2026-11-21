@@ -9,24 +9,35 @@ public sealed partial class WorkspaceViewModel : INotifyPropertyChanged
 {
     readonly SupabaseClient _client;
     readonly Guid _me;
-    Organization? _organization;
+    Membership _membership;
     string _message = "Loading your workspace…";
 
-    public WorkspaceViewModel(SupabaseClient client)
+    public WorkspaceViewModel(SupabaseClient client, Membership membership)
     {
         _client = client;
+        _membership = membership;
         _me = Guid.TryParse(client.User?.Id, out var id) ? id : Guid.Empty;
         Clients = CreateClients();
         Jobs = CreateJobs();
         Projects = CreateProjects();
         Tasks = CreateTasks();
         Reports = CreateReports();
+        Team = CreateTeam();
+        Companies = CreateCompanies();
         Clients.Saved += Relink; Jobs.Saved += Relink; Projects.Saved += Relink; Tasks.Saved += Relink; Reports.Saved += Relink;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    public string OrganizationName => _organization?.Name ?? "";
+    // The company this window works in, and the user's place in it.
+    public Guid OrganizationId => _membership.OrgId;
+    public string OrganizationName => _membership.OrgName;
+    public bool IsAdmin => _membership.IsAdmin;
+    public bool IsPlatformAdmin => _membership.IsPlatformAdmin;
+    public string JoinCode => _membership.JoinCode ?? "";
+
+    // Under the logo in the rail: the job title an admin gave them, or their role until they have one.
+    public string JobTitle => _membership.JobTitle.Length > 0 ? _membership.JobTitle : IsAdmin ? "Administrator" : "Team member";
 
     // "Loading…" or a load error, shown over the tables; empty once the rows are in.
     public string Message { get => _message; private set { _message = value; Raise(); Raise(nameof(HasMessage)); } }
@@ -46,19 +57,15 @@ public sealed partial class WorkspaceViewModel : INotifyPropertyChanged
         Message = "Loading your workspace…";
         try
         {
-            var organizations = _client.GetAsync<Organization>("organizations", "select=id,name&order=created_at&limit=1");
             var people = _client.GetAsync<Person>("profiles", "select=id,full_name,email&order=full_name");
             var clients = _client.GetAsync<Client>("clients", "select=*&order=name");
             var jobs = _client.GetAsync<Job>("jobs", "select=*&order=due_date.nullslast");
             var projects = _client.GetAsync<Project>("projects", "select=*&order=due_date.nullslast");
             var tasks = _client.GetAsync<WorkTask>("tasks", "select=*&order=sort_order,due_date.nullslast");
             var reports = _client.GetAsync<Report>("reports", "select=*&order=created_at.desc");
-            await System.Threading.Tasks.Task.WhenAll(organizations, people, clients, jobs, projects, tasks, reports);
+            await System.Threading.Tasks.Task.WhenAll(people, clients, jobs, projects, tasks, reports);
 
-            _organization = organizations.Result.FirstOrDefault()
-                ?? throw new SupabaseException("Your account isn't part of an organization yet.");
             _people = people.Result;
-            Raise(nameof(OrganizationName));
             Clients.Load(clients.Result);
             Jobs.Load(jobs.Result);
             Projects.Load(projects.Result);
@@ -68,6 +75,7 @@ public sealed partial class WorkspaceViewModel : INotifyPropertyChanged
             Message = "";
         }
         catch (SupabaseException e) { Message = e.Message; }
+        await LoadAdminAsync();
     }
 
     // Fills names and counts from the rows as they are now, rebuilds the pickers and the board, and refreshes every page.
@@ -103,8 +111,7 @@ public sealed partial class WorkspaceViewModel : INotifyPropertyChanged
     // Inserts a new row or updates an existing one in the user's organization and returns it as stored.
     async Task<T> SaveAsync<T>(string table, T draft, bool isNew) where T : Row
     {
-        if (_organization is null) throw new SupabaseException("The workspace hasn't loaded yet.");
-        draft.OrgId = _organization.Id;
+        draft.OrgId = _membership.OrgId;
         return isNew ? await _client.InsertAsync<T>(table, draft.Columns()) : await _client.UpdateAsync<T>(table, draft.Id, draft.Columns());
     }
 

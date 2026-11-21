@@ -59,10 +59,10 @@ public sealed class SupabaseClient
 
     // Auth ---------------------------------------------------------------------------------------------------------
 
-    // Creates the account. Returns false when Supabase wants the email confirmed first, so there is no session yet.
-    public async Task<bool> SignUpAsync(string fullName, string email, string password)
+    // Creates the account; with a company code it asks to join that company and waits for an admin. Returns false when Supabase wants the email confirmed first.
+    public async Task<bool> SignUpAsync(string fullName, string email, string password, string? companyCode = null)
     {
-        var body = new { email, password, data = new { full_name = fullName } };
+        var body = new { email, password, data = new { full_name = fullName, company_code = string.IsNullOrWhiteSpace(companyCode) ? null : companyCode.Trim() } };
         using var reply = await SendAsync(HttpMethod.Post, "auth/v1/signup", body, authorize: false);
         var json = await reply.Content.ReadFromJsonAsync<JsonElement>(Json);
         if (!json.TryGetProperty("access_token", out _)) return false;
@@ -162,6 +162,21 @@ public sealed class SupabaseClient
         using var reply = await SendAsync(HttpMethod.Patch, $"rest/v1/{table}?id=eq.{id}", changes, representation: true);
         var rows = await reply.Content.ReadFromJsonAsync<List<T>>(Json);
         return rows is { Count: 1 } ? rows[0] : throw new SupabaseException("That record no longer exists, or you can no longer edit it.");
+    }
+
+    // POST /rest/v1/rpc/{function} with named arguments; returns its rows. Functions check who is calling themselves.
+    public async Task<List<T>> RpcAsync<T>(string function, object? args = null)
+    {
+        using var reply = await SendAsync(HttpMethod.Post, $"rest/v1/rpc/{function}", args ?? new { });
+        return await reply.Content.ReadFromJsonAsync<List<T>>(Json) ?? [];
+    }
+
+    // The company a sign-up code belongs to, or null; works signed out.
+    public async Task<string?> CompanyForCodeAsync(string code)
+    {
+        using var reply = await SendAsync(HttpMethod.Post, "rest/v1/rpc/company_for_code", new { code }, authorize: false);
+        var json = await reply.Content.ReadFromJsonAsync<JsonElement>(Json);
+        return json.ValueKind == JsonValueKind.String ? json.GetString() : null;
     }
 
     async Task<HttpResponseMessage> SendAsync(HttpMethod method, string path, object? body, bool authorize = true, bool representation = false)

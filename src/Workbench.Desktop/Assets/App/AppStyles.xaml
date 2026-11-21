@@ -17,6 +17,8 @@
     <sys:String x:Key="TasksGlyph">&#xE9D5;</sys:String>
     <sys:String x:Key="ClientsGlyph">&#xE716;</sys:String>
     <sys:String x:Key="ReportsGlyph">&#xE9F9;</sys:String>
+    <sys:String x:Key="TeamGlyph">&#xE77B;</sys:String>
+    <sys:String x:Key="CompaniesGlyph">&#xE825;</sys:String>
 
     <!-- The Levy wordmark (docs/brand/levy-breaker.svg): a wave breaks on the levee L, whose foot shelters "evy" (Segoe UI Bold, as outlines). Set Height; it scales. -->
     <Style x:Key="LevyMark" TargetType="ContentControl">
@@ -60,7 +62,7 @@
     <Style x:Key="NavHeading" TargetType="ListBoxItem">
         <Setter Property="IsEnabled" Value="False" />
         <Setter Property="Focusable" Value="False" />
-        <Setter Property="Padding" Value="28,22,0,8" />
+        <Setter Property="Padding" Value="28,16,0,6" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ListBoxItem">
@@ -79,8 +81,8 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ListBoxItem">
-                    <Grid Margin="12,2">
-                        <Border x:Name="Bd" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" CornerRadius="8" Padding="14,10">
+                    <Grid Margin="12,1">
+                        <Border x:Name="Bd" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" CornerRadius="8" Padding="14,8">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock x:Name="Glyph" Text="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}" FontFamily="{StaticResource IconFont}"
                                            FontSize="16" Foreground="{DynamicResource NavMuted}" VerticalAlignment="Center" />

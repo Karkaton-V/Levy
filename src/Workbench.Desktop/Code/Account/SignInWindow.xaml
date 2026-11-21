@@ -54,6 +54,8 @@
             <StackPanel x:Name="NameSection" Visibility="Collapsed">
                 <TextBlock Text="Full name" Style="{StaticResource FormLabel}" />
                 <TextBox x:Name="NameBox" Style="{StaticResource Input}" Tag="Ada Lovelace" AutomationProperties.Name="Full name" />
+                <TextBlock Text="Company code (optional)" Style="{StaticResource FormLabel}" />
+                <TextBox x:Name="CompanyBox" Style="{StaticResource Input}" Tag="From your company's admin; blank starts your own office" CharacterCasing="Upper" MaxLength="8" AutomationProperties.Name="Company code" />
             </StackPanel>
 
             <TextBlock Text="Email" Style="{StaticResource FormLabel}" />

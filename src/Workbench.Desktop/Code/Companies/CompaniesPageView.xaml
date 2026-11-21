@@ -1,0 +1,88 @@
+<UserControl x:Class="Workbench.Desktop.CompaniesPageView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Workbench.Desktop">
+    <!-- Companies (platform admins): every company, creating and renaming them, and assigning people by email. DataContext: WorkspaceViewModel. Styles: Assets/Workspace/WorkspaceStyles.xaml. -->
+    <Grid Margin="32,24,32,32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="340" />
+        </Grid.ColumnDefinitions>
+
+        <local:PageHeaderView Grid.ColumnSpan="2" DataContext="{Binding Companies}" />
+
+        <Border Grid.Row="1" Style="{StaticResource TableCard}" Margin="0,16,20,0">
+            <Grid>
+                <DataGrid Style="{StaticResource Table}" ItemsSource="{Binding Companies.View}" SelectedItem="{Binding Companies.Selected, Mode=TwoWay}" AutomationProperties.Name="Companies">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="Company" SortMemberPath="Name" Width="*" MinWidth="200">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Name}" Style="{StaticResource CellStrong}" />
+                                        <TextBlock Text="{Binding JoinCode, StringFormat=Code {0}}" Style="{StaticResource CellMuted}" FontFamily="{StaticResource Mono}" FontSize="12" Margin="0,2,0,0" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="State" SortMemberPath="Pending" Width="Auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ContentPresenter Content="{Binding StateChip}" ContentTemplate="{StaticResource ChipTemplate}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="People" Binding="{Binding Members}" Width="Auto" />
+                        <DataGridTextColumn Header="Admins" Binding="{Binding Admins}" Width="Auto" />
+                        <DataGridTextColumn Header="Created" Binding="{Binding Created}" SortMemberPath="CreatedAt" Width="Auto" />
+                    </DataGrid.Columns>
+                </DataGrid>
+                <TextBlock Style="{StaticResource AdminMessage}" Text="{Binding AdminMessage}" />
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource FormCard}" Margin="0,16,0,0" DataContext="{Binding Companies}">
+            <Grid>
+                <TextBlock Style="{StaticResource FormHint}" Text="Pick a company to rename it or add people, or press New company." />
+                <ScrollViewer Style="{StaticResource FormScroll}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding FormTitle}" Style="{StaticResource CardTitle}" />
+                        <TextBlock Text="Name" Style="{StaticResource FormLabel}" />
+                        <TextBox Style="{StaticResource Input}" Text="{Binding Draft.Name}" Tag="Caddo Parish Assessor" AutomationProperties.Name="Company name" />
+                        <CheckBox Style="{StaticResource FormCheck}" Content="Start with sample clients, jobs and tasks" IsChecked="{Binding Draft.WithSampleData}"
+                                  Visibility="{Binding Draft.IsNewCompany, Converter={StaticResource BoolVis}}" />
+                        <StackPanel Visibility="{Binding Draft.IsExisting, Converter={StaticResource BoolVis}}">
+                            <TextBlock Text="Company code" Style="{StaticResource FormLabel}" />
+                            <TextBlock Text="{Binding Draft.JoinCode}" Style="{StaticResource CodeText}" />
+                        </StackPanel>
+                        <local:FormActionsView />
+
+                        <!-- Assign an existing account to this company; active straight away, no review. -->
+                        <StackPanel Visibility="{Binding Draft.IsExisting, Converter={StaticResource BoolVis}}" DataContext="{Binding Workspace}">
+                            <Border Style="{StaticResource FormDivider}" />
+                            <TextBlock Text="Add a person" Style="{StaticResource CardTitle}" />
+                            <TextBlock Text="Email" Style="{StaticResource FormLabel}" />
+                            <TextBox Style="{StaticResource Input}" Text="{Binding AssignEmail, UpdateSourceTrigger=PropertyChanged}" Tag="name@example.com" AutomationProperties.Name="Person's email" />
+                            <UniformGrid Columns="2">
+                                <StackPanel Margin="0,0,6,0">
+                                    <TextBlock Text="Role" Style="{StaticResource FormLabel}" />
+                                    <ComboBox Style="{StaticResource Select}" MinWidth="0" ItemsSource="{x:Static local:Choices.MemberRoles}" SelectedItem="{Binding AssignRole}" AutomationProperties.Name="Person's role" />
+                                </StackPanel>
+                                <StackPanel Margin="6,0,0,0">
+                                    <TextBlock Text="Job title" Style="{StaticResource FormLabel}" />
+                                    <TextBox Style="{StaticResource Input}" Text="{Binding AssignTitle, UpdateSourceTrigger=PropertyChanged}" Tag="Assessor" AutomationProperties.Name="Person's job title" />
+                                </StackPanel>
+                            </UniformGrid>
+                            <TextBlock Style="{StaticResource AssignResult}" Text="{Binding AssignMessage}" />
+                            <Button Style="{StaticResource SecondaryButton}" Content="{Binding AssignLabel}" Command="{Binding AssignCommand}" HorizontalAlignment="Left" Margin="0,16,0,0" />
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

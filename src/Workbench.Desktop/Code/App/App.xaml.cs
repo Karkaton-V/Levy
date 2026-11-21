@@ -16,7 +16,7 @@ public partial class App : Application
         _client = SupabaseClient.FromAssets();
         try
         {
-            if (await _client.RestoreAsync()) ShowMain();
+            if (await _client.RestoreAsync()) await EnterAsync();
             else ShowSignIn();
         }
         catch (SupabaseException ex)
@@ -25,14 +25,29 @@ public partial class App : Application
         }
     }
 
+    // Opens the user's company, or returns to sign-in with the reason they can't (waiting for review, declined, turned off).
+    async Task EnterAsync()
+    {
+        string? problem;
+        try
+        {
+            var (active, reason) = await Membership.CheckAsync(_client);
+            if (active is not null) { ShowMain(active); return; }
+            problem = reason;
+        }
+        catch (SupabaseException ex) { problem = ex.Message; }
+        await _client.SignOutAsync();
+        ShowSignIn(problem);
+    }
+
     void ShowSignIn(string? message = null)
     {
         var window = new SignInWindow(_client, message);
         var signedIn = false;
-        window.SignedIn += () =>
+        window.SignedIn += async () =>
         {
             signedIn = true;
-            ShowMain();
+            await EnterAsync();
             window.Close();
         };
         window.Closed += (_, _) => { if (!signedIn) Shutdown(); };
@@ -40,9 +55,9 @@ public partial class App : Application
         window.Show();
     }
 
-    void ShowMain()
+    void ShowMain(Membership membership)
     {
-        var window = new MainWindow(_client);
+        var window = new MainWindow(_client, membership);
         var signingOut = false;
         window.SignOutRequested += async () =>
         {

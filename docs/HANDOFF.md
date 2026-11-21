@@ -43,6 +43,16 @@ None of this has been run on Windows yet. The XAML parses, every resource key re
   - The rail has VALUATION and WORKFLOW headings (`NavHeading`) and switches pages by item name in `MainWindow.xaml.cs`. Workflow pages hide the summary strip and Run, and show the organization as the subtitle.
   - Cancel discards the draft and closes the form. Dragging a board card saves its status and puts it at the bottom of the new column.
   - Checked on Windows against the hosted project: every page loads, an edit saved and was put back, and a board card was dragged out and back.
+- Company admins and account review (2026-11-21, asked for after step 4):
+  - Migrations `20261121201529_admin_review.sql` and `20261121201628_admin_review_anon.sql`, applied with the Supabase MCP.
+  - Membership roles are `admin` / `member` (the old `owner` became `admin`), with `status` (pending, active, rejected, disabled), `job_title`, `decided_at` and `decided_by`.
+  - Each company has a `join_code`. Only active members pass `private.is_member`, so pending people see no data.
+  - Sign-up with a company code (checked first through `company_for_code`, which works signed out) asks to join and waits; without a code it starts an office of your own, as before.
+  - Admin changes go through security-definer functions that check the caller: `my_memberships`, `team_members`, `update_member` (a company keeps at least one active admin), `add_member`, `list_companies` and `save_company`. Signed-in users may update only their own `profiles.full_name`.
+  - `profiles.is_platform_admin` marks platform admins and is set only from the database. The owner's account was given it on 2026-11-21.
+  - App: `Code/Account/Membership.cs` decides at sign-in whether to open the company or explain why not. The rail shows the job title (or the role until one is set). An ADMIN section holds Team (`Code/Team/`, company admins: code, review, job titles, roles, access, add by email) and Companies (`Code/Companies/`, platform admins: create, rename, add people).
+  - Tested in rolled-back transactions: pending access, approval, the last-admin guard, platform-only functions, the flag, and the signed-out code check. Setting a job title was tested in the app and then cleared.
+  - Open: a platform admin can't open another company's workspace (no company switcher); the advisor suggests turning on leaked-password protection in the Supabase dashboard.
 - `.mcp.json` adds the Supabase MCP server for this project.
 
 ## Still to do, in order

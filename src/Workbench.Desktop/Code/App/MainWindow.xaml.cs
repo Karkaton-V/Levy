@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
 
@@ -14,7 +15,7 @@ public partial class MainWindow : Window
     readonly Dictionary<ListBoxItem, TabItem> _pages;
     readonly HashSet<TabItem> _workflowPages;
 
-    public MainWindow(SupabaseClient client)
+    public MainWindow(SupabaseClient client, Membership membership)
     {
         InitializeComponent();
         FitToScreen();
@@ -27,17 +28,25 @@ public partial class MainWindow : Window
         viewModel.OpenInEditorRequested += OpenInEditor;
 
         // The workflow pages read and save the organization's rows in Supabase.
-        var workspace = new WorkspaceViewModel(client);
-        foreach (var view in new FrameworkElement[] { JobsView, ProjectsView, BoardView, TasksView, ClientsView, ReportsView }) view.DataContext = workspace;
-        workspace.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(WorkspaceViewModel.OrganizationName)) viewModel.WorkspaceName = workspace.OrganizationName; };
+        var workspace = new WorkspaceViewModel(client, membership);
+        foreach (var view in new FrameworkElement[] { JobsView, ProjectsView, BoardView, TasksView, ClientsView, ReportsView, TeamView, CompaniesView }) view.DataContext = workspace;
+        viewModel.WorkspaceName = workspace.OrganizationName;
+        JobTitleText.SetBinding(TextBlock.TextProperty, new Binding(nameof(WorkspaceViewModel.JobTitle)) { Source = workspace });
+        ShowAdminPages(workspace);
+        workspace.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(WorkspaceViewModel.OrganizationName)) viewModel.WorkspaceName = workspace.OrganizationName;
+            if (e.PropertyName == nameof(WorkspaceViewModel.IsAdmin)) ShowAdminPages(workspace);
+        };
 
         _pages = new()
         {
             [NavRules] = RulesPage, [NavMap] = MapPage, [NavCompare] = ComparePage,
             [NavJobs] = JobsPage, [NavProjects] = ProjectsPage, [NavBoard] = BoardPage,
             [NavTasks] = TasksPage, [NavClients] = ClientsPage, [NavReports] = ReportsPage,
+            [NavTeam] = TeamPage, [NavCompanies] = CompaniesPage,
         };
-        _workflowPages = [JobsPage, ProjectsPage, BoardPage, TasksPage, ClientsPage, ReportsPage];
+        _workflowPages = [JobsPage, ProjectsPage, BoardPage, TasksPage, ClientsPage, ReportsPage, TeamPage, CompaniesPage];
         Tabs.SelectedItem = RulesPage;
 
         Loaded += async (_, _) => await Task.WhenAll(viewModel.LoadBuildingsAsync(), workspace.LoadAsync());
@@ -101,6 +110,15 @@ public partial class MainWindow : Window
         WindowStyle = WindowStyle.None;
         ResizeMode = ResizeMode.NoResize;
         WindowState = WindowState.Maximized;
+    }
+
+    // The ADMIN section: Team for company admins (and platform admins), Companies for platform admins only.
+    void ShowAdminPages(WorkspaceViewModel workspace)
+    {
+        var team = workspace.IsAdmin || workspace.IsPlatformAdmin;
+        NavAdminHeading.Visibility = NavTeam.Visibility = team ? Visibility.Visible : Visibility.Collapsed;
+        NavCompanies.Visibility = workspace.IsPlatformAdmin ? Visibility.Visible : Visibility.Collapsed;
+        if (!team && Nav.SelectedItem == NavTeam) Nav.SelectedItem = NavRules;
     }
 
     // A rail item opens its page; workflow pages hide the valuation summary and Run.

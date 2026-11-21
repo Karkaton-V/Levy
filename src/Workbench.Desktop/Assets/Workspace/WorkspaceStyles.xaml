@@ -107,4 +107,82 @@
         <Setter Property="TextTrimming" Value="CharacterEllipsis" />
     </Style>
 
+    <!-- Admin pages (Team, Companies) -->
+
+    <!-- Why the Team or Companies list couldn't load (HasAdminMessage on the workspace). -->
+    <Style x:Key="AdminMessage" TargetType="TextBlock" BasedOn="{StaticResource TableMessage}">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding HasMessage}" Value="True">
+                <Setter Property="Visibility" Value="Collapsed" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding HasAdminMessage}" Value="True">
+                <Setter Property="Visibility" Value="Visible" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- The strip on the Team page showing the company code. -->
+    <Style x:Key="CodeBanner" TargetType="Border" BasedOn="{StaticResource Card}">
+        <Setter Property="Padding" Value="20,12" />
+    </Style>
+
+    <Style x:Key="CodeText" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource Mono}" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource Link}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Margin" Value="0,0,20,0" />
+    </Style>
+
+    <Style x:Key="CodeHint" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Muted}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Margin" Value="0,0,16,0" />
+    </Style>
+
+    <!-- The approve / decline box on a pending person. -->
+    <Style x:Key="ReviewBox" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource ToneAmberFill}" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="14,12" />
+        <Setter Property="Margin" Value="0,16,0,0" />
+    </Style>
+
+    <Style x:Key="FormNote" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Muted}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="Margin" Value="0,10,0,0" />
+    </Style>
+
+    <Style x:Key="FormCheck" TargetType="CheckBox">
+        <Setter Property="Foreground" Value="{DynamicResource Text}" />
+        <Setter Property="Margin" Value="0,14,0,0" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <Style x:Key="FormDivider" TargetType="Border">
+        <Setter Property="Height" Value="1" />
+        <Setter Property="Background" Value="{DynamicResource Line}" />
+        <Setter Property="Margin" Value="0,24,0,20" />
+    </Style>
+
+    <!-- The outcome of "Add to company": green when it worked, red when it didn't (AssignFailed). -->
+    <Style x:Key="AssignResult" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource ToneGreenText}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="Margin" Value="0,14,0,0" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding AssignFailed}" Value="True">
+                <Setter Property="Foreground" Value="{DynamicResource ToneRedText}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding HasAssignMessage}" Value="False">
+                <Setter Property="Visibility" Value="Collapsed" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
 </ResourceDictionary>

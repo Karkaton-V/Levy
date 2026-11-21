@@ -20,9 +20,10 @@
         <!-- Navigation rail: brand, pages, and the account and settings menu at the bottom. -->
         <Border Grid.Column="0" Background="{DynamicResource NavBackground}">
             <DockPanel>
-                <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Left" Margin="24,24,20,32">
+                <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Left" Margin="24,24,20,24">
                     <ContentControl Style="{StaticResource LevyMark}" Height="34" HorizontalAlignment="Left" AutomationProperties.Name="Levy" />
-                    <TextBlock Text="Mass appraisal" Foreground="{DynamicResource NavMuted}" FontSize="11" Margin="2,6,0,0" />
+                    <!-- The signed-in person's job title (set by a company admin on the Team page). -->
+                    <TextBlock x:Name="JobTitleText" Foreground="{DynamicResource NavMuted}" FontSize="11" Margin="2,6,0,0" TextTrimming="CharacterEllipsis" MaxWidth="180" />
                 </StackPanel>
 
                 <local:AccountMenu x:Name="Account" DockPanel.Dock="Bottom" />
@@ -40,6 +41,10 @@
                     <ListBoxItem x:Name="NavTasks" Style="{StaticResource NavItem}" Tag="{StaticResource TasksGlyph}" Content="Tasks" />
                     <ListBoxItem x:Name="NavClients" Style="{StaticResource NavItem}" Tag="{StaticResource ClientsGlyph}" Content="Clients" />
                     <ListBoxItem x:Name="NavReports" Style="{StaticResource NavItem}" Tag="{StaticResource ReportsGlyph}" Content="Reports" />
+                    <!-- Shown from code-behind: Team to company admins, Companies to platform admins. -->
+                    <ListBoxItem x:Name="NavAdminHeading" Style="{StaticResource NavHeading}" Content="ADMIN" Visibility="Collapsed" />
+                    <ListBoxItem x:Name="NavTeam" Style="{StaticResource NavItem}" Tag="{StaticResource TeamGlyph}" Content="Team" Visibility="Collapsed" />
+                    <ListBoxItem x:Name="NavCompanies" Style="{StaticResource NavItem}" Tag="{StaticResource CompaniesGlyph}" Content="Companies" Visibility="Collapsed" />
                 </ListBox>
             </DockPanel>
         </Border>
@@ -111,6 +116,12 @@
                 </TabItem>
                 <TabItem x:Name="ReportsPage" Header="Reports">
                     <local:ReportsPageView x:Name="ReportsView" />
+                </TabItem>
+                <TabItem x:Name="TeamPage" Header="Team">
+                    <local:TeamPageView x:Name="TeamView" />
+                </TabItem>
+                <TabItem x:Name="CompaniesPage" Header="Companies">
+                    <local:CompaniesPageView x:Name="CompaniesView" />
                 </TabItem>
             </TabControl>
         </Grid>
