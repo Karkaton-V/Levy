@@ -77,6 +77,16 @@ None of this has been run on Windows yet. The XAML parses, every resource key re
     - `MockGitLab`, which implements `IGitLab` like `GitLabClient` and is stored in `%LOCALAPPDATA%\ValuationWorkbench\mock-gitlab.json`, seeded from `Assets/MockGitLab/seed.json`;
     - the Mock GitLab window, where you play developer and reviewer, with GitLab-style merge rules.
   - Tested end to end in the app: file → triage → Send to GitLab → merge request → pipeline → ready → self-approval refused → reviewer approval → merge. Intake showed every status through to Fixed, and each step was logged. The test request, its log entries and the mock file were then removed.
+- Step 5 done (2026-11-21), in `.github/workflows/ci.yml`:
+  - `build` (Windows): restore, Release build, engine tests. Test results are kept as an artifact.
+  - `database`: `supabase db start` applies every migration to a fresh Postgres, then `supabase test db` runs `supabase/tests/database/security.test.sql`. It has 24 pgTAP checks: sign-up seeding, joining by code, company isolation, pending lock-out, approval, the last-admin guard, platform-admin-only functions, the self-promotion block, no deletes, request triage rights, activity log read/write limits, and signed-out access. Runs on every push and PR and needs no secrets.
+  - `deploy`: on push to `main`, after both jobs pass, it runs `supabase link` and `supabase db push` in the `production` environment. Migrations already applied with the MCP are recorded with the same versions, so they're skipped.
+  - First run passed: https://github.com/Karkaton-V/Levy/actions/runs/44955777280
+  - **Before the first merge to `main`, the owner adds two repository secrets** (GitHub → Settings → Secrets and variables → Actions):
+    - `SUPABASE_ACCESS_TOKEN`: a personal access token from supabase.com → Account → Access Tokens.
+    - `SUPABASE_DB_PASSWORD`: the project's database password (Supabase → Project Settings → Database).
+
+    Without them, the deploy job stops with a message saying which secret is missing. Optionally, add required reviewers to the `production` environment so a person approves each deploy.
 - `.mcp.json` adds the Supabase MCP server for this project.
 
 ## Still to do, in order
