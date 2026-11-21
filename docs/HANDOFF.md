@@ -72,6 +72,11 @@ None of this has been run on Windows yet. The XAML parses, every resource key re
   - Tested: database rules in a rolled-back transaction; filing, triage and the "not set up" message in the app (the test request was then deleted).
   - Not tested: the GitLab side. It needs the OAuth application on the GitLab server and the GitLab provider turned on in Supabase.
   - Next: a GitLab webhook into a Supabase Edge Function for instant status, and developer/reviewer roles.
+- Mock GitLab (2026-11-21):
+  - `gitlab.json` has `"mock": true` until there's a real server. `Code/MockGitLab/` holds:
+    - `MockGitLab`, which implements `IGitLab` like `GitLabClient` and is stored in `%LOCALAPPDATA%\ValuationWorkbench\mock-gitlab.json`, seeded from `Assets/MockGitLab/seed.json`;
+    - the Mock GitLab window, where you play developer and reviewer, with GitLab-style merge rules.
+  - Tested end to end in the app: file → triage → Send to GitLab → merge request → pipeline → ready → self-approval refused → reviewer approval → merge. Intake showed every status through to Fixed, and each step was logged. The test request, its log entries and the mock file were then removed.
 - `.mcp.json` adds the Supabase MCP server for this project.
 
 ## Still to do, in order

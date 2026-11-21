@@ -27,6 +27,28 @@ How Levy connects to a self-managed GitLab, and the setup that has to be done by
 
 Every filing, triage change and hand-off to GitLab is written to the company's Activity log.
 
+## Demo mode (no GitLab server needed)
+
+`Assets/Account/gitlab.json` ships with `"mock": true`, so Levy uses a **mock GitLab** kept on this PC instead of a real server:
+- **Where it lives:** `%LOCALAPPDATA%\ValuationWorkbench\mock-gitlab.json`, started from `Assets/MockGitLab/seed.json`. Nothing is sent anywhere, and no OAuth app or Supabase change is needed.
+- **Sign-in:** people sign in with email. **Sign in with GitLab** explains that GitLab is in demo mode.
+- **Intake:** it is always "connected". **Send to GitLab** opens the issue in the mock, and the mock's changes refresh Intake straight away. **Open mock GitLab** or an issue link opens the **Mock GitLab** window.
+- **The window:**
+  - **Issues:** a list sorted by priority label, which is what developers pull from.
+  - **Actions:** Assign to me, Start work (adds `workflow::doing`), Create merge request (a draft on a branch named after the issue), Push commit (runs a pipeline for about 2 s, with a "Next pipeline fails" switch), Mark ready, Approve, Merge.
+  - **Acting as:** switches between the seed's developers and reviewers.
+- **Review rules, as GitLab projects usually set them:**
+  - the pipeline must pass;
+  - drafts can't merge;
+  - one approval is needed;
+  - authors can't approve their own merge request;
+  - new commits reset approvals.
+
+  Merging closes the issue, and Intake marks the request **Fixed**.
+- **Reset demo** starts the mock over from the seed.
+
+To go live, set `"mock": false`, point `url` and `projects` at the real server, and do the one-time setup below.
+
 ## Who is who
 
 - **Client staff:** members of a client company. They sign in with email and password (or a company code), and see only their own company's requests.

@@ -13,6 +13,7 @@
                 <ResourceDictionary Source="/ValuationWorkbench;component/Assets/Account/AccountStyles.xaml" />
                 <ResourceDictionary Source="/ValuationWorkbench;component/Assets/Workspace/WorkspaceStyles.xaml" />
                 <ResourceDictionary Source="/ValuationWorkbench;component/Assets/Board/BoardStyles.xaml" />
+                <ResourceDictionary Source="/ValuationWorkbench;component/Assets/MockGitLab/MockGitLabStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

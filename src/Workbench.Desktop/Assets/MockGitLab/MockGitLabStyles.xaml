@@ -1,0 +1,90 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- The Mock GitLab window: a demo stand-in for the agency's GitLab (issue list, issue, merge request). -->
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/ValuationWorkbench;component/Assets/Shared/Theme.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <Style x:Key="MockTopBar" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource Panel}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Line}" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
+        <Setter Property="Padding" Value="24,14" />
+    </Style>
+
+    <!-- The "demo" tag next to the title, so nobody mistakes it for the real server. -->
+    <Style x:Key="DemoTag" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource ToneAmberFill}" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Padding" Value="9,2" />
+        <Setter Property="Margin" Value="10,0,0,0" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="DemoTagText" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource ToneAmberText}" />
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style x:Key="IssueList" TargetType="ListBox">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+    </Style>
+
+    <!-- One issue in the list: a line under each, a soft fill when selected. -->
+    <Style x:Key="IssueItem" TargetType="ListBoxItem">
+        <Setter Property="Foreground" Value="{DynamicResource Text}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBoxItem">
+                    <Border x:Name="Bd" Background="Transparent" BorderBrush="{DynamicResource Line}" BorderThickness="0,0,0,1" Padding="18,12">
+                        <ContentPresenter />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource HoverFillSoft}" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource AccentSoft}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- The merge request box under the issue. -->
+    <Style x:Key="MergeRequestBox" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource Ground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Line}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="16,14" />
+        <Setter Property="Margin" Value="0,10,0,0" />
+    </Style>
+
+    <Style x:Key="ActionRow" TargetType="WrapPanel">
+        <Setter Property="Margin" Value="0,12,0,0" />
+    </Style>
+
+    <Style x:Key="ActionButton" TargetType="Button" BasedOn="{StaticResource SecondaryButton}">
+        <Setter Property="Margin" Value="0,0,8,8" />
+    </Style>
+
+    <Style x:Key="PrimaryAction" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+        <Setter Property="Margin" Value="0,0,8,8" />
+    </Style>
+
+    <!-- What the last action did, or why it couldn't. -->
+    <Style x:Key="MockMessage" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource AccentSoft}" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="14,10" />
+        <Setter Property="Margin" Value="0,0,0,14" />
+    </Style>
+
+</ResourceDictionary>

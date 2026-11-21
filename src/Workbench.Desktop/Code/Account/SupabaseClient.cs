@@ -30,8 +30,8 @@ public sealed record GitLabToken(string AccessToken, DateTimeOffset ExpiresAt)
     public bool IsValid => ExpiresAt - DateTimeOffset.UtcNow > TimeSpan.FromMinutes(1);
 }
 
-// Where Levy's GitLab lives and which projects requests go to (Assets/Account/gitlab.json).
-public sealed record GitLabSettings(string Url, int CallbackPort, string Scopes, Dictionary<string, string> Projects)
+// Where Levy's GitLab lives and which projects requests go to (Assets/Account/gitlab.json). Mock: a demo GitLab kept on this PC (Code/MockGitLab).
+public sealed record GitLabSettings(string Url, int CallbackPort, string Scopes, Dictionary<string, string> Projects, bool Mock = false)
 {
     public static GitLabSettings FromAssets() => JsonSerializer.Deserialize<GitLabSettings>(Shared.ReadAsset("Account", "gitlab.json"), SupabaseClient.Json)!;
 }

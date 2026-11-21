@@ -50,6 +50,7 @@ public partial class MainWindow : Window
         };
         _workflowPages = [JobsPage, ProjectsPage, BoardPage, TasksPage, ClientsPage, ReportsPage, RequestsPage, IntakePage, TeamPage, ActivityPage, CompaniesPage];
         workspace.ContextSource = DescribeContext;
+        workspace.MockGitLabRequested += OpenMockGitLab;
         Tabs.SelectedItem = RulesPage;
 
         Loaded += async (_, _) => await Task.WhenAll(viewModel.LoadBuildingsAsync(), workspace.LoadAsync());
@@ -137,6 +138,21 @@ public partial class MainWindow : Window
         if (page == IntakePage) _ = _workspace.LoadIntakeAsync();
         if (page == RequestsPage) _ = _workspace.LoadRequestsAsync();
         if (!_workflowPages.Contains(page)) _lastValuationPage = (string)page.Header;
+    }
+
+    MockGitLabWindow? _mockGitLab;
+
+    // One Mock GitLab window at a time, owned by this one; opening it again brings it forward on the requested issue.
+    void OpenMockGitLab(string? project, int? iid)
+    {
+        if (_workspace.Mock is not { } mock) return;
+        if (_mockGitLab is null)
+        {
+            _mockGitLab = new MockGitLabWindow(new MockGitLabViewModel(mock, project ?? mock.Projects[0].Path)) { Owner = this };
+            _mockGitLab.Closed += (_, _) => _mockGitLab = null;
+        }
+        if (project is not null && iid is int issue) _mockGitLab.Show(project, issue);
+        else { _mockGitLab.Show(); _mockGitLab.Activate(); }
     }
 
     // The last valuation page the person was on, for "Where in Levy" on a new request.

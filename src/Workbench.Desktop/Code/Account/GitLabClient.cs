@@ -12,8 +12,16 @@ public sealed record GitLabIssue(int Iid, string WebUrl, string State, IReadOnly
 // A merge request linked to an issue, with its latest pipeline result (null when there's no pipeline).
 public sealed record GitLabMergeRequest(int Iid, string Title, string State, string WebUrl, bool Draft, string? Pipeline);
 
+// What Levy asks of GitLab; the real server (GitLabClient) and the demo (MockGitLab) both answer it.
+public interface IGitLab
+{
+    Task<GitLabIssue> CreateIssueAsync(string project, string title, string description, IEnumerable<string> labels);
+    Task<GitLabIssue> GetIssueAsync(string project, int iid);
+    Task<IReadOnlyList<GitLabMergeRequest>> MergeRequestsForAsync(string project, int iid);
+}
+
 // GitLab's REST API (v4) on the agency's server, acting as the signed-in person with the token from "Sign in with GitLab".
-public sealed class GitLabClient
+public sealed class GitLabClient : IGitLab
 {
     readonly HttpClient _http;
 

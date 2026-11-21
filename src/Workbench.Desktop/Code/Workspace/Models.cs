@@ -248,7 +248,7 @@ public sealed class ActivityEntry : Row
 // A merge request linked to a request's GitLab issue, as last read from GitLab (stored in issue_reports.merge_requests).
 public sealed record MergeRequestInfo(int Iid, string Title, string State, string Url, bool Draft, string? Pipeline)
 {
-    public string Summary => $"!{Iid} {Title} · {(State == "opened" && Draft ? "draft" : State)}{(Pipeline is { } p ? " · pipeline " + p : "")}";
+    [JsonIgnore] public string Summary => $"!{Iid} {Title} · {(State == "opened" && Draft ? "draft" : State)}{(Pipeline is { } p ? " · pipeline " + p : "")}";
 }
 
 // A bug report or feature request (public.issue_reports): filed by a company's staff, triaged by its account manager, worked in GitLab.
@@ -287,6 +287,7 @@ public sealed class IssueReport : Row
     [JsonIgnore] public string Filed => CreatedAt == default ? "—" : Date(DateOnly.FromDateTime(CreatedAt.LocalDateTime));
     [JsonIgnore] public string Where => GitlabIid is { } iid ? $"{GitlabProject}#{iid}" : "—";
     [JsonIgnore] public string Progress => MergeRequests.Count == 0 ? (IsInGitLab ? "No merge request yet" : "Your account manager sends it to the developers after triage.") : string.Join("\n", MergeRequests.Select(m => m.Summary));
+    [JsonIgnore] public string IssueNumber => GitlabIid is { } iid ? $"#{iid}" : "—";
     [JsonIgnore] public string NoteOrDash => TriageNote.Length > 0 ? TriageNote : "—";
 
     // Filing sends only what the reporter writes; the database fills in who, when and the starting status.

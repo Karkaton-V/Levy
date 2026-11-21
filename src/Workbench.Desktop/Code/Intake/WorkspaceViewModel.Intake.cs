@@ -8,6 +8,8 @@ namespace Workbench.Desktop;
 public sealed partial class WorkspaceViewModel
 {
     readonly GitLabSettings _gitLab = GitLabSettings.FromAssets();
+    MockGitLab? _mock;
+    bool _refreshAgain;
     string _intakeMessage = "";
     bool _intakeFailed;
     bool _gitLabBusy;
@@ -15,6 +17,34 @@ public sealed partial class WorkspaceViewModel
     public RecordPage<IssueReport> Intake { get; }
 
     public bool IsAccountManager => _membership.IsAccountManager || IsPlatformAdmin;
+
+    // The demo GitLab (gitlab.json "mock": true), made on first use; its changes refresh Intake straight away.
+    public MockGitLab? Mock
+    {
+        get
+        {
+            if (!_gitLab.Mock || _mock is not null) return _mock;
+            _mock = new MockGitLab(_gitLab);
+            _mock.Changed += () => _ = RefreshFromGitLabAsync();
+            return _mock;
+        }
+    }
+
+    public bool IsMockGitLab => _gitLab.Mock;
+    bool GitLabReady => _gitLab.Mock || _client.HasGitLab;
+    IGitLab GitLabApi => Mock ?? (IGitLab)new GitLabClient(_gitLab, _client.GitLab!);
+
+    // Asks the main window to open the Mock GitLab window, on an issue when given one.
+    public event Action<string?, int?>? MockGitLabRequested;
+    public ICommand OpenMockGitLabCommand => new RelayCommand(() => MockGitLabRequested?.Invoke(Intake.Draft?.GitlabProject, Intake.Draft?.GitlabIid));
+
+    // A GitLab link on Intake: in mock mode it opens the Mock GitLab window instead of the browser.
+    public bool OpenInMock(Uri link)
+    {
+        if (Mock is not { } mock || !mock.TryParseIssueUrl(link, out var project, out var iid)) return false;
+        MockGitLabRequested?.Invoke(project, iid);
+        return true;
+    }
     public string IntakeMessage { get => _intakeMessage; private set { _intakeMessage = value; Raise(); Raise(nameof(HasIntakeMessage)); } }
     public bool IntakeFailed { get => _intakeFailed; private set { _intakeFailed = value; Raise(); } }
     public bool HasIntakeMessage => _intakeMessage.Length > 0;
@@ -22,10 +52,12 @@ public sealed partial class WorkspaceViewModel
     public bool IsGitLabIdle => !_gitLabBusy;
 
     // "Connected to GitLab as @user" or why not.
-    public string GitLabStatus => _client.HasGitLab
+    public string GitLabStatus => _gitLab.Mock
+        ? $"Mock GitLab ({new Uri(_gitLab.Url).Host}), demo mode: nothing leaves this PC"
+        : _client.HasGitLab
         ? $"Connected to {new Uri(_gitLab.Url).Host}{(_client.User?.GitLabUsername is { } user ? " as @" + user : "")}"
         : $"Not connected to {new Uri(_gitLab.Url).Host}";
-    public bool NeedsGitLab => !_client.HasGitLab;
+    public bool NeedsGitLab => !GitLabReady;
 
     public ICommand SendToGitLabCommand => new RelayCommand(() => _ = SendToGitLabAsync());
     public ICommand RefreshGitLabCommand => new RelayCommand(() => _ = RefreshFromGitLabAsync());
@@ -66,7 +98,7 @@ public sealed partial class WorkspaceViewModel
             Intake.Load(rows);
         }
         catch (SupabaseException e) { ShowIntake(e.Message, failed: true); return; }
-        if (_client.HasGitLab) await RefreshFromGitLabAsync();
+        if (GitLabReady) await RefreshFromGitLabAsync();
     }
 
     // Opens the issue in the project for the request's codebase, labelled for triage boards, and records where it went.
@@ -75,11 +107,11 @@ public sealed partial class WorkspaceViewModel
         if (Intake.Draft is not { CanSend: true } draft || _gitLabBusy) return;
         if (draft.Stack is null || draft.Priority is null) { ShowIntake("Set the codebase and priority first; they decide the GitLab project and labels.", failed: true); return; }
         if (!_gitLab.Projects.TryGetValue(draft.Stack, out var project)) { ShowIntake($"No GitLab project is set for {draft.Stack} in Assets/Account/gitlab.json.", failed: true); return; }
-        if (!_client.HasGitLab) { ShowIntake("Connect GitLab first, then send the request.", failed: true); return; }
+        if (!GitLabReady) { ShowIntake("Connect GitLab first, then send the request.", failed: true); return; }
         GitLabBusy = true;
         try
         {
-            var issue = await new GitLabClient(_gitLab, _client.GitLab!).CreateIssueAsync(project, draft.Title.Trim(), IssueBody(draft), Labels(draft));
+            var issue = await GitLabApi.CreateIssueAsync(project, draft.Title.Trim(), IssueBody(draft), Labels(draft));
             draft.GitlabProject = project;
             draft.GitlabIid = issue.Iid;
             draft.GitlabUrl = issue.WebUrl;
@@ -99,10 +131,10 @@ public sealed partial class WorkspaceViewModel
     // Asks GitLab about every open request that has an issue, and saves what changed so clients see it on their Requests page.
     async Task RefreshFromGitLabAsync()
     {
-        if (_gitLabBusy) return;
-        if (!_client.HasGitLab) { ShowIntake("Connect GitLab to refresh issue and merge request status.", failed: true); return; }
+        if (_gitLabBusy) { _refreshAgain = true; return; }
+        if (!GitLabReady) { ShowIntake("Connect GitLab to refresh issue and merge request status.", failed: true); return; }
         GitLabBusy = true;
-        var gitLab = new GitLabClient(_gitLab, _client.GitLab!);
+        var gitLab = GitLabApi;
         var changed = 0;
         try
         {
@@ -123,6 +155,7 @@ public sealed partial class WorkspaceViewModel
         }
         catch (SupabaseException e) { ShowIntake(e.Message, failed: true); }
         finally { GitLabBusy = false; }
+        if (_refreshAgain) { _refreshAgain = false; await RefreshFromGitLabAsync(); }
     }
 
     // Signs in with GitLab again for a fresh token; it must be the same Levy account.

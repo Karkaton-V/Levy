@@ -21,6 +21,8 @@
             <DockPanel>
                 <Button DockPanel.Dock="Right" Style="{StaticResource SecondaryButton}" Content="Refresh from GitLab" Command="{Binding RefreshGitLabCommand}"
                         IsEnabled="{Binding IsGitLabIdle}" VerticalAlignment="Center" Margin="10,0,0,0" />
+                <Button DockPanel.Dock="Right" Style="{StaticResource SecondaryButton}" Content="Open mock GitLab" Command="{Binding OpenMockGitLabCommand}"
+                        Visibility="{Binding IsMockGitLab, Converter={StaticResource BoolVis}}" VerticalAlignment="Center" Margin="10,0,0,0" />
                 <Button DockPanel.Dock="Right" Style="{StaticResource PrimaryButton}" Content="Connect GitLab" Command="{Binding ConnectGitLabCommand}"
                         IsEnabled="{Binding IsGitLabIdle}" Visibility="{Binding NeedsGitLab, Converter={StaticResource BoolVis}}" VerticalAlignment="Center" />
                 <TextBlock DockPanel.Dock="Left" Text="{Binding GitLabStatus}" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,16,0" />
@@ -58,8 +60,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTextColumn Header="GitLab" Binding="{Binding Where}" SortMemberPath="GitlabIid" Width="Auto" />
-                        <DataGridTextColumn Header="Filed" Binding="{Binding Filed}" SortMemberPath="CreatedAt" Width="Auto" />
+                        <DataGridTextColumn Header="GitLab" Binding="{Binding IssueNumber}" SortMemberPath="GitlabIid" Width="Auto" />
                     </DataGrid.Columns>
                 </DataGrid>
                 <TextBlock Style="{StaticResource AdminMessage}" Text="{Binding AdminMessage}" />

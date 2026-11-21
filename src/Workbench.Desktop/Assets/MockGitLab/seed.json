@@ -1,0 +1,43 @@
+{
+  "people": ["Dana Developer", "Riley Reviewer", "Sam Rails", "Morgan DotNet"],
+  "required_approvals": 1,
+  "projects": [
+    {
+      "path": "levy-dev/cama-rails",
+      "issues": [
+        {
+          "title": "Export the 2026 tax roll as LTC JSON",
+          "description": "The Tax Commission is replacing the paper recap with a JSON file for tax year 2026. Add an export that aggregates assessments by property class in the LTC's format.",
+          "labels": ["type::feature", "priority::high", "stack::rails", "client::Caddo Parish"],
+          "assignee": "Sam Rails"
+        },
+        {
+          "title": "Taxpayer portal search times out on long owner names",
+          "description": "Searching the portal for owner names over 40 characters takes more than 30 seconds and then fails.",
+          "labels": ["type::bug", "priority::medium", "stack::rails", "client::Bossier Parish"]
+        },
+        {
+          "title": "Audit trail: show batch changes separately from user edits",
+          "description": "Assessors want the history view to group batch revaluations apart from changes made by hand.",
+          "labels": ["type::feature", "priority::low", "stack::rails", "client::Webster Parish"]
+        }
+      ]
+    },
+    {
+      "path": "levy-dev/levy-desktop",
+      "issues": [
+        {
+          "title": "Ratio study: add the PRB alongside the PRD",
+          "description": "IAAO now recommends reporting the price-related bias (PRB) with the PRD. Show both on the Compare page.",
+          "labels": ["type::feature", "priority::medium", "stack::.net", "client::Caddo Parish"],
+          "assignee": "Morgan DotNet"
+        },
+        {
+          "title": "Parcel map: study area outline missing at low zoom",
+          "description": "The study area outline disappears below zoom level 12.",
+          "labels": ["type::bug", "priority::low", "stack::.net", "client::Bossier Parish"]
+        }
+      ]
+    }
+  ]
+}

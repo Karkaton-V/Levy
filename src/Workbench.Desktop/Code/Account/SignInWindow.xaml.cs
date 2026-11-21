@@ -87,6 +87,11 @@ public partial class SignInWindow : Window
     async void GitLab_Click(object sender, RoutedEventArgs e)
     {
         if (_gitLab is not null) { _gitLab.Cancel(); return; }
+        if (GitLabSettings.FromAssets().Mock)
+        {
+            ShowInfo("GitLab is in demo mode (Assets/Account/gitlab.json): sign in with your email, and Levy uses its mock GitLab.");
+            return;
+        }
         _gitLab = new CancellationTokenSource();
         SubmitButton.IsEnabled = false;
         GitLabText.Text = "Cancel GitLab sign-in";
