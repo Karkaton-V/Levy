@@ -12,5 +12,9 @@
     <!-- The Levy mark: the same in both themes. -->
     <SolidColorBrush x:Key="BrandWave" Color="#4F8DF7" />
     <SolidColorBrush x:Key="BrandMark" Color="#FFFFFF" />
+    <!-- The Edit pill on the profile card banner: the same in both themes, since it sits on the banner. -->
+    <SolidColorBrush x:Key="BannerButtonFill" Color="#73000000" />
+    <SolidColorBrush x:Key="BannerButtonHover" Color="#A6000000" />
+    <SolidColorBrush x:Key="BannerButtonText" Color="#FFFFFF" />
     <Color x:Key="MenuShadowColor">#000000</Color>
 </ResourceDictionary>

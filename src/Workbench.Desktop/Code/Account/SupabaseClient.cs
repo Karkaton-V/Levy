@@ -177,11 +177,12 @@ public sealed class SupabaseClient
         }
     }
 
-    public async Task SignOutAsync()
+    // Signs out here; with everywhere, also ends the sessions on every other device.
+    public async Task SignOutAsync(bool everywhere = false)
     {
         try
         {
-            if (Session is not null) using (await SendAsync(HttpMethod.Post, "auth/v1/logout", null)) { }
+            if (Session is not null) using (await SendAsync(HttpMethod.Post, everywhere ? "auth/v1/logout?scope=global" : "auth/v1/logout", null)) { }
         }
         catch (SupabaseException) { } // Signed out locally even if the server can't be reached.
         finally
@@ -261,6 +262,12 @@ public sealed class SupabaseClient
         return await reply.Content.ReadFromJsonAsync<List<T>>(Json) ?? [];
     }
 
+    // Calls a function that returns nothing (rpc/{function}).
+    public async Task CallAsync(string function, object? args = null)
+    {
+        using (await SendAsync(HttpMethod.Post, $"rest/v1/rpc/{function}", args ?? new { })) { }
+    }
+
     // The company a sign-up code belongs to, or null; works signed out.
     public async Task<string?> CompanyForCodeAsync(string code)
     {
@@ -269,13 +276,49 @@ public sealed class SupabaseClient
         return json.ValueKind == JsonValueKind.String ? json.GetString() : null;
     }
 
-    async Task<HttpResponseMessage> SendAsync(HttpMethod method, string path, object? body, bool authorize = true, bool representation = false)
+    // Sets a new password for the signed-in account.
+    public async Task ChangePasswordAsync(string password)
+    {
+        using (await SendAsync(HttpMethod.Put, "auth/v1/user", new { password })) { }
+    }
+
+    // Storage -------------------------------------------------------------------------------------------------------------
+
+    // Saves a file at bucket/path (replacing what's there); the bucket's policies decide who may.
+    public async Task UploadAsync(string bucket, string path, byte[] bytes, string contentType)
+    {
+        var content = new ByteArrayContent(bytes);
+        content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+        using (await SendAsync(HttpMethod.Post, $"storage/v1/object/{bucket}/{path}", null, content: content, upsert: true)) { }
+    }
+
+    // A private file's bytes, or null when it isn't there or the caller may not see it.
+    public async Task<byte[]?> DownloadAsync(string bucket, string path)
+    {
+        try
+        {
+            using var reply = await SendAsync(HttpMethod.Get, $"storage/v1/object/authenticated/{bucket}/{path}", null);
+            return await reply.Content.ReadAsByteArrayAsync();
+        }
+        catch (SupabaseException e) when (e.IsRejection) { return null; }
+    }
+
+    public async Task RemoveAsync(string bucket, string path)
+    {
+        try { using (await SendAsync(HttpMethod.Delete, $"storage/v1/object/{bucket}/{path}", null)) { } }
+        catch (SupabaseException e) when (e.IsRejection) { } // Already gone.
+    }
+
+    async Task<HttpResponseMessage> SendAsync(HttpMethod method, string path, object? body, bool authorize = true, bool representation = false,
+        HttpContent? content = null, bool upsert = false)
     {
         if (authorize) await EnsureFreshAsync();
         using var request = new HttpRequestMessage(method, path);
         if (authorize) request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Session!.AccessToken);
         if (representation) request.Headers.Add("Prefer", "return=representation");
+        if (upsert) request.Headers.Add("x-upsert", "true");
         if (body is not null) request.Content = JsonContent.Create(body, body.GetType(), options: Json);
+        else if (content is not null) request.Content = content;
 
         HttpResponseMessage reply;
         try { reply = await _http.SendAsync(request); }

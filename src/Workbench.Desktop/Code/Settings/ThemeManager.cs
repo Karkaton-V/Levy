@@ -6,7 +6,7 @@ namespace Workbench.Desktop;
 // Styles look colours up with DynamicResource, so everything open recolours at once; code that copies colours listens to Changed.
 public static class ThemeManager
 {
-    static readonly string[] Folders = ["Shared", "App", "Editor", "Map", "Compare"];
+    static readonly string[] Folders = ["Shared", "App", "Editor", "Map", "Compare", "Settings"];
     static readonly List<ResourceDictionary> Loaded = [];
 
     public static AppTheme Current { get; private set; } = AppTheme.Light;

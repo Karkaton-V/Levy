@@ -76,7 +76,11 @@ public sealed partial class WorkspaceViewModel
     {
         try
         {
-            if (IsAdmin || IsPlatformAdmin) Team.Load(await _client.RpcAsync<Member>("team_members", new { Org = OrganizationId }));
+            if (IsAdmin || IsPlatformAdmin)
+            {
+                Team.Load(await _client.RpcAsync<Member>("team_members", new { Org = OrganizationId }));
+                await LoadTeamAwardsAsync();
+            }
             if (IsPlatformAdmin)
             {
                 Companies.Load(await _client.RpcAsync<Company>("list_companies"));

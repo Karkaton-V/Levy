@@ -202,6 +202,22 @@
         </Style.Triggers>
     </Style>
 
+    <!-- The outcome of a badge award on the Team page: green when it worked, red when it didn't (TeamFailed). -->
+    <Style x:Key="TeamResult" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource ToneGreenText}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="Margin" Value="0,10,0,0" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Workspace.TeamFailed}" Value="True">
+                <Setter Property="Foreground" Value="{DynamicResource ToneRedText}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Workspace.HasTeamMessage}" Value="False">
+                <Setter Property="Visibility" Value="Collapsed" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
     <!-- The outcome of "Add to company": green when it worked, red when it didn't (AssignFailed). -->
     <Style x:Key="AssignResult" TargetType="TextBlock">
         <Setter Property="Foreground" Value="{DynamicResource ToneGreenText}" />

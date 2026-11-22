@@ -87,6 +87,19 @@ None of this has been run on Windows yet. The XAML parses, every resource key re
     - `SUPABASE_DB_PASSWORD`: the project's database password (Supabase → Project Settings → Database).
 
     Without them, the deploy job stops with a message saying which secret is missing. Optionally, add required reviewers to the `production` environment so a person approves each deploy.
+- Profiles, badges and account deletion (2026-11-22):
+  - Migration `20261122021621_profiles_badges.sql`, checked in CI against a fresh database before it was applied with the MCP:
+    - profile fields (bio, pronouns, banner colour, picture and banner paths), and the private `profile-media` Storage bucket (own folder writable, colleagues readable);
+    - `badge_awards`, with `award_badge` / `revoke_badge`;
+    - `delete_account`, for a member who works only under the calling admin, logged before deleting.
+  - Tests: `supabase/tests/database/profiles.test.sql` adds 20 checks (44 in all).
+  - App, in `Code/Settings/`:
+    - `AccountMenu`: the footer opens the profile card or the settings menu, and each closes the other.
+    - `ProfileCardView`, `Profile.cs` (`ProfileStore`, image crop and scale), `EditProfileWindow` and `ChangePasswordWindow`.
+    - Badge catalogue in `Assets/Settings/badges.json`; banner colours in `Assets/Settings/Colors.*.xaml`.
+    - Team page: badges and Delete account.
+  - Tested in the app: profile card, mutual close, editing with picture upload and removal, a restart reloading the picture from Storage, badge award and take-back, and the delete confirmation (answered No).
+  - Not run for real: Change password, Sign out of all devices, Reduce motion.
 - `.mcp.json` adds the Supabase MCP server for this project.
 
 ## Still to do, in order

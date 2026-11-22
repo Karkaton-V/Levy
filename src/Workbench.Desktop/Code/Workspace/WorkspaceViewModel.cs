@@ -23,6 +23,7 @@ public sealed partial class WorkspaceViewModel : INotifyPropertyChanged
         Tasks = CreateTasks();
         Reports = CreateReports();
         Team = CreateTeam();
+        FollowTeamDraft();
         Companies = CreateCompanies();
         Activity = CreateActivity();
         Requests = CreateRequests();

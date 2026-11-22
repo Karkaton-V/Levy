@@ -1,0 +1,10 @@
+[
+  { "key": "top-appraiser", "name": "Top appraiser", "glyph": "", "tone": "Amber", "description": "Exceptional valuation work." },
+  { "key": "appeal-ace", "name": "Appeal ace", "glyph": "", "tone": "Blue", "description": "Defended values in tough appeals." },
+  { "key": "fast-closer", "name": "Fast closer", "glyph": "", "tone": "Purple", "description": "Closes jobs ahead of schedule." },
+  { "key": "field-pro", "name": "Field pro", "glyph": "", "tone": "Green", "description": "Outstanding field reviews." },
+  { "key": "mentor", "name": "Mentor", "glyph": "", "tone": "Blue", "description": "Helps teammates grow." },
+  { "key": "team-player", "name": "Team player", "glyph": "", "tone": "Green", "description": "Always there for the team." },
+  { "key": "clean-data", "name": "Clean data", "glyph": "", "tone": "Grey", "description": "Keeps the records spotless." },
+  { "key": "kudos", "name": "Kudos", "glyph": "", "tone": "Red", "description": "A thank-you from management." }
+]
