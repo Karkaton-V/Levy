@@ -1,7 +1,7 @@
 -- Company tags, run by `supabase test db` (pgTAP): admins set their company's tag; members and other companies can't.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(6);
+select plan(8);
 
 insert into auth.users (id, instance_id, email, raw_user_meta_data, aud, role) values
     ('a0000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000000', 'ann@example.com', '{"full_name":"Ann Admin"}', 'authenticated', 'authenticated'),
@@ -29,6 +29,8 @@ set local role authenticated;
 select set_config('request.jwt.claims', '{"sub":"c0000000-0000-0000-0000-000000000003","role":"authenticated"}', true);
 select is_empty($$ update public.organizations set tag_text = 'HACK' where id = current_setting('test.ann_org')::uuid returning 1 $$, 'members can''t change the tag');
 select is((select tag_icon || ' ' || tag_text from public.organizations where id = current_setting('test.ann_org')::uuid), 'bank CADO', 'members see the tag');
+select isnt_empty($$ update public.profiles set pronouns = 'they/them' where id = 'c0000000-0000-0000-0000-000000000003' returning 1 $$, 'pronouns can be one of the choices');
+select throws_ok($$ update public.profiles set pronouns = 'xe/xem' where id = 'c0000000-0000-0000-0000-000000000003' $$, '23514', null, 'pronouns outside the choices are refused');
 
 reset role;
 select * from finish();
