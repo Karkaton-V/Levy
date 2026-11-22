@@ -1,0 +1,17 @@
+# GitHub Pages site for Levy; built and deployed by .github/workflows/pages.yml.
+title: Levy
+description: A mass-appraisal workbench for property tax assessors, in C# / .NET 8 and WPF.
+baseurl: /Levy
+url: https://karkaton-v.github.io
+theme: minima
+header_pages:
+  - getting-started.md
+  - valuation.md
+  - workflow.md
+  - accounts.md
+  - architecture.md
+  - ci-cd.md
+plugins:
+  - jekyll-relative-links
+relative_links:
+  enabled: true
