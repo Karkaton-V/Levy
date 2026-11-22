@@ -1,0 +1,11 @@
+[
+  { "key": "bank", "name": "Bank", "glyph": "" },
+  { "key": "briefcase", "name": "Briefcase", "glyph": "" },
+  { "key": "building", "name": "Office", "glyph": "" },
+  { "key": "chart", "name": "Chart", "glyph": "" },
+  { "key": "shield", "name": "Shield", "glyph": "" },
+  { "key": "globe", "name": "Globe", "glyph": "" },
+  { "key": "map", "name": "Map", "glyph": "" },
+  { "key": "star", "name": "Star", "glyph": "" },
+  { "key": "flag", "name": "Flag", "glyph": "" }
+]

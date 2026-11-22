@@ -47,7 +47,12 @@ public partial class MainWindow : Window
         viewModel.WorkspaceName = workspace.OrganizationName;
         JobTitleText.SetBinding(TextBlock.TextProperty, new Binding(nameof(WorkspaceViewModel.JobTitle)) { Source = workspace });
         profile.Card.JobTitle = workspace.JobTitle;
-        workspace.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(WorkspaceViewModel.JobTitle)) profile.Card.JobTitle = workspace.JobTitle; };
+        workspace.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(WorkspaceViewModel.JobTitle)) profile.Card.JobTitle = workspace.JobTitle;
+            if (e.PropertyName == nameof(WorkspaceViewModel.TagIcon)) profile.Card.TagIcon = workspace.TagIcon;
+            if (e.PropertyName == nameof(WorkspaceViewModel.TagText)) profile.Card.TagText = workspace.TagText;
+        };
         ShowAdminPages(workspace);
         workspace.PropertyChanged += (_, e) =>
         {

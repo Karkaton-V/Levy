@@ -34,7 +34,7 @@
                             </StackPanel>
                             <StackPanel Margin="6,0,0,0">
                                 <TextBlock Text="Pronouns" Style="{StaticResource FormLabel}" />
-                                <TextBox x:Name="PronounsBox" Style="{StaticResource Input}" MaxLength="30" Tag="she/her, he/they…" TextChanged="Preview" AutomationProperties.Name="Pronouns" />
+                                <ComboBox x:Name="PronounsBox" Style="{StaticResource Select}" MinWidth="0" SelectionChanged="Preview" AutomationProperties.Name="Pronouns" />
                             </StackPanel>
                         </UniformGrid>
 

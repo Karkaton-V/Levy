@@ -31,6 +31,15 @@ public sealed record BadgeInfo(string Key, string Name, string Glyph, string Ton
     public static BadgeInfo Find(string key) => Catalog.FirstOrDefault(b => b.Key == key) ?? new(key, key, "", "Grey", "");
 }
 
+// One of the nine icons a company tag can use (Assets/Settings/company-tags.json).
+public sealed record CompanyTagIcon(string Key, string Name, string Glyph)
+{
+    public static IReadOnlyList<CompanyTagIcon> Catalog { get; } =
+        JsonSerializer.Deserialize<List<CompanyTagIcon>>(Shared.ReadAsset("Settings", "company-tags.json"), SupabaseClient.Json) ?? [];
+
+    public static CompanyTagIcon? Find(string? key) => Catalog.FirstOrDefault(i => i.Key == key);
+}
+
 // One badge someone holds (public.badge_awards), with who gave it and why.
 public sealed class BadgeAward
 {
@@ -64,6 +73,11 @@ public sealed class ProfileCard : INotifyPropertyChanged
     ImageSource? _avatar;
     ImageSource? _banner;
     IReadOnlyList<BadgeAward> _badges = [];
+    string? _tagIcon;
+    string? _tagText;
+
+    // How many badges show on the card (the newest).
+    const int TopBadgeCount = 5;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -75,7 +89,19 @@ public sealed class ProfileCard : INotifyPropertyChanged
     public string BannerColor { get => _bannerColor; set { _bannerColor = value; Raise(); Raise(nameof(BannerKey)); } }
     public ImageSource? Avatar { get => _avatar; set { _avatar = value; Raise(); Raise(nameof(HasAvatar)); } }
     public ImageSource? Banner { get => _banner; set { _banner = value; Raise(); Raise(nameof(HasBanner)); } }
-    public IReadOnlyList<BadgeAward> Badges { get => _badges; set { _badges = value; Raise(); Raise(nameof(HasBadges)); } }
+    public IReadOnlyList<BadgeAward> Badges { get => _badges; set { _badges = value; Raise(); Raise(nameof(HasBadges)); Raise(nameof(TopBadges)); } }
+
+    // The company tag beside the name, set by the company's admins: one of nine icons and up to four letters.
+    public string? TagIcon { get => _tagIcon; set { _tagIcon = value; Raise(); Raise(nameof(TagGlyph)); Raise(nameof(HasTag)); } }
+    public string? TagText { get => _tagText; set { _tagText = value; Raise(); Raise(nameof(HasTag)); } }
+    public string TagGlyph => CompanyTagIcon.Find(_tagIcon)?.Glyph ?? "";
+    public bool HasTag => !string.IsNullOrEmpty(_tagText) && CompanyTagIcon.Find(_tagIcon) is not null;
+
+    // The newest five badges, shown as icons.
+    public IReadOnlyList<BadgeAward> TopBadges => _badges.Take(TopBadgeCount).ToList();
+
+    // The pronoun choices ("" for none), matching the check on profiles.pronouns.
+    public static readonly string[] PronounChoices = ["", "he/him", "she/her", "they/them"];
 
     public bool HasAvatar => _avatar is not null;
     public bool HasBanner => _banner is not null;
@@ -90,7 +116,7 @@ public sealed class ProfileCard : INotifyPropertyChanged
     public ProfileCard CopyForPreview() => new()
     {
         Name = _name, Pronouns = _pronouns, JobTitle = _jobTitle, Email = _email, Bio = _bio, BannerColor = _bannerColor,
-        Avatar = _avatar, Banner = _banner, Badges = _badges,
+        Avatar = _avatar, Banner = _banner, Badges = _badges, TagIcon = _tagIcon, TagText = _tagText,
     };
 
     // "Ada Lovelace" → "AL", "ada" → "A".

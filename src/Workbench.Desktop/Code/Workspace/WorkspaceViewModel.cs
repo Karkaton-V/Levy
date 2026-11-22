@@ -80,6 +80,7 @@ public sealed partial class WorkspaceViewModel : INotifyPropertyChanged
         }
         catch (SupabaseException e) { Message = e.Message; }
         await LoadRequestsAsync();
+        await LoadTagAsync();
         await LoadAdminAsync();
     }
 

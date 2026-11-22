@@ -27,7 +27,8 @@ public partial class EditProfileWindow : Window
         _bannerColor = store.Card.BannerColor;
         PreviewCard.DataContext = _preview;
         NameBox.Text = store.Card.Name;
-        PronounsBox.Text = store.Card.Pronouns;
+        PronounsBox.ItemsSource = ProfileCard.PronounChoices.Select(p => p == "" ? "None" : p).ToList();
+        PronounsBox.SelectedIndex = Math.Max(0, Array.IndexOf(ProfileCard.PronounChoices, store.Card.Pronouns));
         BioBox.Text = store.Card.Bio;
         foreach (var color in BannerColors)
         {
@@ -40,11 +41,13 @@ public partial class EditProfileWindow : Window
         Loaded += (_, _) => NameBox.Focus();
     }
 
-    void Preview(object sender, TextChangedEventArgs e)
+    string Pronouns => ProfileCard.PronounChoices[Math.Max(0, PronounsBox.SelectedIndex)];
+
+    void Preview(object sender, RoutedEventArgs e)
     {
         if (_preview is null) return; // Fires while InitializeComponent is still filling the boxes.
         _preview.Name = NameBox.Text.Trim();
-        _preview.Pronouns = PronounsBox.Text.Trim();
+        _preview.Pronouns = Pronouns;
         _preview.Bio = BioBox.Text;
         BioCount.Text = $"{BioBox.Text.Length} / {BioBox.MaxLength}";
     }
@@ -112,7 +115,7 @@ public partial class EditProfileWindow : Window
         SaveButton.Content = "Saving…";
         try
         {
-            await _store.SaveAsync(NameBox.Text, PronounsBox.Text, BioBox.Text, _bannerColor, _newAvatar, _removeAvatar, _newBanner, _removeBanner);
+            await _store.SaveAsync(NameBox.Text, Pronouns, BioBox.Text, _bannerColor, _newAvatar, _removeAvatar, _newBanner, _removeBanner);
             DialogResult = true;
         }
         catch (SupabaseException ex)
