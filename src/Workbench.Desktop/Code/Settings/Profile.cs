@@ -100,8 +100,8 @@ public sealed class ProfileCard : INotifyPropertyChanged
     // The newest five badges, shown as icons.
     public IReadOnlyList<BadgeAward> TopBadges => _badges.Take(TopBadgeCount).ToList();
 
-    // The pronoun choices ("" for none), matching the check on profiles.pronouns.
-    public static readonly string[] PronounChoices = ["", "he/him", "she/her", "they/them"];
+    // The three pronoun choices; "" (not chosen) is also allowed by the check on profiles.pronouns.
+    public static readonly string[] PronounChoices = ["he/him", "she/her", "they/them"];
 
     public bool HasAvatar => _avatar is not null;
     public bool HasBanner => _banner is not null;

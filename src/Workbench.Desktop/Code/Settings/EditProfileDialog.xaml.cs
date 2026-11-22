@@ -30,8 +30,8 @@ public partial class EditProfileDialog : UserControl
         _bannerColor = store.Card.BannerColor;
         PreviewCard.DataContext = _preview;
         NameBox.Text = store.Card.Name;
-        PronounsBox.ItemsSource = ProfileCard.PronounChoices.Select(p => p == "" ? "None" : p).ToList();
-        PronounsBox.SelectedIndex = Math.Max(0, Array.IndexOf(ProfileCard.PronounChoices, store.Card.Pronouns));
+        PronounsBox.ItemsSource = ProfileCard.PronounChoices;
+        PronounsBox.SelectedItem = ProfileCard.PronounChoices.FirstOrDefault(p => p == store.Card.Pronouns);
         BioBox.Text = store.Card.Bio;
         foreach (var color in BannerColors)
         {
@@ -54,7 +54,7 @@ public partial class EditProfileDialog : UserControl
 
     void Cancel(object sender, RoutedEventArgs e) { if (SaveButton.IsEnabled) Closed?.Invoke(); }
 
-    string Pronouns => ProfileCard.PronounChoices[Math.Max(0, PronounsBox.SelectedIndex)];
+    string Pronouns => PronounsBox.SelectedItem as string ?? "";
 
     void Preview(object sender, RoutedEventArgs e)
     {
