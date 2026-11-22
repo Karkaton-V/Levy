@@ -1,0 +1,17 @@
+<UserControl x:Class="Workbench.Desktop.ImageCropper"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Choose the part of an image to keep: drag the frame to move it, drag a corner or scroll to resize, arrow keys and +/- also work.
+         The frame keeps the target shape (square for a picture, 3:1 for a banner). Styles: Assets/Settings/SettingsStyles.xaml. -->
+    <Grid x:Name="Stage" Style="{StaticResource CropStage}" AutomationProperties.Name="Crop area">
+        <Image x:Name="Photo" Stretch="Fill" HorizontalAlignment="Left" VerticalAlignment="Top" IsHitTestVisible="False" />
+        <Path x:Name="Shade" Style="{StaticResource CropShade}" />
+        <Canvas IsHitTestVisible="False">
+            <Border x:Name="Frame" Style="{StaticResource CropFrame}" />
+            <Border x:Name="HandleTopLeft" Style="{StaticResource CropHandle}" />
+            <Border x:Name="HandleTopRight" Style="{StaticResource CropHandle}" />
+            <Border x:Name="HandleBottomLeft" Style="{StaticResource CropHandle}" />
+            <Border x:Name="HandleBottomRight" Style="{StaticResource CropHandle}" />
+        </Canvas>
+    </Grid>
+</UserControl>

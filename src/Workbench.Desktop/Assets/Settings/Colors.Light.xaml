@@ -29,4 +29,9 @@
         <GradientStop Color="#475569" Offset="0" />
         <GradientStop Color="#94A3B8" Offset="1" />
     </LinearGradientBrush>
+    <!-- Behind a profile picture, so transparent parts show black rather than the initials colour. -->
+    <SolidColorBrush x:Key="AvatarBackdropFill" Color="#000000" />
+    <!-- The picture and banner cropper: the dimmed area outside the frame, and the frame and its corner handles. -->
+    <SolidColorBrush x:Key="CropShadeFill" Color="#A6000000" />
+    <SolidColorBrush x:Key="CropFrameLine" Color="#FFFFFF" />
 </ResourceDictionary>

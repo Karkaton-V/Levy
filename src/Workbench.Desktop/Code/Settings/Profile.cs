@@ -158,15 +158,12 @@ public static class ProfileImages
         catch (Exception e) when (e is NotSupportedException or FileFormatException or IOException) { return null; }
     }
 
-    // A square profile picture: the middle of the image, scaled to 256 × 256, as PNG.
-    public static byte[] PrepareAvatar(string file) => Crop(file, AvatarSize, AvatarSize, new PngBitmapEncoder());
+    public const double AvatarAspect = 1;
+    public const double BannerAspect = (double)BannerWidth / BannerHeight;
 
-    // A 3:1 banner: the middle band of the image, scaled to 900 × 300, as JPEG.
-    public static byte[] PrepareBanner(string file) => Crop(file, BannerWidth, BannerHeight, new JpegBitmapEncoder { QualityLevel = 85 });
-
-    static byte[] Crop(string file, int width, int height, BitmapEncoder encoder)
+    // Reads a picked file at full size, for the cropper.
+    public static BitmapSource Load(string file)
     {
-        BitmapSource source;
         try
         {
             var image = new BitmapImage();
@@ -174,19 +171,33 @@ public static class ProfileImages
             image.CacheOption = BitmapCacheOption.OnLoad;
             image.UriSource = new Uri(file);
             image.EndInit();
-            source = image;
+            image.Freeze();
+            return image;
         }
         catch (Exception e) when (e is NotSupportedException or FileFormatException or IOException or UriFormatException)
         {
             throw new SupabaseException("That file isn't an image Levy can read. Pick a PNG or JPEG.");
         }
-        // Crop to the target shape around the middle, then scale.
-        var target = (double)width / height;
-        var cropWidth = source.PixelWidth;
-        var cropHeight = (int)Math.Round(cropWidth / target);
-        if (cropHeight > source.PixelHeight) { cropHeight = source.PixelHeight; cropWidth = (int)Math.Round(cropHeight * target); }
-        var cropped = new CroppedBitmap(source, new Int32Rect((source.PixelWidth - cropWidth) / 2, (source.PixelHeight - cropHeight) / 2, cropWidth, cropHeight));
-        var scaled = new TransformedBitmap(cropped, new ScaleTransform((double)width / cropWidth, (double)height / cropHeight));
+    }
+
+    // The largest area of the given shape (width ÷ height) in the middle of the image: where the cropper starts.
+    public static Int32Rect Centered(BitmapSource source, double aspect)
+    {
+        var width = source.PixelWidth;
+        var height = (int)Math.Round(width / aspect);
+        if (height > source.PixelHeight) { height = source.PixelHeight; width = (int)Math.Round(height * aspect); }
+        return new Int32Rect((source.PixelWidth - width) / 2, (source.PixelHeight - height) / 2, width, height);
+    }
+
+    // A square profile picture: the chosen area, scaled to 256 × 256, as PNG.
+    public static byte[] PrepareAvatar(BitmapSource source, Int32Rect area) => Crop(source, area, AvatarSize, AvatarSize, new PngBitmapEncoder());
+
+    // A 3:1 banner: the chosen area, scaled to 900 × 300, as JPEG.
+    public static byte[] PrepareBanner(BitmapSource source, Int32Rect area) => Crop(source, area, BannerWidth, BannerHeight, new JpegBitmapEncoder { QualityLevel = 85 });
+
+    static byte[] Crop(BitmapSource source, Int32Rect area, int width, int height, BitmapEncoder encoder)
+    {
+        var scaled = new TransformedBitmap(new CroppedBitmap(source, area), new ScaleTransform((double)width / area.Width, (double)height / area.Height));
         encoder.Frames.Add(BitmapFrame.Create(scaled));
         using var stream = new MemoryStream();
         encoder.Save(stream);

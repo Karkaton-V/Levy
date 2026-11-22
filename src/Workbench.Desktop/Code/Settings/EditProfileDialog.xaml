@@ -46,19 +46,37 @@
                             <TextBlock Text="Profile picture" Style="{StaticResource FormLabel}" />
                             <StackPanel Orientation="Horizontal">
                                 <Button Style="{StaticResource SecondaryButton}" Content="Upload picture…" Click="PickAvatar" />
+                                <Button x:Name="AdjustAvatarButton" Style="{StaticResource LinkButton}" Content="Adjust" Margin="14,0,0,0" VerticalAlignment="Center" Click="AdjustAvatar" />
                                 <Button x:Name="RemoveAvatarButton" Style="{StaticResource LinkButton}" Content="Remove" Margin="14,0,0,0" VerticalAlignment="Center" Click="RemoveAvatar" />
                             </StackPanel>
-                            <TextBlock Text="PNG or JPEG. Cropped to a square around the middle." Style="{StaticResource FormNote}" />
+                            <TextBlock Text="PNG or JPEG. You choose the part to show after picking it." Style="{StaticResource FormNote}" />
 
                             <TextBlock Text="Banner" Style="{StaticResource FormLabel}" />
                             <StackPanel x:Name="Swatches" Orientation="Horizontal" />
                             <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
                                 <Button Style="{StaticResource SecondaryButton}" Content="Upload banner…" Click="PickBanner" />
+                                <Button x:Name="AdjustBannerButton" Style="{StaticResource LinkButton}" Content="Adjust" Margin="14,0,0,0" VerticalAlignment="Center" Click="AdjustBanner" />
                                 <Button x:Name="RemoveBannerButton" Style="{StaticResource LinkButton}" Content="Use the colour" Margin="14,0,0,0" VerticalAlignment="Center" Click="RemoveBanner" />
                             </StackPanel>
-                            <TextBlock Text="An image covers the colour. Cropped to a wide 3:1 band." Style="{StaticResource FormNote}" />
+                            <TextBlock Text="An image covers the colour. You choose the part to show after picking it." Style="{StaticResource FormNote}" />
                         </StackPanel>
                     </ScrollViewer>
+                </DockPanel>
+            </Border>
+
+            <!-- Adjusting a picture or banner: takes over the form until Apply or Back; the preview follows the frame. -->
+            <Border x:Name="CropPanel" Style="{StaticResource DialogBody}" CornerRadius="11,0,0,11" Visibility="Collapsed">
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Top">
+                        <TextBlock x:Name="CropTitle" Style="{StaticResource DialogTitle}" />
+                        <TextBlock Text="Drag the frame to move it. Drag a corner or scroll to resize. Arrow keys and + / − work too." Foreground="{DynamicResource Muted}"
+                                   TextWrapping="Wrap" Margin="0,4,0,16" />
+                    </StackPanel>
+                    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,16,0,0">
+                        <Button Style="{StaticResource PrimaryButton}" Content="Apply" MinWidth="96" Click="ApplyCrop" />
+                        <Button Style="{StaticResource SecondaryButton}" Content="Back" Margin="10,0,0,0" Click="CancelCrop" />
+                    </StackPanel>
+                    <local:ImageCropper x:Name="Cropper" />
                 </DockPanel>
             </Border>
 

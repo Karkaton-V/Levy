@@ -33,6 +33,38 @@
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
+    <!-- Behind a profile picture (black), in place of the initials circle. -->
+    <Style x:Key="AvatarBackdrop" TargetType="Ellipse">
+        <Setter Property="Fill" Value="{DynamicResource AvatarBackdropFill}" />
+    </Style>
+
+    <!-- The cropper: its stage, the dimmed area outside the frame, the frame, and the corner handles. -->
+    <Style x:Key="CropStage" TargetType="Grid">
+        <Setter Property="Background" Value="{DynamicResource Panel}" />
+        <Setter Property="ClipToBounds" Value="True" />
+        <Setter Property="Focusable" Value="True" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+    </Style>
+
+    <Style x:Key="CropShade" TargetType="Path">
+        <Setter Property="Fill" Value="{DynamicResource CropShadeFill}" />
+        <Setter Property="IsHitTestVisible" Value="False" />
+    </Style>
+
+    <Style x:Key="CropFrame" TargetType="Border">
+        <Setter Property="BorderBrush" Value="{DynamicResource CropFrameLine}" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="IsHitTestVisible" Value="False" />
+    </Style>
+
+    <Style x:Key="CropHandle" TargetType="Border">
+        <Setter Property="Width" Value="12" />
+        <Setter Property="Height" Value="12" />
+        <Setter Property="CornerRadius" Value="2" />
+        <Setter Property="Background" Value="{DynamicResource CropFrameLine}" />
+        <Setter Property="IsHitTestVisible" Value="False" />
+    </Style>
+
     <Style x:Key="ProfileInitialsText" TargetType="TextBlock">
         <Setter Property="Foreground" Value="{DynamicResource OnAccent}" />
         <Setter Property="FontSize" Value="28" />

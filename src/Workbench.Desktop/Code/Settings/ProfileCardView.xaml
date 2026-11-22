@@ -9,9 +9,10 @@
                 <Border x:Name="BannerFill" Height="100" CornerRadius="11,11,0,0" VerticalAlignment="Top" />
                 <Border Style="{StaticResource ProfileRing}">
                     <Grid>
-                        <Border Style="{StaticResource ProfileInitials}">
+                        <Border Style="{StaticResource ProfileInitials}" Visibility="{Binding HasAvatar, Converter={StaticResource InverseBoolVis}}">
                             <TextBlock Text="{Binding Initials}" Style="{StaticResource ProfileInitialsText}" />
                         </Border>
+                        <Ellipse Style="{StaticResource AvatarBackdrop}" Width="80" Height="80" Visibility="{Binding HasAvatar, Converter={StaticResource BoolVis}}" />
                         <Ellipse x:Name="AvatarFill" Width="80" Height="80" Visibility="{Binding HasAvatar, Converter={StaticResource BoolVis}}" />
                     </Grid>
                 </Border>

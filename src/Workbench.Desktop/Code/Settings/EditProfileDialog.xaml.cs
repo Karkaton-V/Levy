@@ -1,6 +1,8 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 
 namespace Workbench.Desktop;
@@ -19,6 +21,13 @@ public partial class EditProfileDialog : UserControl
     byte[]? _newBanner;
     bool _removeAvatar;
     bool _removeBanner;
+    // The full images picked in this dialog and the areas chosen from them, so Adjust can reopen the cropper.
+    BitmapSource? _avatarSource, _bannerSource;
+    Int32Rect _avatarArea, _bannerArea;
+    // While cropping: which image, its full source, and what the preview showed before (restored by Back).
+    bool _croppingBanner;
+    BitmapSource? _cropSource;
+    ImageSource? _beforeCrop;
 
     public event Action? Closed;
 
@@ -40,14 +49,18 @@ public partial class EditProfileDialog : UserControl
             swatch.Checked += (_, _) => { _bannerColor = (string)swatch.Tag; _preview.BannerColor = _bannerColor; };
             Swatches.Children.Add(swatch);
         }
+        Cropper.Changed += CropMoved;
         ShowButtons();
         Loaded += (_, _) => NameBox.Focus();
     }
 
+    bool Cropping => CropPanel.Visibility == Visibility.Visible;
+
     // Esc cancels; Enter in a one-line box saves, like a dialog window's default button.
     protected override void OnPreviewKeyDown(KeyEventArgs e)
     {
-        if (e.Key == Key.Escape) { Cancel(this, e); e.Handled = true; }
+        if (e.Key == Key.Escape) { if (Cropping) CancelCrop(this, e); else Cancel(this, e); e.Handled = true; }
+        else if (e.Key == Key.Enter && Cropping) { ApplyCrop(this, e); e.Handled = true; }
         else if (e.Key == Key.Enter && e.OriginalSource is TextBox { AcceptsReturn: false }) { Save(this, e); e.Handled = true; }
         base.OnPreviewKeyDown(e);
     }
@@ -65,37 +78,79 @@ public partial class EditProfileDialog : UserControl
         BioCount.Text = $"{BioBox.Text.Length} / {BioBox.MaxLength}";
     }
 
-    void PickAvatar(object sender, RoutedEventArgs e)
+    void PickAvatar(object sender, RoutedEventArgs e) => PickAndCrop("Choose a profile picture", banner: false);
+    void PickBanner(object sender, RoutedEventArgs e) => PickAndCrop("Choose a banner image", banner: true);
+    void AdjustAvatar(object sender, RoutedEventArgs e) { if (_avatarSource is { } source) StartCrop(source, banner: false, _avatarArea); }
+    void AdjustBanner(object sender, RoutedEventArgs e) { if (_bannerSource is { } source) StartCrop(source, banner: true, _bannerArea); }
+
+    void PickAndCrop(string title, bool banner)
     {
-        if (Pick("Choose a profile picture") is not { } file) return;
+        if (Pick(title) is not { } file) return;
         try
         {
-            _newAvatar = ProfileImages.PrepareAvatar(file);
-            _removeAvatar = false;
-            _preview.Avatar = ProfileImages.Decode(_newAvatar);
+            StartCrop(ProfileImages.Load(file), banner, null);
             ShowError(null);
         }
         catch (SupabaseException ex) { ShowError(ex.Message); }
-        ShowButtons();
     }
 
-    void PickBanner(object sender, RoutedEventArgs e)
+    // Opens the cropper over the form: square and round for a picture, 3:1 for a banner.
+    void StartCrop(BitmapSource source, bool banner, Int32Rect? area)
     {
-        if (Pick("Choose a banner image") is not { } file) return;
-        try
+        _croppingBanner = banner;
+        _cropSource = source;
+        _beforeCrop = banner ? _preview.Banner : _preview.Avatar;
+        CropTitle.Text = banner ? "Adjust banner" : "Adjust picture";
+        CropPanel.Visibility = Visibility.Visible;
+        Cropper.Load(source, banner ? ProfileImages.BannerAspect : ProfileImages.AvatarAspect, round: !banner, area);
+    }
+
+    // The preview shows the framed area as it moves.
+    void CropMoved()
+    {
+        if (_cropSource is null || !Cropping) return;
+        var part = new CroppedBitmap(_cropSource, Cropper.Area);
+        part.Freeze();
+        if (_croppingBanner) _preview.Banner = part; else _preview.Avatar = part;
+    }
+
+    void ApplyCrop(object sender, RoutedEventArgs e)
+    {
+        if (_cropSource is not { } source) return;
+        var area = Cropper.Area;
+        if (_croppingBanner)
         {
-            _newBanner = ProfileImages.PrepareBanner(file);
-            _removeBanner = false;
+            (_bannerSource, _bannerArea, _removeBanner) = (source, area, false);
+            _newBanner = ProfileImages.PrepareBanner(source, area);
             _preview.Banner = ProfileImages.Decode(_newBanner);
-            ShowError(null);
         }
-        catch (SupabaseException ex) { ShowError(ex.Message); }
+        else
+        {
+            (_avatarSource, _avatarArea, _removeAvatar) = (source, area, false);
+            _newAvatar = ProfileImages.PrepareAvatar(source, area);
+            _preview.Avatar = ProfileImages.Decode(_newAvatar);
+        }
+        EndCrop();
+    }
+
+    void CancelCrop(object sender, RoutedEventArgs e)
+    {
+        if (_croppingBanner) _preview.Banner = _beforeCrop; else _preview.Avatar = _beforeCrop;
+        EndCrop();
+    }
+
+    void EndCrop()
+    {
+        _cropSource = null;
+        CropPanel.Visibility = Visibility.Collapsed;
         ShowButtons();
+        NameBox.Focus(); // The cropper had focus; without this, Esc and Enter no longer reach the dialog.
     }
 
     void RemoveAvatar(object sender, RoutedEventArgs e)
     {
         _newAvatar = null;
+        _avatarSource = null;
         _removeAvatar = true;
         _preview.Avatar = null;
         ShowButtons();
@@ -104,6 +159,7 @@ public partial class EditProfileDialog : UserControl
     void RemoveBanner(object sender, RoutedEventArgs e)
     {
         _newBanner = null;
+        _bannerSource = null;
         _removeBanner = true;
         _preview.Banner = null;
         ShowButtons();
@@ -119,11 +175,13 @@ public partial class EditProfileDialog : UserControl
     {
         RemoveAvatarButton.Visibility = _preview.HasAvatar ? Visibility.Visible : Visibility.Collapsed;
         RemoveBannerButton.Visibility = _preview.HasBanner ? Visibility.Visible : Visibility.Collapsed;
+        AdjustAvatarButton.Visibility = _avatarSource is null ? Visibility.Collapsed : Visibility.Visible;
+        AdjustBannerButton.Visibility = _bannerSource is null ? Visibility.Collapsed : Visibility.Visible;
     }
 
     async void Save(object sender, RoutedEventArgs e)
     {
-        if (!SaveButton.IsEnabled) return;
+        if (!SaveButton.IsEnabled || Cropping) return;
         if (NameBox.Text.Trim().Length == 0) { ShowError("Enter the name people know you by."); return; }
         SaveButton.IsEnabled = false;
         SaveButton.Content = "Saving…";
