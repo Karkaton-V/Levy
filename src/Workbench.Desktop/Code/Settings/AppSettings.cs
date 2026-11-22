@@ -7,7 +7,7 @@ namespace Workbench.Desktop;
 public enum AppTheme { Light, Dark }
 
 // Per-user preferences, kept in %LOCALAPPDATA%\ValuationWorkbench\settings.json.
-public sealed record AppSettings(AppTheme Theme, bool ReduceMotion = false)
+public sealed record AppSettings(AppTheme Theme, bool ReduceMotion = false, string ProfileColor = "blue", string CodeTheme = "app")
 {
     static readonly string FilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ValuationWorkbench", "settings.json");
     static readonly JsonSerializerOptions Json = new() { WriteIndented = true, Converters = { new JsonStringEnumConverter() } };

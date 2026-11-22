@@ -8,4 +8,29 @@
     <SolidColorBrush x:Key="EditorCaret" Color="#E6E9EF" />
     <SolidColorBrush x:Key="EditorProblemTint" Color="#1CF0A35A" />
     <Pen x:Key="EditorProblemSquiggle" Brush="#F0A35A" Thickness="1.2" />
+    <!-- Fixed code themes (profiles.code_theme): the editor's own colours, the same in both app themes. -->
+    <SolidColorBrush x:Key="CodeMidnightBackground" Color="#0B1020" />
+    <SolidColorBrush x:Key="CodeMidnightText" Color="#D6DEEB" />
+    <SolidColorBrush x:Key="CodeMidnightLineNumbers" Color="#4B5775" />
+    <SolidColorBrush x:Key="CodeMidnightCurrentLine" Color="#14FFFFFF" />
+    <SolidColorBrush x:Key="CodeMidnightSelection" Color="#553A6EA5" />
+    <SolidColorBrush x:Key="CodeMidnightCaret" Color="#FFCC66" />
+    <SolidColorBrush x:Key="CodeEmberBackground" Color="#1E1712" />
+    <SolidColorBrush x:Key="CodeEmberText" Color="#EADCCB" />
+    <SolidColorBrush x:Key="CodeEmberLineNumbers" Color="#6E5B4A" />
+    <SolidColorBrush x:Key="CodeEmberCurrentLine" Color="#12FFFFFF" />
+    <SolidColorBrush x:Key="CodeEmberSelection" Color="#55A0522D" />
+    <SolidColorBrush x:Key="CodeEmberCaret" Color="#FFB86B" />
+    <SolidColorBrush x:Key="CodeForestBackground" Color="#0F1A14" />
+    <SolidColorBrush x:Key="CodeForestText" Color="#D5E5D8" />
+    <SolidColorBrush x:Key="CodeForestLineNumbers" Color="#4C6655" />
+    <SolidColorBrush x:Key="CodeForestCurrentLine" Color="#12FFFFFF" />
+    <SolidColorBrush x:Key="CodeForestSelection" Color="#553E7B5A" />
+    <SolidColorBrush x:Key="CodeForestCaret" Color="#A3E6B4" />
+    <SolidColorBrush x:Key="CodePaperBackground" Color="#FBF8F1" />
+    <SolidColorBrush x:Key="CodePaperText" Color="#2E2A24" />
+    <SolidColorBrush x:Key="CodePaperLineNumbers" Color="#A8A091" />
+    <SolidColorBrush x:Key="CodePaperCurrentLine" Color="#0A000000" />
+    <SolidColorBrush x:Key="CodePaperSelection" Color="#40C9A86B" />
+    <SolidColorBrush x:Key="CodePaperCaret" Color="#2E2A24" />
 </ResourceDictionary>

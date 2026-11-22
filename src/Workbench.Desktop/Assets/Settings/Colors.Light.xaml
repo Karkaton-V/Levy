@@ -34,4 +34,15 @@
     <!-- The picture and banner cropper: the dimmed area outside the frame, and the frame and its corner handles. -->
     <SolidColorBrush x:Key="CropShadeFill" Color="#A6000000" />
     <SolidColorBrush x:Key="CropFrameLine" Color="#FFFFFF" />
+    <!-- Profile colours: each person's choice (profiles.banner_color) becomes the app's accent, and the backgrounds take a slight tint of it.
+         ThemeManager recolours the blue-tinted keys to this hue; Blue leaves the theme exactly as designed. -->
+    <Color x:Key="ProfileBlue">#2563EB</Color>
+    <Color x:Key="ProfileTeal">#0D9488</Color>
+    <Color x:Key="ProfileGreen">#16A34A</Color>
+    <Color x:Key="ProfileAmber">#D97706</Color>
+    <Color x:Key="ProfileRose">#E11D48</Color>
+    <Color x:Key="ProfilePurple">#7C3AED</Color>
+    <Color x:Key="ProfileSlate">#475569</Color>
+    <!-- Text on the accent where white would be hard to read. -->
+    <Color x:Key="ProfileOnAmber">#1F1300</Color>
 </ResourceDictionary>

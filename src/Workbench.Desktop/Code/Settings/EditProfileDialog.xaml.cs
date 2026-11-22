@@ -50,6 +50,13 @@ public partial class EditProfileDialog : UserControl
             Swatches.Children.Add(swatch);
         }
         Cropper.Changed += CropMoved;
+        // A sample from the starting rules: a comment, two land rates and a building cost.
+        var lines = Shared.ReadAsset("Editor", "DefaultRules.rules").Split('\n').Select(l => l.TrimEnd()).Where(l => l.Length > 0).ToList();
+        CodeSample.Text = string.Join("\n", new[] { 0, 1, 2, 4 }.Where(i => i < lines.Count).Select(i => lines[i]));
+        CodeThemeBox.ItemsSource = CodeThemeInfo.Catalog;
+        CodeThemeBox.SelectedItem = CodeThemeInfo.Catalog.FirstOrDefault(t => t.Key == store.CodeTheme) ?? CodeThemeInfo.Catalog[0];
+        Loaded += (_, _) => ThemeManager.Changed += PaintSample;
+        Unloaded += (_, _) => ThemeManager.Changed -= PaintSample;
         ShowButtons();
         Loaded += (_, _) => NameBox.Focus();
     }
@@ -68,6 +75,10 @@ public partial class EditProfileDialog : UserControl
     void Cancel(object sender, RoutedEventArgs e) { if (SaveButton.IsEnabled) Closed?.Invoke(); }
 
     string Pronouns => PronounsBox.SelectedItem as string ?? "";
+    string CodeTheme => (CodeThemeBox.SelectedItem as CodeThemeInfo)?.Key ?? "app";
+
+    void CodeThemeChanged(object sender, SelectionChangedEventArgs e) => PaintSample();
+    void PaintSample() => Shared.PaintCode(CodeSample, CodeTheme);
 
     void Preview(object sender, RoutedEventArgs e)
     {
@@ -187,7 +198,7 @@ public partial class EditProfileDialog : UserControl
         SaveButton.Content = "Saving…";
         try
         {
-            await _store.SaveAsync(NameBox.Text, Pronouns, BioBox.Text, _bannerColor, _newAvatar, _removeAvatar, _newBanner, _removeBanner);
+            await _store.SaveAsync(NameBox.Text, Pronouns, BioBox.Text, _bannerColor, CodeTheme, _newAvatar, _removeAvatar, _newBanner, _removeBanner);
             Closed?.Invoke();
         }
         catch (SupabaseException ex)

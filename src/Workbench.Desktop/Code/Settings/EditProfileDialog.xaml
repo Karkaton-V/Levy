@@ -2,8 +2,9 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:Workbench.Desktop"
+             xmlns:avalon="http://icsharpcode.net/sharpdevelop/avalonedit"
              Width="860" MaxHeight="680" FontSize="13" Foreground="{DynamicResource Text}">
-    <!-- Edit your profile, shown inside the main window: name, pronouns, bio, banner and picture, with a live preview of your card.
+    <!-- Edit your profile, shown inside the main window: name, pronouns, bio, picture, profile colour, banner and code colours, with a live preview of your card.
          Styles: Assets/App/AppStyles.xaml (the dialog card) and Assets/Settings/SettingsStyles.xaml. -->
     <Border Style="{StaticResource DialogCard}">
         <Grid>
@@ -51,14 +52,26 @@
                             </StackPanel>
                             <TextBlock Text="PNG or JPEG. You choose the part to show after picking it." Style="{StaticResource FormNote}" />
 
-                            <TextBlock Text="Banner" Style="{StaticResource FormLabel}" />
+                            <TextBlock Text="Profile color" Style="{StaticResource FormLabel}" />
                             <StackPanel x:Name="Swatches" Orientation="Horizontal" />
-                            <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                            <TextBlock Text="Colours your buttons, links and highlights, tints the background, and fills your banner when it has no image." Style="{StaticResource FormNote}" />
+
+                            <TextBlock Text="Banner image" Style="{StaticResource FormLabel}" />
+                            <StackPanel Orientation="Horizontal">
                                 <Button Style="{StaticResource SecondaryButton}" Content="Upload banner…" Click="PickBanner" />
                                 <Button x:Name="AdjustBannerButton" Style="{StaticResource LinkButton}" Content="Adjust" Margin="14,0,0,0" VerticalAlignment="Center" Click="AdjustBanner" />
                                 <Button x:Name="RemoveBannerButton" Style="{StaticResource LinkButton}" Content="Use the colour" Margin="14,0,0,0" VerticalAlignment="Center" Click="RemoveBanner" />
                             </StackPanel>
                             <TextBlock Text="An image covers the colour. You choose the part to show after picking it." Style="{StaticResource FormNote}" />
+
+                            <!-- Code colours: the rules editor's scheme, separate from the profile colour. -->
+                            <TextBlock Text="Code colors" Style="{StaticResource FormLabel}" />
+                            <ComboBox x:Name="CodeThemeBox" Style="{StaticResource Select}" DisplayMemberPath="Name" SelectionChanged="CodeThemeChanged" AutomationProperties.Name="Code colors" />
+                            <Border Style="{StaticResource CodeSample}">
+                                <avalon:TextEditor x:Name="CodeSample" FontFamily="{StaticResource Mono}" FontSize="13" IsReadOnly="True" ShowLineNumbers="True"
+                                                   HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled" Padding="0,8" Focusable="False" />
+                            </Border>
+                            <TextBlock Text="Only changes how the rules editor looks for you." Style="{StaticResource FormNote}" />
                         </StackPanel>
                     </ScrollViewer>
                 </DockPanel>

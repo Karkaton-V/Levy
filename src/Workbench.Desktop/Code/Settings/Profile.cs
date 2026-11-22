@@ -18,8 +18,16 @@ public sealed class ProfileRow
     public string Bio { get; set; } = "";
     public string Pronouns { get; set; } = "";
     public string BannerColor { get; set; } = "blue";
+    public string CodeTheme { get; set; } = "app";
     public string? AvatarPath { get; set; }
     public string? BannerPath { get; set; }
+}
+
+// A code theme people can pick for the rules editor (Assets/Editor/code-themes.json); "app" follows the app's light or dark theme.
+public sealed record CodeThemeInfo(string Key, string Name)
+{
+    public static IReadOnlyList<CodeThemeInfo> Catalog { get; } =
+        JsonSerializer.Deserialize<List<CodeThemeInfo>>(Shared.ReadAsset("Editor", "code-themes.json"), SupabaseClient.Json) ?? [];
 }
 
 // A badge people can be awarded (Assets/Settings/badges.json): its icon glyph, chip tone and what it's for.
@@ -216,13 +224,14 @@ public sealed class ProfileStore(SupabaseClient client, Guid orgId)
 
     public async Task LoadAsync()
     {
-        _row = (await client.GetAsync<ProfileRow>("profiles", $"select=id,full_name,email,bio,pronouns,banner_color,avatar_path,banner_path&id=eq.{_me}")).FirstOrDefault();
+        _row = (await client.GetAsync<ProfileRow>("profiles", $"select=id,full_name,email,bio,pronouns,banner_color,code_theme,avatar_path,banner_path&id=eq.{_me}")).FirstOrDefault();
         if (_row is null) return;
         Card.Name = _row.FullName;
         Card.Email = _row.Email.Length > 0 ? _row.Email : client.User?.Email ?? "";
         Card.Bio = _row.Bio;
         Card.Pronouns = _row.Pronouns;
         Card.BannerColor = _row.BannerColor;
+        ThemeManager.SetProfile(_row.BannerColor, _row.CodeTheme);
         Card.Avatar = _row.AvatarPath is { } avatar ? ProfileImages.Decode(await client.DownloadAsync(ProfileImages.Bucket, avatar)) : null;
         Card.Banner = _row.BannerPath is { } banner ? ProfileImages.Decode(await client.DownloadAsync(ProfileImages.Bucket, banner)) : null;
         await LoadBadgesAsync();
@@ -232,7 +241,10 @@ public sealed class ProfileStore(SupabaseClient client, Guid orgId)
         Card.Badges = await client.GetAsync<BadgeAward>("badge_awards", $"select=*&user_id=eq.{_me}&org_id=eq.{orgId}&order=created_at.desc");
 
     // Uploads new pictures under a fresh name (so nothing shows a stale copy), saves the profile, then removes replaced pictures.
-    public async Task SaveAsync(string name, string pronouns, string bio, string bannerColor, byte[]? newAvatar, bool removeAvatar, byte[]? newBanner, bool removeBanner)
+    // The code theme as saved (or as last used on this computer, until the profile loads).
+    public string CodeTheme => _row?.CodeTheme ?? ThemeManager.CodeTheme;
+
+    public async Task SaveAsync(string name, string pronouns, string bio, string bannerColor, string codeTheme, byte[]? newAvatar, bool removeAvatar, byte[]? newBanner, bool removeBanner)
     {
         if (_row is null) throw new SupabaseException("Your profile hasn't loaded yet. Try again in a moment.");
         var stamp = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
@@ -241,14 +253,15 @@ public sealed class ProfileStore(SupabaseClient client, Guid orgId)
         if (newAvatar is not null) await client.UploadAsync(ProfileImages.Bucket, avatarPath!, newAvatar, "image/png");
         if (newBanner is not null) await client.UploadAsync(ProfileImages.Bucket, bannerPath!, newBanner, "image/jpeg");
 
-        await client.UpdateAsync<ProfileRow>("profiles", _me, new { FullName = name.Trim(), Pronouns = pronouns.Trim(), Bio = bio.Trim(), BannerColor = bannerColor, AvatarPath = avatarPath, BannerPath = bannerPath });
+        await client.UpdateAsync<ProfileRow>("profiles", _me, new { FullName = name.Trim(), Pronouns = pronouns.Trim(), Bio = bio.Trim(), BannerColor = bannerColor, CodeTheme = codeTheme, AvatarPath = avatarPath, BannerPath = bannerPath });
         if (_row.AvatarPath is { } oldAvatar && oldAvatar != avatarPath) await client.RemoveAsync(ProfileImages.Bucket, oldAvatar);
         if (_row.BannerPath is { } oldBanner && oldBanner != bannerPath) await client.RemoveAsync(ProfileImages.Bucket, oldBanner);
 
-        _row.FullName = name.Trim(); _row.Pronouns = pronouns.Trim(); _row.Bio = bio.Trim(); _row.BannerColor = bannerColor;
+        _row.FullName = name.Trim(); _row.Pronouns = pronouns.Trim(); _row.Bio = bio.Trim(); _row.BannerColor = bannerColor; _row.CodeTheme = codeTheme;
         _row.AvatarPath = avatarPath; _row.BannerPath = bannerPath;
         Card.Name = _row.FullName; Card.Pronouns = _row.Pronouns; Card.Bio = _row.Bio; Card.BannerColor = bannerColor;
         if (newAvatar is not null) Card.Avatar = ProfileImages.Decode(newAvatar); else if (removeAvatar) Card.Avatar = null;
         if (newBanner is not null) Card.Banner = ProfileImages.Decode(newBanner); else if (removeBanner) Card.Banner = null;
+        ThemeManager.SetProfile(bannerColor, codeTheme);
     }
 }

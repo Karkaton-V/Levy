@@ -1,7 +1,10 @@
 using System.Globalization;
 using System.IO;
 using System.Windows.Input;
+using System.Windows.Controls;
+using System.Windows.Media;
 using System.Xml;
+using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using Workbench.Engine;
@@ -27,10 +30,35 @@ public static class Shared
     // Syntax colours for the rules language from Assets/Shared/Rules.Light.xshd or Rules.Dark.xshd, each loaded once; used by the Editor and the Map's code snippets.
     public static IHighlightingDefinition RulesSyntax(bool dark) => dark ? DarkSyntax.Value : LightSyntax.Value;
 
-    static IHighlightingDefinition LoadSyntax(string file)
+    static IHighlightingDefinition LoadSyntax(string file, string folder = "Shared")
     {
-        using var reader = XmlReader.Create(AssetPath("Shared", file));
+        using var reader = XmlReader.Create(AssetPath(folder, file));
         return HighlightingLoader.Load(reader, HighlightingManager.Instance);
+    }
+
+    static readonly Dictionary<string, IHighlightingDefinition> CodeSyntaxes = [];
+
+    // Colours a rules editor in a code theme: "app" uses Assets/Editor/Colors.*.xaml and Rules.Light/Dark.xshd for the current app theme;
+    // a fixed theme uses its Code<Name>* colours and Assets/Editor/Rules.<Name>.xshd. Call again on ThemeManager.Changed.
+    public static void PaintCode(TextEditor editor, string theme)
+    {
+        var name = theme.Length > 0 ? char.ToUpperInvariant(theme[0]) + theme[1..] : "App";
+        var fixedTheme = name != "App" && editor.TryFindResource($"Code{name}Background") is Brush;
+        string Key(string part, string appKey) => fixedTheme ? $"Code{name}{part}" : appKey;
+        if (fixedTheme) editor.SetResourceReference(Control.BackgroundProperty, Key("Background", ""));
+        else editor.Background = Brushes.Transparent;
+        editor.SetResourceReference(Control.ForegroundProperty, Key("Text", "Text"));
+        editor.SetResourceReference(TextEditor.LineNumbersForegroundProperty, Key("LineNumbers", "EditorLineNumbers"));
+        editor.TextArea.TextView.CurrentLineBackground = (Brush)editor.FindResource(Key("CurrentLine", "EditorCurrentLine"));
+        editor.TextArea.TextView.CurrentLineBorder = (Pen)editor.FindResource("EditorCurrentLineBorder");
+        editor.TextArea.SelectionBrush = (Brush)editor.FindResource(Key("Selection", "EditorSelection"));
+        editor.TextArea.Caret.CaretBrush = (Brush)editor.FindResource(Key("Caret", "EditorCaret"));
+        if (!fixedTheme) editor.SyntaxHighlighting = RulesSyntax(ThemeManager.IsDark);
+        else
+        {
+            if (!CodeSyntaxes.TryGetValue(name, out var syntax)) CodeSyntaxes[name] = syntax = LoadSyntax($"Rules.{name}.xshd", "Editor");
+            editor.SyntaxHighlighting = syntax;
+        }
     }
 
     // Which side of the 0.95 to 1.05 target a parcel's ratio falls on.

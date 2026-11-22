@@ -150,6 +150,16 @@
         <Setter Property="Margin" Value="0,4,0,0" />
     </Style>
 
+    <!-- The code colours sample in the profile editor: a few lines of rules in the chosen scheme. -->
+    <Style x:Key="CodeSample" TargetType="Border">
+        <Setter Property="BorderBrush" Value="{DynamicResource Line}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Margin" Value="0,10,0,0" />
+        <Setter Property="Height" Value="92" />
+        <Setter Property="ClipToBounds" Value="True" />
+    </Style>
+
     <!-- Editor windows -->
     <Style x:Key="DialogBody" TargetType="Border">
         <Setter Property="Background" Value="{DynamicResource Panel}" />

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The Midnight code theme's syntax colours for the rules language; its editor colours are CodeMidnight* in Assets/Editor/Colors.*.xaml. -->
+<SyntaxDefinition name="Rules" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+  <Color name="Comment" foreground="#637777" fontStyle="italic" />
+  <Color name="Key" foreground="#82AAFF" />
+  <Color name="Neighborhood" foreground="#C792EA" />
+  <Color name="Number" foreground="#F78C6C" />
+  <Color name="Operator" foreground="#89DDFF" />
+  <RuleSet>
+    <Span color="Comment"><Begin>\#</Begin></Span>
+    <Rule color="Neighborhood">(?&lt;=\.)[A-Za-z0-9\-]+(?=\s*=)</Rule>
+    <Rule color="Key">[A-Za-z][A-Za-z0-9]*(?=\s*[.=])</Rule>
+    <Rule color="Operator">=</Rule>
+    <Rule color="Number">-?[0-9]+(\.[0-9]+)?</Rule>
+  </RuleSet>
+</SyntaxDefinition>
