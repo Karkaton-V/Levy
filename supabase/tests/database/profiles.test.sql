@@ -22,8 +22,8 @@ insert into public.organization_members (org_id, user_id, role, status) values (
 set local role authenticated;
 select set_config('request.jwt.claims', '{"sub":"c0000000-0000-0000-0000-000000000003","role":"authenticated"}', true);
 
-select is((with changed as (update public.profiles set bio = 'Residential appraiser.', pronouns = 'he/him', banner_color = 'teal' where id = 'c0000000-0000-0000-0000-000000000003' returning 1) select count(*) from changed),
-    1::bigint, 'people edit their own bio, pronouns and banner');
+select isnt_empty($$ update public.profiles set bio = 'Residential appraiser.', pronouns = 'he/him', banner_color = 'teal' where id = 'c0000000-0000-0000-0000-000000000003' returning 1 $$,
+    'people edit their own bio, pronouns and banner');
 select is_empty($$ update public.profiles set bio = 'hacked' where id = 'a0000000-0000-0000-0000-000000000001' returning 1 $$, 'nobody edits someone else''s profile');
 select throws_ok($$ update public.profiles set avatar_path = 'a0000000-0000-0000-0000-000000000001/x.png' where id = 'c0000000-0000-0000-0000-000000000003' $$,
     '23514', null, 'a profile picture must sit in its owner''s folder');
