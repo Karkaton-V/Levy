@@ -78,7 +78,7 @@ Built with C# / .NET 8 and WPF, with Supabase (Postgres, Auth, row-level securit
 | `src/Workbench.Desktop` | The WPF app. |
 | `tests/Workbench.Engine.Tests` | xUnit tests for the engine. |
 | `supabase/migrations` | The database: tables, row-level security, the functions the app calls, triggers for sign-up, the activity log and request stamping. |
-| `supabase/tests` | 44 pgTAP security tests, run in CI against a fresh database. |
+| `supabase/tests` | 56 pgTAP security tests, run in CI against a fresh database. |
 | `.github/workflows/ci.yml` | CI/CD. |
 
 ### Desktop app layout
@@ -133,5 +133,7 @@ All colours are `DynamicResource` look-ups from the colour files, so the theme s
 - **Real data:** real parcel shapes and sales, and the Louisiana Tax Commission's JSON tax-roll export.
 - **Ratio study:** PRB and vertical-equity measures.
 - **Scale:** 100k+ parcels, then profiling `Valuer.ValueAll`.
+
+Documentation site: [karkaton-v.github.io/Levy](https://karkaton-v.github.io/Levy/) (source in `docs/site`).
 
 More detail: [docs/HANDOFF.md](docs/HANDOFF.md) (what was built and how) and [docs/GITLAB.md](docs/GITLAB.md).
