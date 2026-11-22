@@ -1,12 +1,13 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using Microsoft.Win32;
 
 namespace Workbench.Desktop;
 
 // Edits the signed-in person's profile. Changes show in the preview card as they're made and are saved together (text, banner colour,
-// new or removed pictures); Cancel leaves everything as it was.
-public partial class EditProfileWindow : Window
+// new or removed pictures); Cancel, the close button or Esc leaves everything as it was. Shown inside the main window (MainWindow.OpenDialog).
+public partial class EditProfileDialog : UserControl
 {
     static readonly string[] BannerColors = ["blue", "teal", "green", "amber", "rose", "purple", "slate"];
     const string ImageFilter = "Images (*.png;*.jpg;*.jpeg)|*.png;*.jpg;*.jpeg";
@@ -19,7 +20,9 @@ public partial class EditProfileWindow : Window
     bool _removeAvatar;
     bool _removeBanner;
 
-    public EditProfileWindow(ProfileStore store)
+    public event Action? Closed;
+
+    public EditProfileDialog(ProfileStore store)
     {
         InitializeComponent();
         _store = store;
@@ -40,6 +43,16 @@ public partial class EditProfileWindow : Window
         ShowButtons();
         Loaded += (_, _) => NameBox.Focus();
     }
+
+    // Esc cancels; Enter in a one-line box saves, like a dialog window's default button.
+    protected override void OnPreviewKeyDown(KeyEventArgs e)
+    {
+        if (e.Key == Key.Escape) { Cancel(this, e); e.Handled = true; }
+        else if (e.Key == Key.Enter && e.OriginalSource is TextBox { AcceptsReturn: false }) { Save(this, e); e.Handled = true; }
+        base.OnPreviewKeyDown(e);
+    }
+
+    void Cancel(object sender, RoutedEventArgs e) { if (SaveButton.IsEnabled) Closed?.Invoke(); }
 
     string Pronouns => ProfileCard.PronounChoices[Math.Max(0, PronounsBox.SelectedIndex)];
 
@@ -99,7 +112,7 @@ public partial class EditProfileWindow : Window
     string? Pick(string title)
     {
         var dialog = new OpenFileDialog { Title = title, Filter = ImageFilter, CheckFileExists = true };
-        return dialog.ShowDialog(this) == true ? dialog.FileName : null;
+        return dialog.ShowDialog(Window.GetWindow(this)) == true ? dialog.FileName : null;
     }
 
     void ShowButtons()
@@ -110,13 +123,14 @@ public partial class EditProfileWindow : Window
 
     async void Save(object sender, RoutedEventArgs e)
     {
+        if (!SaveButton.IsEnabled) return;
         if (NameBox.Text.Trim().Length == 0) { ShowError("Enter the name people know you by."); return; }
         SaveButton.IsEnabled = false;
         SaveButton.Content = "Saving…";
         try
         {
             await _store.SaveAsync(NameBox.Text, Pronouns, BioBox.Text, _bannerColor, _newAvatar, _removeAvatar, _newBanner, _removeBanner);
-            DialogResult = true;
+            Closed?.Invoke();
         }
         catch (SupabaseException ex)
         {

@@ -142,6 +142,24 @@
     <sys:String x:Key="SignOutGlyph">&#xF3B1;</sys:String>
     <sys:String x:Key="EditGlyph">&#xE70F;</sys:String>
     <sys:String x:Key="PasswordGlyph">&#xE72E;</sys:String>
+    <sys:String x:Key="CloseGlyph">&#xE711;</sys:String>
+
+    <!-- In-app dialogs: a card in the middle of the window over a dimmed backdrop. -->
+    <Style x:Key="DialogScrim" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource Scrim}" />
+    </Style>
+
+    <Style x:Key="DialogCard" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource Ground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Line}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect Color="{DynamicResource MenuShadowColor}" BlurRadius="32" ShadowDepth="8" Direction="270" Opacity="0.4" />
+            </Setter.Value>
+        </Setter>
+    </Style>
 
     <!-- Your name and picture in the footer: a flat toggle that opens your profile card. -->
     <Style x:Key="RailProfileToggle" TargetType="ToggleButton">
