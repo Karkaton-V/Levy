@@ -1,0 +1,32 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Profile banner colours (Dark theme): one gradient per banner choice (profiles.banner_color). The other theme's file has the same keys. -->
+    <LinearGradientBrush x:Key="BannerBlue" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#1D4ED8" Offset="0" />
+        <GradientStop Color="#3B82F6" Offset="1" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BannerTeal" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#0F766E" Offset="0" />
+        <GradientStop Color="#14B8A6" Offset="1" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BannerGreen" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#15803D" Offset="0" />
+        <GradientStop Color="#22C55E" Offset="1" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BannerAmber" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#B45309" Offset="0" />
+        <GradientStop Color="#F59E0B" Offset="1" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BannerRose" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#BE123C" Offset="0" />
+        <GradientStop Color="#F43F5E" Offset="1" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BannerPurple" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#6D28D9" Offset="0" />
+        <GradientStop Color="#8B5CF6" Offset="1" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BannerSlate" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#334155" Offset="0" />
+        <GradientStop Color="#64748B" Offset="1" />
+    </LinearGradientBrush>
+</ResourceDictionary>

@@ -102,6 +102,46 @@
                         </UniformGrid>
                         <TextBlock Text="Admins can review people, set job titles and see the company code." Style="{StaticResource FormNote}" />
                         <local:FormActionsView />
+
+                        <!-- Badges: awarded by admins, shown on the person's profile card. -->
+                        <StackPanel Visibility="{Binding Workspace.CanAwardBadges, Converter={StaticResource BoolVis}}">
+                            <Border Style="{StaticResource FormDivider}" />
+                            <TextBlock Text="Badges" Style="{StaticResource CardTitle}" />
+                            <ItemsControl ItemsSource="{Binding Workspace.DraftBadges}" Margin="0,10,0,0" Focusable="False">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <DockPanel Margin="0,0,0,6">
+                                            <Button DockPanel.Dock="Right" Style="{StaticResource LinkButton}" Content="Take back" VerticalAlignment="Center"
+                                                    Command="{Binding DataContext.Workspace.RevokeBadgeCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" />
+                                            <Border Style="{StaticResource BadgePill}" ToolTip="{Binding Tip}" Margin="0">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Style="{StaticResource BadgeGlyph}" />
+                                                    <TextBlock Style="{StaticResource ChipText}" VerticalAlignment="Center" />
+                                                </StackPanel>
+                                            </Border>
+                                        </DockPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <TextBlock Text="No badges yet." Style="{StaticResource FormNote}" Margin="0,0,0,0"
+                                       Visibility="{Binding Workspace.HasDraftBadges, Converter={StaticResource InverseBoolVis}}" />
+                            <TextBlock Text="Award a badge" Style="{StaticResource FormLabel}" />
+                            <ComboBox Style="{StaticResource Select}" ItemsSource="{x:Static local:BadgeInfo.Catalog}" DisplayMemberPath="Name"
+                                      SelectedItem="{Binding Workspace.AwardBadge}" AutomationProperties.Name="Badge" />
+                            <TextBox Style="{StaticResource Input}" Text="{Binding Workspace.AwardReason, UpdateSourceTrigger=PropertyChanged}" MaxLength="200"
+                                     Tag="What it's for (optional)" Margin="0,8,0,0" AutomationProperties.Name="Reason" />
+                            <Button Style="{StaticResource SecondaryButton}" Content="Award badge" Command="{Binding Workspace.AwardBadgeCommand}" HorizontalAlignment="Left" Margin="0,10,0,0" />
+                            <TextBlock Style="{StaticResource TeamResult}" Text="{Binding Workspace.TeamMessage}" />
+                        </StackPanel>
+
+                        <!-- Deleting an account: members only, never yourself; asks first. -->
+                        <StackPanel Visibility="{Binding Workspace.CanDeleteDraft, Converter={StaticResource BoolVis}}">
+                            <Border Style="{StaticResource FormDivider}" />
+                            <TextBlock Text="Delete account" Style="{StaticResource CardTitle}" />
+                            <TextBlock Text="Permanently deletes their sign-in and profile. Their jobs, tasks and records stay with the company, unassigned. This can't be undone."
+                                       Style="{StaticResource FormNote}" />
+                            <Button Style="{StaticResource DangerButton}" Content="Delete account…" Click="DeleteAccount_Click" HorizontalAlignment="Left" Margin="0,12,0,0" />
+                        </StackPanel>
                     </StackPanel>
                 </ScrollViewer>
             </Grid>

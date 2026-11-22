@@ -11,6 +11,9 @@ public partial class MainWindow : Window
     // Raised by Sign out in the account menu; the app closes this window and returns to sign-in.
     public event Action? SignOutRequested;
 
+    // Raised by "Sign out of all devices"; the app ends every session and returns to sign-in.
+    public event Action? SignOutEverywhereRequested;
+
     readonly MainViewModel _viewModel;
     readonly Dictionary<ListBoxItem, TabItem> _pages;
     readonly HashSet<TabItem> _workflowPages;
@@ -20,9 +23,19 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         FitToScreen();
-        Account.UserName = client.User?.FullName ?? "";
-        Account.Email = client.User?.Email ?? "";
+        // Your profile card (side-panel footer and popup): name and email straight away, the rest once it loads.
+        var profile = new ProfileStore(client, membership.OrgId);
+        profile.Card.Name = client.User?.FullName ?? "";
+        profile.Card.Email = client.User?.Email ?? "";
+        Account.Profile = profile.Card;
         Account.SignOutRequested += () => SignOutRequested?.Invoke();
+        Account.SignOutEverywhereRequested += () => SignOutEverywhereRequested?.Invoke();
+        Account.EditProfileRequested += () => new EditProfileWindow(profile) { Owner = this }.ShowDialog();
+        Account.ChangePasswordRequested += () =>
+        {
+            if (new ChangePasswordWindow(client) { Owner = this }.ShowDialog() == true)
+                MessageBox.Show(this, "Your password was changed.", "Levy", MessageBoxButton.OK, MessageBoxImage.Information);
+        };
         // The starting rules and the study area are assets, not strings in code.
         var viewModel = _viewModel = new MainViewModel(Shared.ReadAsset("Editor", "DefaultRules.rules"), StudyArea.Default);
         DataContext = viewModel;
@@ -33,6 +46,8 @@ public partial class MainWindow : Window
         foreach (var view in new FrameworkElement[] { JobsView, ProjectsView, BoardView, TasksView, ClientsView, ReportsView, RequestsView, IntakeView, TeamView, ActivityView, CompaniesView }) view.DataContext = workspace;
         viewModel.WorkspaceName = workspace.OrganizationName;
         JobTitleText.SetBinding(TextBlock.TextProperty, new Binding(nameof(WorkspaceViewModel.JobTitle)) { Source = workspace });
+        profile.Card.JobTitle = workspace.JobTitle;
+        workspace.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(WorkspaceViewModel.JobTitle)) profile.Card.JobTitle = workspace.JobTitle; };
         ShowAdminPages(workspace);
         workspace.PropertyChanged += (_, e) =>
         {
@@ -53,7 +68,14 @@ public partial class MainWindow : Window
         workspace.MockGitLabRequested += OpenMockGitLab;
         Tabs.SelectedItem = RulesPage;
 
-        Loaded += async (_, _) => await Task.WhenAll(viewModel.LoadBuildingsAsync(), workspace.LoadAsync());
+        Loaded += async (_, _) => await Task.WhenAll(viewModel.LoadBuildingsAsync(), workspace.LoadAsync(), LoadProfileAsync(profile));
+    }
+
+    // A profile that can't load leaves the card with just the name and email; the app keeps working.
+    static async Task LoadProfileAsync(ProfileStore profile)
+    {
+        try { await profile.LoadAsync(); }
+        catch (SupabaseException) { }
     }
 
     // With display scaling (125%, 150%) the screen can be smaller than the default size; shrink to fit and centre in the space above the taskbar.

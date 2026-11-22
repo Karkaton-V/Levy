@@ -74,6 +74,14 @@ public static class Shared
     }
 }
 
+// Visible when false, collapsed when true: for "nothing here yet" messages beside a list.
+public sealed class InverseBoolVis : System.Windows.Data.IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) =>
+        value is true ? System.Windows.Visibility.Collapsed : System.Windows.Visibility.Visible;
+    public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) => throw new NotSupportedException();
+}
+
 // Runs a plain Action from a button or key binding.
 public sealed class RelayCommand(Action execute) : ICommand
 {

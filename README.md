@@ -44,14 +44,21 @@ Built with C# / .NET 8 and WPF, with Supabase (Postgres, Auth, row-level securit
 - **Signing up:**
   - **Company code:** people sign up with their company's code and wait for an admin to approve them. Until then, they see nothing.
   - **No code:** without one, they start an office of their own.
-- **Team** (company admins): approve or decline people, set job titles (shown under the logo), roles and access, and add existing accounts by email.
+- **Team** (company admins):
+  - approve or decline people, set job titles (shown under the logo), roles and access, and add existing accounts by email;
+  - **award badges** with a reason (they show on the person's profile card), and take them back;
+  - **delete the account** of someone who works only under them, after a confirmation. Their work stays, unassigned.
 - **Activity** (company admins): who did what, to which record, on what date and at what time. The database writes it with triggers, so the app can't skip or forge an entry, and nobody can edit it.
 - **Companies** (platform admins): create and rename companies, assign people, and choose each company's account manager.
 - **Intake** (account managers):
   - triage requests from the companies they manage, setting priority, codebase (Rails or .NET) and a note;
   - **Send to GitLab** opens the issue with `type::`, `priority::`, `stack::` and `client::` labels;
   - Levy then reads back the issue, its merge requests and their pipelines, and shows the status to the client.
-- **Settings menu:** in the side panel, with light and dark themes that switch instantly, and sign out.
+- **Profile card:** clicking your name in the side panel opens a Discord-style card with a banner (a colour or an image), your picture, name, pronouns, job title, email, bio and badges.
+- **Settings menu** (the gear; it and the profile card close each other):
+  - **Edit profile** opens a window with a live preview. Pictures are cropped, scaled and kept in a private Supabase Storage bucket that only colleagues can read.
+  - Light and dark themes that switch instantly, plus **Reduce motion**.
+  - **Change password**, **Sign out**, and **Sign out of all devices**.
 
 ### GitLab, live or demo
 `Assets/Account/gitlab.json` starts in **demo mode**.
@@ -71,7 +78,7 @@ Built with C# / .NET 8 and WPF, with Supabase (Postgres, Auth, row-level securit
 | `src/Workbench.Desktop` | The WPF app. |
 | `tests/Workbench.Engine.Tests` | xUnit tests for the engine. |
 | `supabase/migrations` | The database: tables, row-level security, the functions the app calls, triggers for sign-up, the activity log and request stamping. |
-| `supabase/tests` | 24 pgTAP security tests, run in CI against a fresh database. |
+| `supabase/tests` | 44 pgTAP security tests, run in CI against a fresh database. |
 | `.github/workflows/ci.yml` | CI/CD. |
 
 ### Desktop app layout

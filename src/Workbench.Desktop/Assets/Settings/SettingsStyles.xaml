@@ -1,0 +1,134 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- The profile card (side-panel popup and editor preview), the profile editor and the change-password window. -->
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/ValuationWorkbench;component/Assets/Shared/Theme.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <!-- Profile card -->
+    <Style x:Key="ProfileCardShell" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource Panel}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Line}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="12" />
+    </Style>
+
+    <!-- The ring around the picture is the card's own colour, so the picture seems cut out of the banner. -->
+    <Style x:Key="ProfileRing" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource Panel}" />
+        <Setter Property="Width" Value="88" />
+        <Setter Property="Height" Value="88" />
+        <Setter Property="CornerRadius" Value="44" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="Margin" Value="16,56,0,0" />
+    </Style>
+
+    <Style x:Key="ProfileInitials" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource Accent}" />
+        <Setter Property="Width" Value="80" />
+        <Setter Property="Height" Value="80" />
+        <Setter Property="CornerRadius" Value="40" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="ProfileInitialsText" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource OnAccent}" />
+        <Setter Property="FontSize" Value="28" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="ProfileName" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Text}" />
+        <Setter Property="FontSize" Value="19" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <Style x:Key="ProfileMuted" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Muted}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        <Setter Property="Margin" Value="0,3,0,0" />
+    </Style>
+
+    <!-- A section inside the card ("About me", "Badges"): a soft box, like Discord's. -->
+    <Style x:Key="ProfileSection" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource Ground}" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="12,10" />
+        <Setter Property="Margin" Value="0,10,0,0" />
+    </Style>
+
+    <Style x:Key="ProfileSectionTitle" TargetType="TextBlock" BasedOn="{StaticResource SectionLabel}">
+        <Setter Property="Margin" Value="0,0,0,6" />
+    </Style>
+
+    <!-- One badge: its icon and name in a tinted pill. -->
+    <Style x:Key="BadgePill" TargetType="Border" BasedOn="{StaticResource Chip}">
+        <Setter Property="Margin" Value="0,0,6,6" />
+        <Setter Property="Padding" Value="8,3" />
+    </Style>
+
+    <Style x:Key="BadgeGlyph" TargetType="TextBlock" BasedOn="{StaticResource ChipText}">
+        <Setter Property="Text" Value="{Binding Glyph}" />
+        <Setter Property="FontFamily" Value="{StaticResource IconFont}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Margin" Value="0,0,6,0" />
+    </Style>
+
+    <!-- Editor windows -->
+    <Style x:Key="DialogBody" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource Panel}" />
+        <Setter Property="Padding" Value="28,24" />
+    </Style>
+
+    <Style x:Key="DialogTitle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Text}" />
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <!-- One banner colour choice: a round swatch whose fill the code sets from the banner colours. -->
+    <Style x:Key="BannerSwatch" TargetType="RadioButton">
+        <Setter Property="Width" Value="30" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="Margin" Value="0,0,8,0" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Grid>
+                        <Ellipse x:Name="Ring" Stroke="Transparent" StrokeThickness="2" />
+                        <Ellipse Margin="4" Fill="{TemplateBinding Background}" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Ring" Property="Stroke" Value="{DynamicResource Accent}" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Ring" Property="Stroke" Value="{DynamicResource Muted}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="CharCount" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource Muted}" />
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="HorizontalAlignment" Value="Right" />
+        <Setter Property="Margin" Value="0,4,0,0" />
+    </Style>
+
+    <!-- A destructive action (Delete account): red text, red outline on hover. -->
+    <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource SecondaryButton}">
+        <Setter Property="Foreground" Value="{DynamicResource ToneRedText}" />
+    </Style>
+
+</ResourceDictionary>

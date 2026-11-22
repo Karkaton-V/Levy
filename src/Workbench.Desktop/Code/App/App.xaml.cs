@@ -59,13 +59,15 @@ public partial class App : Application
     {
         var window = new MainWindow(_client, membership);
         var signingOut = false;
-        window.SignOutRequested += async () =>
+        async Task SignOut(bool everywhere)
         {
             signingOut = true;
-            await _client.SignOutAsync();
-            ShowSignIn();
+            await _client.SignOutAsync(everywhere);
+            ShowSignIn(everywhere ? "You were signed out on every device." : null);
             window.Close();
-        };
+        }
+        window.SignOutRequested += async () => await SignOut(everywhere: false);
+        window.SignOutEverywhereRequested += async () => await SignOut(everywhere: true);
         window.Closed += (_, _) => { if (!signingOut) Shutdown(); };
         MainWindow = window;
         window.Show();
