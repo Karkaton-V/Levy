@@ -17,4 +17,6 @@
     <SolidColorBrush x:Key="BannerButtonHover" Color="#A6000000" />
     <SolidColorBrush x:Key="BannerButtonText" Color="#FFFFFF" />
     <Color x:Key="MenuShadowColor">#000000</Color>
+    <!-- Behind in-app dialogs (Edit profile). -->
+    <SolidColorBrush x:Key="Scrim" Color="#B3000000" />
 </ResourceDictionary>

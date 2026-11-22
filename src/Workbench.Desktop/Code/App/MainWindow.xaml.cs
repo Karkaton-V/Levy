@@ -30,7 +30,7 @@ public partial class MainWindow : Window
         Account.Profile = profile.Card;
         Account.SignOutRequested += () => SignOutRequested?.Invoke();
         Account.SignOutEverywhereRequested += () => SignOutEverywhereRequested?.Invoke();
-        Account.EditProfileRequested += () => new EditProfileWindow(profile) { Owner = this }.ShowDialog();
+        Account.EditProfileRequested += () => OpenDialog(new EditProfileDialog(profile));
         Account.ChangePasswordRequested += () =>
         {
             if (new ChangePasswordWindow(client) { Owner = this }.ShowDialog() == true)
@@ -47,7 +47,12 @@ public partial class MainWindow : Window
         viewModel.WorkspaceName = workspace.OrganizationName;
         JobTitleText.SetBinding(TextBlock.TextProperty, new Binding(nameof(WorkspaceViewModel.JobTitle)) { Source = workspace });
         profile.Card.JobTitle = workspace.JobTitle;
-        workspace.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(WorkspaceViewModel.JobTitle)) profile.Card.JobTitle = workspace.JobTitle; };
+        workspace.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(WorkspaceViewModel.JobTitle)) profile.Card.JobTitle = workspace.JobTitle;
+            if (e.PropertyName == nameof(WorkspaceViewModel.TagIcon)) profile.Card.TagIcon = workspace.TagIcon;
+            if (e.PropertyName == nameof(WorkspaceViewModel.TagText)) profile.Card.TagText = workspace.TagText;
+        };
         ShowAdminPages(workspace);
         workspace.PropertyChanged += (_, e) =>
         {
@@ -69,6 +74,20 @@ public partial class MainWindow : Window
         Tabs.SelectedItem = RulesPage;
 
         Loaded += async (_, _) => await Task.WhenAll(viewModel.LoadBuildingsAsync(), workspace.LoadAsync(), LoadProfileAsync(profile));
+    }
+
+    // Shows an in-app dialog over the whole window until it raises Closed; focus returns to where it was.
+    void OpenDialog(EditProfileDialog dialog)
+    {
+        var returnTo = Keyboard.FocusedElement;
+        dialog.Closed += () =>
+        {
+            DialogHost.Content = null;
+            DialogLayer.Visibility = Visibility.Collapsed;
+            returnTo?.Focus();
+        };
+        DialogHost.Content = dialog;
+        DialogLayer.Visibility = Visibility.Visible;
     }
 
     // A profile that can't load leaves the card with just the name and email; the app keeps working.

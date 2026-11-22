@@ -178,10 +178,14 @@ public partial class AccountMenu : UserControl
         var email = string.IsNullOrWhiteSpace(_card?.Email) ? "Not signed in" : _card!.Email.Trim();
         FooterName.Text = MenuName.Text = name;
         FooterEmail.Text = MenuEmail.Text = email;
-        FooterInitials.Text = MenuInitials.Text = ProfileCard.InitialsOf(name);
         var picture = _card?.Avatar is { } avatar ? new ImageBrush(avatar) { Stretch = Stretch.UniformToFill } : null;
         FooterPicture.Fill = picture;
         MenuPicture.Fill = picture;
+        // With a picture, a black circle sits behind it instead of the initials.
+        FooterInitials.Text = MenuInitials.Text = picture is null ? ProfileCard.InitialsOf(name) : "";
+        foreach (var circle in new[] { FooterAvatar, MenuAvatar })
+            if (picture is null) circle.ClearValue(Border.BackgroundProperty);
+            else circle.SetResourceReference(Border.BackgroundProperty, "AvatarBackdropFill");
     }
 
     void ShowTheme()

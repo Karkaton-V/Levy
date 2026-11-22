@@ -1,7 +1,7 @@
 <UserControl x:Class="Workbench.Desktop.ProfileCardView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <!-- A profile card: banner, picture, name, pronouns and job title, email, bio and badges. DataContext: ProfileCard. Styles: Assets/Settings/SettingsStyles.xaml. -->
+    <!-- A profile card laid out like Discord's: banner and picture, name, job title • pronouns with the company tag, up to five badges, then the bio. DataContext: ProfileCard. -->
     <Border x:Name="Shell" Style="{StaticResource ProfileCardShell}">
         <StackPanel>
             <Grid>
@@ -9,9 +9,10 @@
                 <Border x:Name="BannerFill" Height="100" CornerRadius="11,11,0,0" VerticalAlignment="Top" />
                 <Border Style="{StaticResource ProfileRing}">
                     <Grid>
-                        <Border Style="{StaticResource ProfileInitials}">
+                        <Border Style="{StaticResource ProfileInitials}" Visibility="{Binding HasAvatar, Converter={StaticResource InverseBoolVis}}">
                             <TextBlock Text="{Binding Initials}" Style="{StaticResource ProfileInitialsText}" />
                         </Border>
+                        <Ellipse Style="{StaticResource AvatarBackdrop}" Width="80" Height="80" Visibility="{Binding HasAvatar, Converter={StaticResource BoolVis}}" />
                         <Ellipse x:Name="AvatarFill" Width="80" Height="80" Visibility="{Binding HasAvatar, Converter={StaticResource BoolVis}}" />
                     </Grid>
                 </Border>
@@ -20,41 +21,38 @@
 
             <StackPanel Margin="16,0,16,16">
                 <TextBlock Text="{Binding Name}" Style="{StaticResource ProfileName}" />
-                <TextBlock Text="{Binding Subtitle}" Style="{StaticResource ProfileMuted}" FontSize="13" Foreground="{DynamicResource Soft}" />
-                <TextBlock Text="{Binding Email}" Style="{StaticResource ProfileMuted}" />
 
-                <Border Style="{StaticResource ProfileSection}" Margin="0,14,0,0">
-                    <StackPanel>
-                        <TextBlock Text="ABOUT ME" Style="{StaticResource ProfileSectionTitle}" />
-                        <TextBlock Text="{Binding Bio}" TextWrapping="Wrap" Foreground="{DynamicResource Text}" Visibility="{Binding HasBio, Converter={StaticResource BoolVis}}" />
-                        <TextBlock Text="Nothing here yet." Foreground="{DynamicResource Muted}" Visibility="{Binding HasBio, Converter={StaticResource InverseBoolVis}}" />
-                    </StackPanel>
-                </Border>
+                <WrapPanel Margin="0,2,0,0">
+                    <TextBlock Text="{Binding Subtitle}" Style="{StaticResource ProfileMuted}" FontSize="13" Foreground="{DynamicResource Soft}" VerticalAlignment="Center" />
+                    <Border Style="{StaticResource CompanyTag}" Visibility="{Binding HasTag, Converter={StaticResource BoolVis}}" ToolTip="Company tag">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding TagGlyph}" Style="{StaticResource CompanyTagGlyph}" />
+                            <TextBlock Text="{Binding TagText}" Style="{StaticResource CompanyTagText}" />
+                        </StackPanel>
+                    </Border>
+                </WrapPanel>
 
-                <Border Style="{StaticResource ProfileSection}">
-                    <StackPanel>
-                        <TextBlock Text="BADGES" Style="{StaticResource ProfileSectionTitle}" />
-                        <ItemsControl ItemsSource="{Binding Badges}" Focusable="False" Visibility="{Binding HasBadges, Converter={StaticResource BoolVis}}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <WrapPanel />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Style="{StaticResource BadgePill}" ToolTip="{Binding Tip}">
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Style="{StaticResource BadgeGlyph}" />
-                                            <TextBlock Style="{StaticResource ChipText}" VerticalAlignment="Center" />
-                                        </StackPanel>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                        <TextBlock Text="No badges yet. Management awards them for great work." Foreground="{DynamicResource Muted}" TextWrapping="Wrap"
-                                   Visibility="{Binding HasBadges, Converter={StaticResource InverseBoolVis}}" />
-                    </StackPanel>
-                </Border>
+                <!-- Up to five badges as icons; hovering one says what it is, who gave it and why. -->
+                <ItemsControl ItemsSource="{Binding TopBadges}" Focusable="False" Margin="0,8,0,0" Visibility="{Binding HasBadges, Converter={StaticResource BoolVis}}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource BadgeIcon}" ToolTip="{Binding Tip}">
+                                <TextBlock Style="{StaticResource BadgeGlyph}" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- The bio: three lines, then "View Full Bio" opens the rest in place. -->
+                <StackPanel Margin="0,10,0,0" Visibility="{Binding HasBio, Converter={StaticResource BoolVis}}">
+                    <TextBlock x:Name="BioText" Text="{Binding Bio}" Style="{StaticResource ProfileBio}" />
+                    <Button x:Name="BioToggle" Style="{StaticResource BioLink}" Content="View Full Bio" Click="BioToggle_Click" Visibility="Collapsed" />
+                </StackPanel>
             </StackPanel>
         </StackPanel>
     </Border>

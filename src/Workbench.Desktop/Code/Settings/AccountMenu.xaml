@@ -19,7 +19,7 @@
                           ToolTip="Your profile" AutomationProperties.Name="Your profile">
                 <DockPanel>
                     <Grid Width="32" Height="32" VerticalAlignment="Center">
-                        <Border Style="{StaticResource Avatar}">
+                        <Border x:Name="FooterAvatar" Style="{StaticResource Avatar}">
                             <TextBlock x:Name="FooterInitials" Style="{StaticResource AvatarText}" />
                         </Border>
                         <Ellipse x:Name="FooterPicture" Width="32" Height="32" />
@@ -41,7 +41,7 @@
                         <StackPanel>
                             <DockPanel>
                                 <Grid Width="38" Height="38">
-                                    <Border Style="{StaticResource Avatar}" Width="38" Height="38" CornerRadius="19">
+                                    <Border x:Name="MenuAvatar" Style="{StaticResource Avatar}" Width="38" Height="38" CornerRadius="19">
                                         <TextBlock x:Name="MenuInitials" Style="{StaticResource AvatarText}" FontSize="14" />
                                     </Border>
                                     <Ellipse x:Name="MenuPicture" Width="38" Height="38" />

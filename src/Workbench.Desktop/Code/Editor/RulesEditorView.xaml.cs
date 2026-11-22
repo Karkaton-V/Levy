@@ -46,14 +46,10 @@ public partial class RulesEditorView : UserControl
         DataContextChanged += (_, _) => Attach(DataContext as MainViewModel);
     }
 
-    // Colours from Assets/Editor/Colors.*.xaml and syntax colours from Assets/Shared/Rules.*.xshd, for the current theme.
+    // The person's code theme (Shared.PaintCode), and the problem marks from Assets/Editor/Colors.*.xaml.
     void ApplyTheme()
     {
-        Editor.SyntaxHighlighting = Shared.RulesSyntax(ThemeManager.IsDark);
-        Editor.TextArea.TextView.CurrentLineBackground = (Brush)FindResource("EditorCurrentLine");
-        Editor.TextArea.TextView.CurrentLineBorder = (Pen)FindResource("EditorCurrentLineBorder");
-        Editor.TextArea.SelectionBrush = (Brush)FindResource("EditorSelection");
-        Editor.TextArea.Caret.CaretBrush = (Brush)FindResource("EditorCaret");
+        Shared.PaintCode(Editor, ThemeManager.CodeTheme);
         _marks.ProblemBrush = (Brush)FindResource("EditorProblemTint");
         _marks.SquigglePen = (Pen)FindResource("EditorProblemSquiggle");
         Editor.TextArea.TextView.InvalidateLayer(KnownLayer.Background);

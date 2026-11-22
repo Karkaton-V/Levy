@@ -18,11 +18,32 @@
 
         <!-- The code new people type when they create an account; their request then waits here for review. -->
         <Border Grid.Row="1" Grid.ColumnSpan="2" Style="{StaticResource CodeBanner}" Margin="0,16,0,0">
-            <DockPanel>
-                <Button DockPanel.Dock="Right" Style="{StaticResource SecondaryButton}" Content="Copy code" Click="CopyCode_Click" VerticalAlignment="Center" />
-                <TextBlock Style="{StaticResource CodeText}" Text="{Binding JoinCode}" DockPanel.Dock="Left" />
-                <TextBlock Style="{StaticResource CodeHint}" Text="Company code: new people enter it when they create an account, and wait here until an admin approves them." />
-            </DockPanel>
+            <StackPanel>
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Style="{StaticResource SecondaryButton}" Content="Copy code" Click="CopyCode_Click" VerticalAlignment="Center" />
+                    <TextBlock Style="{StaticResource CodeText}" Text="{Binding JoinCode}" DockPanel.Dock="Left" />
+                    <TextBlock Style="{StaticResource CodeHint}" Text="Company code: new people enter it when they create an account, and wait here until an admin approves them." />
+                </DockPanel>
+                <Border Style="{StaticResource FormDivider}" Margin="0,12" />
+                <!-- The company tag: an icon and up to four letters next to everyone's name on their profile card. -->
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Style="{StaticResource SecondaryButton}" Content="Remove" Command="{Binding ClearTagCommand}" Margin="0,0,10,0" />
+                        <Button Style="{StaticResource PrimaryButton}" Content="Save tag" Command="{Binding SaveTagCommand}" />
+                    </StackPanel>
+                    <TextBlock Text="Company tag" Style="{StaticResource FormLabel}" Margin="0,0,16,0" VerticalAlignment="Center" />
+                    <ListBox Style="{StaticResource TagIconList}" ItemsSource="{x:Static local:CompanyTagIcon.Catalog}" SelectedItem="{Binding DraftTagIcon}" AutomationProperties.Name="Tag icon" />
+                    <TextBox Style="{StaticResource Input}" Width="88" Margin="6,0,0,0" VerticalAlignment="Center" CharacterCasing="Upper" MaxLength="4"
+                             Text="{Binding DraftTagText, UpdateSourceTrigger=PropertyChanged}" Tag="CADO" AutomationProperties.Name="Tag letters" />
+                    <Border Style="{StaticResource CompanyTag}" Margin="12,0,0,0" Visibility="{Binding HasDraftTag, Converter={StaticResource BoolVis}}" ToolTip="Preview">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding DraftTagGlyph}" Style="{StaticResource CompanyTagGlyph}" />
+                            <TextBlock Text="{Binding DraftTagText}" Style="{StaticResource CompanyTagText}" />
+                        </StackPanel>
+                    </Border>
+                    <TextBlock Text="{Binding TagMessage}" Style="{StaticResource TagResult}" />
+                </DockPanel>
+            </StackPanel>
         </Border>
 
         <Border Grid.Row="2" Style="{StaticResource TableCard}" Margin="0,16,20,0">

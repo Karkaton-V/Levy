@@ -456,6 +456,9 @@
                         <ContentPresenter IsHitTestVisible="False" Margin="11,0,30,0" VerticalAlignment="Center" HorizontalAlignment="Left"
                                           Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
                                           ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" />
+                        <!-- Shown until something is picked: the ComboBox's Tag, e.g. "Choose…". -->
+                        <TextBlock x:Name="Placeholder" Text="{TemplateBinding Tag}" Foreground="{DynamicResource Muted}" Margin="12,0,30,0" VerticalAlignment="Center"
+                                   IsHitTestVisible="False" Visibility="Collapsed" />
                         <TextBlock Text="&#xE70D;" FontFamily="{StaticResource IconFont}" FontSize="10" Foreground="{DynamicResource Muted}"
                                    HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,0" IsHitTestVisible="False" />
                         <ToggleButton Focusable="False" ClickMode="Press" Cursor="Hand"
@@ -477,6 +480,9 @@
                         </Popup>
                     </Grid>
                     <ControlTemplate.Triggers>
+                        <Trigger Property="SelectedIndex" Value="-1">
+                            <Setter TargetName="Placeholder" Property="Visibility" Value="Visible" />
+                        </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Muted}" />
                         </Trigger>

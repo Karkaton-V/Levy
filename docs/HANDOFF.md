@@ -1,4 +1,4 @@
-# Handoff: workspace, accounts, themes and CI
+﻿# Handoff: workspace, accounts, themes and CI
 
 Started in a claude.ai chat on 2026-11-17 and moved to Claude Code. Branch: `workspace-accounts`.
 
@@ -76,15 +76,15 @@ None of this has been run on Windows yet. The XAML parses, every resource key re
   - `gitlab.json` has `"mock": true` until there's a real server. `Code/MockGitLab/` holds:
     - `MockGitLab`, which implements `IGitLab` like `GitLabClient` and is stored in `%LOCALAPPDATA%\ValuationWorkbench\mock-gitlab.json`, seeded from `Assets/MockGitLab/seed.json`;
     - the Mock GitLab window, where you play developer and reviewer, with GitLab-style merge rules.
-  - Tested end to end in the app: file → triage → Send to GitLab → merge request → pipeline → ready → self-approval refused → reviewer approval → merge. Intake showed every status through to Fixed, and each step was logged. The test request, its log entries and the mock file were then removed.
+  - Tested end to end in the app: file â†’ triage â†’ Send to GitLab â†’ merge request â†’ pipeline â†’ ready â†’ self-approval refused â†’ reviewer approval â†’ merge. Intake showed every status through to Fixed, and each step was logged. The test request, its log entries and the mock file were then removed.
 - Step 5 done (2026-11-21), in `.github/workflows/ci.yml`:
   - `build` (Windows): restore, Release build, engine tests. Test results are kept as an artifact.
   - `database`: `supabase db start` applies every migration to a fresh Postgres, then `supabase test db` runs `supabase/tests/database/security.test.sql`. It has 24 pgTAP checks: sign-up seeding, joining by code, company isolation, pending lock-out, approval, the last-admin guard, platform-admin-only functions, the self-promotion block, no deletes, request triage rights, activity log read/write limits, and signed-out access. Runs on every push and PR and needs no secrets.
   - `deploy`: on push to `main`, after both jobs pass, it runs `supabase link` and `supabase db push` in the `production` environment. Migrations already applied with the MCP are recorded with the same versions, so they're skipped.
   - First run passed: https://github.com/Karkaton-V/Levy/actions/runs/44955777280
-  - **Before the first merge to `main`, the owner adds two repository secrets** (GitHub → Settings → Secrets and variables → Actions):
-    - `SUPABASE_ACCESS_TOKEN`: a personal access token from supabase.com → Account → Access Tokens.
-    - `SUPABASE_DB_PASSWORD`: the project's database password (Supabase → Project Settings → Database).
+  - **Before the first merge to `main`, the owner adds two repository secrets** (GitHub â†’ Settings â†’ Secrets and variables â†’ Actions):
+    - `SUPABASE_ACCESS_TOKEN`: a personal access token from supabase.com â†’ Account â†’ Access Tokens.
+    - `SUPABASE_DB_PASSWORD`: the project's database password (Supabase â†’ Project Settings â†’ Database).
 
     Without them, the deploy job stops with a message saying which secret is missing. Optionally, add required reviewers to the `production` environment so a person approves each deploy.
 - Profiles, badges and account deletion (2026-11-22):
@@ -95,7 +95,7 @@ None of this has been run on Windows yet. The XAML parses, every resource key re
   - Tests: `supabase/tests/database/profiles.test.sql` adds 20 checks (44 in all).
   - App, in `Code/Settings/`:
     - `AccountMenu`: the footer opens the profile card or the settings menu, and each closes the other.
-    - `ProfileCardView`, `Profile.cs` (`ProfileStore`, image crop and scale), `EditProfileWindow` and `ChangePasswordWindow`.
+    - `ProfileCardView`, `Profile.cs` (`ProfileStore`, image crop and scale), `EditProfileDialog` (shown inside the main window) and `ChangePasswordWindow`.
     - Badge catalogue in `Assets/Settings/badges.json`; banner colours in `Assets/Settings/Colors.*.xaml`.
     - Team page: badges and Delete account.
   - Tested in the app: profile card, mutual close, editing with picture upload and removal, a restart reloading the picture from Storage, badge award and take-back, and the delete confirmation (answered No).
@@ -164,7 +164,7 @@ None of this has been run on Windows yet. The XAML parses, every resource key re
 - Job `build`: `windows-latest`, `actions/setup-dotnet@v4` (8.0.x), `dotnet build ValuationWorkbench.sln -c Release`, then `dotnet test tests/Workbench.Engine.Tests -c Release`. Runs on every push and PR.
 - Job `database-check`: `ubuntu-latest`, `supabase/setup-cli@v1`, then `supabase db start`, which applies every migration to a local Postgres and catches SQL errors before merge. Runs on PRs.
 - Job `deploy-database`: runs on push to `main` after `build`. It runs `supabase link --project-ref hrzalbzhskbjninplrlu`, then `supabase db push`, with env `SUPABASE_ACCESS_TOKEN` and `SUPABASE_DB_PASSWORD`.
-- The owner has to add those two repository secrets in GitHub (Settings → Secrets and variables → Actions).
+- The owner has to add those two repository secrets in GitHub (Settings â†’ Secrets and variables â†’ Actions).
 
 ### 6. Finish
 Update `README.md` (accounts, pages, themes, CI), push the branch and open a PR to `main`.

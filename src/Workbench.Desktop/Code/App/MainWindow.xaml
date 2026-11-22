@@ -137,5 +137,11 @@
                 </TabItem>
             </TabControl>
         </Grid>
+
+        <!-- In-app dialogs (Edit profile): a dimmed backdrop over the whole window, the dialog in the middle, Tab kept inside it. -->
+        <Grid x:Name="DialogLayer" Grid.ColumnSpan="2" Visibility="Collapsed" KeyboardNavigation.TabNavigation="Cycle" KeyboardNavigation.ControlTabNavigation="Cycle">
+            <Border Style="{StaticResource DialogScrim}" />
+            <ContentControl x:Name="DialogHost" Focusable="False" IsTabStop="False" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="32" />
+        </Grid>
     </Grid>
 </Window>
