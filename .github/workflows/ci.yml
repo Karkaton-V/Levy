@@ -56,7 +56,7 @@ jobs:
 
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 3.2.0
 
       # Starts Postgres alone (no other Supabase services) and applies supabase/migrations in order.
       - name: Apply every migration to a fresh database
@@ -80,7 +80,7 @@ jobs:
 
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 3.2.0
 
       - name: Check the secrets are set
         run: |
@@ -92,6 +92,7 @@ jobs:
       - name: Link the hosted project
         run: supabase link --project-ref "$SUPABASE_PROJECT_REF"
 
-      # Applies only migrations the hosted project hasn't recorded; ones already applied with the Supabase MCP are skipped.
+      # Applies only migrations the hosted project hasn't recorded (ones already applied with the Supabase MCP are skipped).
+      # --remote: CLI v3 pushes to a local database unless told to use the linked project.
       - name: Push migrations
-        run: supabase db push
+        run: supabase db push --remote
